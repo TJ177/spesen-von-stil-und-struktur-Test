@@ -7,93 +7,78 @@
 <title>Spesen von Stil & Struktur</title>
 <style>
   :root{
-    --bg:#0f172a; --card:#1e293b; --field:#334155; --text:#fff; --muted:#94a3b8;
-    --green:#22c55e; --yellow:#eab308; --red:#ef4444; --blue:#3b82f6; --line:#475569; --soft:#0b1220;
-    --orange:#f59e0b; --purple:#8b5cf6;
+    --bg:#0b1733; --card:#1b2a49; --card2:#223353; --field:#394b6b; --text:#fff; --muted:#b8c4da;
+    --green:#22c55e; --yellow:#eab308; --red:#ef4444; --blue:#3b82f6; --line:#506483; --soft:#101d39;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-  .container{max-width:980px;margin:auto;padding:14px}
+  .container{max-width:980px;margin:auto;padding:18px}
+  .topbar{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
   .app-title{font-size:28px;font-weight:700;margin:0 0 4px 0}
-  .sub{color:var(--muted);margin-bottom:10px}
-  .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
-  .badge{display:inline-block;padding:8px 12px;border-radius:999px;background:#facc15;color:#111;font-weight:700;font-size:13px}
-  .top-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .icon-btn,.mini-btn,.tab-btn,.compact-btn{
-    border:none;border-radius:10px;cursor:pointer;font-weight:700
+  .sub{color:var(--muted);margin-bottom:8px}
+  .status-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .badge{display:inline-block;padding:8px 12px;border-radius:999px;background:#facc15;color:#111;font-weight:700;font-size:14px}
+  .badge.gray{background:#6b7280;color:#fff}
+  .badge.blue{background:#2563eb;color:#fff}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  .card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid rgba(255,255,255,.04)}
+  h3{margin:0 0 12px 0;font-size:18px}
+  h4{margin:0 0 10px 0;font-size:17px}
+  .label{display:block;font-weight:700;margin:2px 0 6px}
+  input, select, textarea{
+    width:100%;background:var(--field);color:var(--text);border:none;border-radius:12px;
+    padding:12px;font-size:16px;margin:0 0 10px 0;
   }
-  .icon-btn{padding:10px 12px;background:var(--field);color:#fff}
-  .compact-btn{padding:11px 12px;font-size:14px}
-  .btn-green{background:var(--green);color:#052e16}
+  input::placeholder, textarea::placeholder{color:#c7d0df}
+  textarea{min-height:92px;resize:vertical}
+  button{
+    border:none;border-radius:12px;padding:12px 14px;font-size:16px;font-weight:700;cursor:pointer
+  }
+  .btn-green{background:var(--green)}
   .btn-yellow{background:var(--yellow);color:#111}
   .btn-red{background:var(--red);color:#fff}
   .btn-blue{background:var(--blue);color:#fff}
   .btn-ghost{background:var(--field);color:#fff}
-  .btn-orange{background:var(--orange);color:#111}
-  .btn-purple{background:var(--purple);color:#fff}
-  .card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid rgba(255,255,255,.05)}
-  .grid{display:grid;gap:12px}
-  .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-  h2,h3,h4{margin:0 0 10px 0}
-  .small-note{color:var(--muted);font-size:13px;line-height:1.4}
-  input,select,textarea{
-    width:100%;background:var(--field);color:#fff;border:none;border-radius:10px;
-    padding:10px 12px;font-size:15px;margin-top:6px
-  }
-  input.compact, select.compact{padding:9px 10px;font-size:14px}
-  textarea{min-height:88px;resize:vertical}
-  .label{display:block;font-weight:700;margin:3px 0 4px}
-  .login-grid{display:grid;grid-template-columns:1fr 1fr auto auto auto;gap:8px;align-items:end}
-  .pw-wrap{position:relative}
-  .pw-eye{
-    position:absolute;right:8px;top:50%;transform:translateY(-50%);
-    background:transparent;border:none;color:#fff;font-size:16px;cursor:pointer;padding:2px 4px
-  }
-  .tab-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin-bottom:12px}
-  .tab-btn{padding:12px 6px;background:#e5e7eb;color:#111;min-height:50px;font-size:14px}
-  .tab-btn.active{background:var(--blue);color:#fff}
+  .btn-sm{padding:10px 12px;font-size:14px}
+  .inline-check{display:flex;align-items:center;gap:10px;margin:6px 0 12px}
+  .inline-check input{width:auto;margin:0;transform:scale(1.15)}
+  .login-grid{display:grid;grid-template-columns:1.2fr 1.2fr 1fr;gap:12px}
+  .pw-wrap{display:flex;gap:8px;align-items:flex-end}
+  .pw-wrap input{margin:0}
+  .pw-eye{min-width:46px;height:46px;padding:0}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  .btn-row button{min-width:120px}
+  .small-note{color:var(--muted);font-size:13px;line-height:1.45}
   .hidden{display:none !important}
-  .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
-  .row > *{flex:1}
-  .summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tab-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:14px}
+  .tab-btn{width:100%;padding:12px 6px;background:#e5e7eb;color:#111;font-size:14px;border-radius:12px;min-height:52px}
+  .tab-btn.active{background:var(--blue);color:#fff}
+  .tab-panel.hidden{display:none}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
   .summary-box{background:var(--field);border-radius:12px;padding:12px}
-  .summary-label{color:var(--muted);font-size:13px}
-  .summary-value{font-size:22px;font-weight:700;margin-top:6px}
-  .entry-list{display:grid;gap:10px;margin-top:10px}
-  .entry-card{background:var(--field);border-radius:12px;padding:12px}
-  .entry-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .entry-title{font-weight:700}
+  .summary-label{color:var(--muted);font-size:13px;margin-bottom:6px}
+  .summary-value{font-size:20px;font-weight:700}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .dt-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+  .entry-list{display:grid;gap:10px}
+  .entry-card{background:var(--card2);border-radius:14px;padding:12px}
+  .entry-title{font-weight:700;font-size:16px}
   .entry-meta{color:var(--muted);font-size:13px;line-height:1.4;margin-top:4px}
   .entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .pill{display:inline-block;padding:5px 8px;border-radius:999px;background:var(--soft);color:#dbeafe;font-size:12px;margin:6px 6px 0 0}
-  .upload-box{background:var(--field);border:1px dashed #64748b;border-radius:12px;padding:12px}
-  .thumb{width:100%;max-height:180px;object-fit:contain;border-radius:10px;margin-top:8px;background:#111827}
-  .info-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px;line-height:1.45}
-  .checkline{background:var(--field);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .checkline input{width:auto;margin:0;transform:scale(1.15)}
-  .admin-panel,.request-card,.profile-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px}
-  .warn{color:#fde68a}
-  .ok{color:#86efac}
-  .danger{color:#fecaca}
-  .section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-  .link-like{color:#93c5fd;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
-  .sort-wrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .modal-backdrop{
-    position:fixed;inset:0;background:rgba(2,6,23,.75);display:none;align-items:center;justify-content:center;padding:16px;z-index:50
-  }
-  .modal{max-width:760px;width:100%;background:var(--card);border-radius:16px;padding:16px;max-height:90vh;overflow:auto}
-  .mono{font-family:Consolas,monospace;font-size:13px;white-space:pre-wrap;background:#0b1220;border-radius:10px;padding:10px}
-  .hint{font-size:12px;color:var(--muted)}
-  .package-chooser{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-  .package-card{background:var(--field);border-radius:12px;padding:12px;border:2px solid transparent;cursor:pointer}
-  .package-card.selected{border-color:var(--yellow)}
-  .package-price{font-size:20px;font-weight:700;color:var(--yellow);margin-top:6px}
-  @media (max-width: 860px){
-    .tab-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .login-grid{grid-template-columns:1fr 1fr 1fr}
-    .grid-2,.grid-3,.grid-4,.summary,.package-chooser{grid-template-columns:1fr}
+  .admin-panel{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+  .notice{background:var(--soft);border:1px solid var(--line);padding:12px;border-radius:12px;line-height:1.5}
+  .sort-wrap{display:flex;justify-content:flex-end;gap:8px;align-items:center;margin-bottom:8px}
+  .info-list{margin:8px 0 0 18px;padding:0}
+  .info-list li{margin:0 0 6px 0}
+  .thumb{width:100%;max-height:200px;object-fit:contain;border-radius:10px;margin-top:8px;background:#111827}
+  .upload-box{background:var(--field);border:1px dashed #64748b;border-radius:12px;padding:12px;margin-bottom:10px}
+  .status-msg{margin-top:8px;font-size:14px;font-weight:700}
+  .good{color:#86efac}.warn{color:#fde68a}.bad{color:#fca5a5}
+  .request-card{background:var(--card2);padding:12px;border-radius:12px;margin-top:10px}
+  @media (max-width:900px){
+    .tab-grid{grid-template-columns:repeat(4,1fr)}
+    .login-grid,.profile-grid,.row,.summary{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -103,87 +88,86 @@
     <div>
       <div class="app-title">Spesen von Stil &amp; Struktur</div>
       <div class="sub">Beta-Version – Spesen auf Handy und PC</div>
+      <div class="status-row">
+        <span class="badge" id="loginBadge">Nicht angemeldet</span>
+        <span class="badge gray" id="packageBadge">Kein aktiver Zugang</span>
+      </div>
     </div>
-    <div class="top-actions">
-      <span class="badge" id="statusBadge">Nicht angemeldet</span>
-      <button class="icon-btn" id="helpBtn" title="App installieren / Hilfe">ℹ️ Hilfe</button>
-      <button class="icon-btn" id="contactBtn" title="Admin kontaktieren">✉️ Admin</button>
+    <div class="toolbar">
+      <button class="btn-ghost btn-sm" id="helpBtn">App installieren / Hilfe</button>
+      <button class="btn-ghost btn-sm" id="betaBtn">Info / Beta</button>
+      <button class="btn-ghost btn-sm hidden" id="adminToggleBtn">Admin</button>
     </div>
   </div>
 
-  <div class="card">
-    <div class="section-title">
-      <h3>Login</h3>
-      <div class="small-note" id="authStatus">Nicht angemeldet.</div>
-    </div>
+  <div class="card" id="authCard">
+    <h3>Login</h3>
     <div class="login-grid">
       <div>
-        <label class="label">E-Mail</label>
-        <input class="compact" id="email" placeholder="E-Mail" />
+        <span class="label">E-Mail</span>
+        <input id="email" placeholder="E-Mail" />
       </div>
       <div>
-        <label class="label">Passwort</label>
+        <span class="label">Passwort</span>
         <div class="pw-wrap">
-          <input class="compact" id="password" type="password" placeholder="Passwort" />
-          <button class="pw-eye" id="togglePwBtn" type="button" aria-label="Passwort anzeigen">👁️</button>
+          <input id="password" type="password" placeholder="Passwort" />
+          <button type="button" class="btn-ghost pw-eye" id="togglePwBtn">👁</button>
         </div>
+        <div><a href="#" id="forgotPwLink" style="color:#93c5fd">Passwort vergessen?</a></div>
       </div>
-      <button class="compact-btn btn-green" id="loginBtn" type="button">Anmelden</button>
-      <button class="compact-btn btn-yellow" id="registerBtn" type="button">Registrieren</button>
-      <button class="compact-btn btn-red" id="logoutBtn" type="button">Abmelden</button>
+      <div>
+        <span class="label">Empfehlungscode (optional)</span>
+        <input id="refCodeInput" placeholder="nur für neue Nutzer" />
+      </div>
     </div>
-    <div class="row" style="margin-top:8px">
-      <label class="checkline" style="margin:0;flex:0 0 auto;"><input type="checkbox" id="stayLoggedIn" checked /> Angemeldet bleiben</label>
-      <button class="link-like" id="forgotPwBtn" type="button">Passwort vergessen?</button>
+    <label class="inline-check"><input type="checkbox" id="stayLoggedIn" checked /> Angemeldet bleiben</label>
+    <div class="btn-row">
+      <button class="btn-green" id="loginBtn">Anmelden</button>
+      <button class="btn-yellow" id="registerBtn">Registrieren</button>
+      <button class="btn-red hidden" id="logoutBtn">Abmelden</button>
     </div>
+    <div class="small-note" id="authStatus">Nicht angemeldet.</div>
+    <div class="status-msg" id="actionStatus"></div>
   </div>
 
   <div class="card">
-    <div class="section-title">
-      <h3>Profil & Zugang</h3>
-      <div class="small-note" id="profileHint">Melde dich an, um dein Profil zu sehen.</div>
+    <h3>Profil &amp; Zugang</h3>
+    <div class="profile-grid">
+      <div class="card" style="margin:0;padding:14px;background:#0b1733">
+        <h4>Fahrerprofil</h4>
+        <span class="label">Name</span>
+        <input id="displayName" placeholder="Vor- und Nachname" />
+        <span class="label">E-Mail</span>
+        <input id="profileEmail" placeholder="wird aus dem Login übernommen" disabled />
+        <div id="premiumFields" class="hidden">
+          <span class="label">Firma</span>
+          <input id="companyName" placeholder="Firma" />
+          <span class="label">Fahrzeug</span>
+          <input id="vehicleName" placeholder="Fahrzeug" />
+          <span class="label">Kennzeichen</span>
+          <input id="licensePlate" placeholder="Kennzeichen" />
+        </div>
+        <button class="btn-blue btn-sm" id="saveProfileBtn">Profil speichern</button>
+        <div class="small-note">Basic: Name + E-Mail. Premium/Gold: zusätzlich Firma, Fahrzeug, Kennzeichen.</div>
+      </div>
+
+      <div class="card" style="margin:0;padding:14px;background:#0b1733">
+        <h4>Zugang &amp; Laufzeit</h4>
+        <div class="notice" id="runtimeBox">Melde dich an, um deine Laufzeit zu sehen.</div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn-yellow btn-sm" id="startTrialBtn">7 Tage Testzeit starten</button>
+          <button class="btn-ghost btn-sm" id="contactAdminBtn">Admin kontaktieren</button>
+        </div>
+        <div class="small-note" style="margin-top:10px">Alle starten mit einer 7-tägigen Gold-Testphase. Drei Tage vor Ablauf erscheint ein Hinweis in der App. Nach Ablauf wird der Account gesperrt, bis ein neues Paket aktiviert wird.</div>
+      </div>
     </div>
 
-    <div class="grid grid-2">
-      <div class="profile-box">
-        <h4>Fahrerprofil</h4>
-        <div class="grid grid-2">
-          <div>
-            <label class="label">Name</label>
-            <input id="displayName" placeholder="Vor- und Nachname" />
-          </div>
-          <div>
-            <label class="label">E-Mail</label>
-            <input id="profileEmail" placeholder="wird aus dem Login übernommen" disabled />
-          </div>
-          <div id="premiumFieldCompanyWrap" class="hidden">
-            <label class="label">Firma</label>
-            <input id="company" placeholder="Firma" />
-          </div>
-          <div id="premiumFieldVehicleWrap" class="hidden">
-            <label class="label">Fahrzeug</label>
-            <input id="vehicle" placeholder="Fahrzeug" />
-          </div>
-          <div id="premiumFieldPlateWrap" class="hidden">
-            <label class="label">Kennzeichen</label>
-            <input id="plate" placeholder="Kennzeichen" />
-          </div>
-        </div>
-        <button class="compact-btn btn-blue" id="saveProfileBtn" type="button" style="margin-top:10px">Profil speichern</button>
-        <div class="small-note" style="margin-top:8px">Basic: Name + E-Mail. Premium/Gold: zusätzlich Firma, Fahrzeug, Kennzeichen.</div>
-      </div>
-
-      <div class="profile-box">
-        <h4>Zugang & Laufzeit</h4>
-        <div id="accessInfo" class="info-box">Noch kein aktiver Zugang.</div>
-        <div class="row" style="margin-top:10px">
-          <button class="compact-btn btn-orange" id="startTrialBtn" type="button">7 Tage Testzeit starten</button>
-          <button class="compact-btn btn-purple hidden" id="shareReferralBtn" type="button">Fahrer werben</button>
-        </div>
-        <div class="small-note" style="margin-top:10px">
-          Alle starten mit einer 7-tägigen Gold-Testphase. Drei Tage vor Ablauf erscheint ein Hinweis in der App. Nach Ablauf wird der Account gesperrt, bis ein neues Paket aktiviert wird.
-        </div>
-      </div>
+    <div class="admin-panel hidden" id="adminPanel">
+      <h4>Adminbereich</h4>
+      <div class="small-note">Nur für Admin sichtbar. Hier verwaltest du Buchungsanfragen und Freischaltungen.</div>
+      <button class="btn-blue btn-sm" id="refreshAdminBtn">Anfragen / Nutzer laden</button>
+      <div id="adminRequestsList"></div>
+      <div id="adminUsersList"></div>
     </div>
   </div>
 
@@ -196,286 +180,203 @@
       <button class="tab-btn" data-tab="pdfexport">PDF</button>
       <button class="tab-btn" data-tab="auswertung">Auswertung</button>
       <button class="tab-btn" data-tab="pakete">Pakete</button>
-      <button class="tab-btn" data-tab="admin">Admin</button>
+      <button class="tab-btn" data-tab="werben">Werben</button>
     </div>
 
-    <div id="tab-fahrt">
-      <div class="section-title">
-        <h3>Fahrt erfassen</h3>
-        <div class="sort-wrap">
-          <label class="small-note">Sortierung</label>
-          <select id="sortOrderSelect" class="compact" style="width:auto">
-            <option value="desc">Jüngstes zuerst</option>
-            <option value="asc">Ältestes zuerst</option>
-          </select>
-        </div>
+    <div id="fahrt" class="tab-panel">
+      <div class="sort-wrap">
+        <span class="small-note">Sortierung</span>
+        <select id="sortMode">
+          <option value="desc">Jüngstes zuerst</option>
+          <option value="asc">Ältestes zuerst</option>
+        </select>
       </div>
+      <h3>Fahrt erfassen</h3>
       <div class="summary">
-        <div class="summary-box"><div class="summary-label">Monat</div><input type="month" id="monthPicker" class="compact" /></div>
+        <div class="summary-box">
+          <div class="summary-label">Monat</div>
+          <input type="month" id="monthPicker" style="margin:0">
+        </div>
         <div class="summary-box"><div class="summary-label">Gesamt</div><div class="summary-value" id="monthTotalEuro">0,00 €</div></div>
         <div class="summary-box"><div class="summary-label">Gesamtzeit</div><div class="summary-value" id="monthTotalTime">0 h</div></div>
       </div>
-      <div class="grid grid-2" style="margin-top:10px">
+      <div class="row">
+        <div><span class="label">Tour / Titel</span><input id="tripTitle" placeholder="Tour / Titel"></div>
+        <div><span class="label">Bemerkung</span><textarea id="tripNote" placeholder="Bemerkung"></textarea></div>
+      </div>
+      <div class="row">
         <div>
-          <label class="label">Tour / Titel</label>
-          <input id="tripTitle" placeholder="Tour / Titel" />
+          <span class="label">Start</span>
+          <div class="dt-row"><input type="datetime-local" id="start"><button class="btn-green btn-sm" type="button" id="startNowBtn">Jetzt</button></div>
         </div>
         <div>
-          <label class="label">Bemerkung</label>
-          <textarea id="tripNote" placeholder="Bemerkung"></textarea>
+          <span class="label">Ende</span>
+          <div class="dt-row"><input type="datetime-local" id="ende"><button class="btn-red btn-sm" type="button" id="endNowBtn">Jetzt</button></div>
         </div>
       </div>
-      <div class="grid grid-2">
-        <div>
-          <label class="label">Start</label>
-          <div class="row">
-            <input id="start" type="datetime-local" />
-            <button class="compact-btn btn-green" type="button" id="startNowBtn">Jetzt</button>
-          </div>
-        </div>
-        <div>
-          <label class="label">Ende</label>
-          <div class="row">
-            <input id="ende" type="datetime-local" />
-            <button class="compact-btn btn-red" type="button" id="endNowBtn">Jetzt</button>
-          </div>
-        </div>
+      <div class="row">
+        <div><span class="label">Dauer</span><input id="tripDuration" readonly></div>
+        <div><span class="label">Betrag</span><input id="tripAmount" readonly></div>
       </div>
-      <div class="grid grid-2">
-        <div>
-          <label class="label">Dauer</label>
-          <input id="tripDuration" readonly />
-        </div>
-        <div>
-          <label class="label">Betrag</label>
-          <input id="tripAmount" readonly />
-        </div>
-      </div>
-      <button class="compact-btn btn-blue" id="saveTripBtn" type="button">Fahrt speichern</button>
+      <button class="btn-blue btn-sm" id="saveTripBtn">Fahrt speichern</button>
+      <div class="small-note" id="tripStatus">Noch keine Fahrten gespeichert.</div>
       <div class="entry-list" id="tripList"></div>
     </div>
 
-    <div id="tab-hotel" class="hidden">
-      <div class="section-title"><h3>Hotel</h3><div class="small-note">Ältere Hotels können jederzeit nachgetragen werden.</div></div>
-      <div class="grid grid-2">
-        <div>
-          <label class="label">Hotelname / Ort</label>
-          <input id="hotelName" placeholder="Hotelname / Ort" />
-        </div>
-        <div>
-          <label class="label">Bemerkung / Zweck</label>
-          <textarea id="hotelNote" placeholder="Bemerkung / Zweck"></textarea>
-        </div>
+    <div id="hotel" class="tab-panel hidden">
+      <h3>Hotel</h3>
+      <div class="row">
+        <div><span class="label">Hotelname / Ort</span><input id="hotelName" placeholder="Hotelname / Ort"></div>
+        <div><span class="label">Preis €</span><input id="hotelPrice" placeholder="Preis €"></div>
       </div>
-      <div class="grid grid-2">
-        <div>
-          <label class="label">Anreise</label>
-          <div class="row">
-            <input id="hotelCheckin" type="date" />
-            <button class="compact-btn btn-green" id="hotelCheckinNowBtn" type="button">Heute</button>
-          </div>
-        </div>
-        <div>
-          <label class="label">Abreise</label>
-          <div class="row">
-            <input id="hotelCheckout" type="date" />
-            <button class="compact-btn btn-red" id="hotelCheckoutNowBtn" type="button">Heute</button>
-          </div>
-        </div>
+      <div class="row">
+        <div><span class="label">Anreise</span><input id="hotelCheckin" type="date"></div>
+        <div><span class="label">Abreise</span><input id="hotelCheckout" type="date"></div>
       </div>
-      <div class="grid grid-2">
-        <div><label class="label">Nächte</label><input id="hotelNights" placeholder="Nächte" /></div>
-        <div><label class="label">Preis</label><input id="hotelPrice" placeholder="Preis €" /></div>
+      <div class="row">
+        <div><span class="label">Nächte</span><input id="hotelNights" placeholder="Nächte"></div>
+        <div><span class="label">Beleg-Sortierung</span><select id="receiptSortHotel"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div>
       </div>
+      <textarea id="hotelNote" placeholder="Bemerkung / Zweck"></textarea>
       <div class="upload-box">
         <strong>Hotelbeleg hochladen</strong>
-        <div class="small-note">Beleg wird gespeichert. Automatisches Auslesen ist in dieser Version noch Beta.</div>
-        <input type="file" id="hotelReceipt" accept="image/*" />
-        <div class="row" style="margin-top:10px">
-          <button class="compact-btn btn-ghost" id="hotelScanBtn" type="button">Beleg auslesen (Beta)</button>
-        </div>
+        <input type="file" id="hotelReceipt" accept="image/*">
         <div class="small-note" id="hotelPreview">Noch kein Beleg gewählt.</div>
-        <img class="thumb hidden" id="hotelThumb" alt="Hotelbeleg" />
+        <img class="thumb hidden" id="hotelThumb" alt="Hotelbeleg">
       </div>
-      <button class="compact-btn btn-blue" id="saveHotelBtn" type="button">Hotel speichern</button>
+      <div class="btn-row">
+        <button class="btn-blue btn-sm" id="saveHotelBtn">Hotel speichern</button>
+        <button class="btn-ghost btn-sm" id="readHotelReceiptBtn">Beleg auslesen (Beta)</button>
+      </div>
       <div class="entry-list" id="hotelList"></div>
     </div>
 
-    <div id="tab-tanken" class="hidden">
-      <div class="section-title"><h3>Tanken</h3><div class="small-note">Sortierung richtet sich immer nach dem echten Datum.</div></div>
-      <div class="grid grid-2">
-        <div>
-          <label class="label">Tankstelle / Ort</label>
-          <input id="fuelStation" placeholder="Tankstelle / Ort" />
-        </div>
-        <div>
-          <label class="label">Bemerkung</label>
-          <textarea id="fuelNote" placeholder="Bemerkung"></textarea>
-        </div>
+    <div id="tanken" class="tab-panel hidden">
+      <h3>Tanken</h3>
+      <div class="row">
+        <div><span class="label">Tankstelle / Ort</span><input id="fuelStation" placeholder="Tankstelle / Ort"></div>
+        <div><span class="label">Betrag €</span><input id="fuelAmount" placeholder="Betrag €"></div>
       </div>
-      <div class="grid grid-2">
-        <div>
-          <label class="label">Datum</label>
-          <div class="row">
-            <input id="fuelDate" type="date" />
-            <button class="compact-btn btn-green" id="fuelDateNowBtn" type="button">Heute</button>
-          </div>
-        </div>
-        <div>
-          <label class="label">Uhrzeit</label>
-          <div class="row">
-            <input id="fuelTime" type="time" />
-            <button class="compact-btn btn-red" id="fuelTimeNowBtn" type="button">Jetzt</button>
-          </div>
-        </div>
+      <div class="row">
+        <div><span class="label">Datum</span><input id="fuelDate" type="date"></div>
+        <div><span class="label">Uhrzeit</span><input id="fuelTime" type="time"></div>
       </div>
-      <div class="grid grid-3">
-        <div><label class="label">Liter</label><input id="fuelLiters" placeholder="Liter" /></div>
-        <div><label class="label">Betrag</label><input id="fuelAmount" placeholder="Betrag €" /></div>
-        <div><label class="label">Spritart</label><input id="fuelType" placeholder="Spritart" /></div>
+      <div class="row">
+        <div><span class="label">Liter</span><input id="fuelLiters" placeholder="Liter"></div>
+        <div><span class="label">Spritart</span><input id="fuelType" placeholder="Spritart"></div>
       </div>
-      <div class="grid grid-2">
-        <div><label class="label">Preis / Liter</label><input id="fuelPricePerLiter" placeholder="Preis / Liter" /></div>
-        <div></div>
+      <div class="row">
+        <div><span class="label">Preis / Liter</span><input id="fuelPricePerLiter" placeholder="Preis / Liter"></div>
+        <div><span class="label">Beleg-Sortierung</span><select id="receiptSortFuel"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div>
       </div>
+      <textarea id="fuelNote" placeholder="Bemerkung"></textarea>
       <div class="upload-box">
         <strong>Tankquittung hochladen</strong>
-        <div class="small-note">Beleg wird gespeichert. Automatisches Auslesen ist in dieser Version noch Beta.</div>
-        <input type="file" id="fuelReceipt" accept="image/*" />
-        <div class="row" style="margin-top:10px">
-          <button class="compact-btn btn-ghost" id="fuelScanBtn" type="button">Beleg auslesen (Beta)</button>
-        </div>
+        <input type="file" id="fuelReceipt" accept="image/*">
         <div class="small-note" id="fuelPreview">Noch kein Beleg gewählt.</div>
-        <img class="thumb hidden" id="fuelThumb" alt="Tankbeleg" />
+        <img class="thumb hidden" id="fuelThumb" alt="Tankbeleg">
       </div>
-      <button class="compact-btn btn-blue" id="saveFuelBtn" type="button">Tanken speichern</button>
+      <div class="btn-row">
+        <button class="btn-blue btn-sm" id="saveFuelBtn">Tanken speichern</button>
+        <button class="btn-ghost btn-sm" id="readFuelReceiptBtn">Beleg auslesen (Beta)</button>
+      </div>
       <div class="entry-list" id="fuelList"></div>
     </div>
 
-    <div id="tab-km" class="hidden">
+    <div id="km" class="tab-panel hidden">
       <h3>Kilometer</h3>
-      <div class="grid grid-2">
-        <div><label class="label">Strecke / Zweck</label><input id="kmPurpose" placeholder="Strecke / Zweck" /></div>
-        <div><label class="label">Bemerkung</label><textarea id="kmNote" placeholder="Bemerkung"></textarea></div>
+      <div class="row">
+        <div><span class="label">Strecke / Zweck</span><input id="kmPurpose" placeholder="Strecke / Zweck"></div>
+        <div><span class="label">Kilometer</span><input id="kmValue" placeholder="Kilometer"></div>
       </div>
-      <div class="grid grid-2">
-        <div><label class="label">Datum</label><input id="kmDate" type="date" /></div>
-        <div><label class="label">Kilometer</label><input id="kmValue" placeholder="Kilometer" /></div>
+      <div class="row">
+        <div><span class="label">Datum</span><input id="kmDate" type="date"></div>
+        <div><span class="label">Bemerkung</span><textarea id="kmNote" placeholder="Bemerkung"></textarea></div>
       </div>
-      <button class="compact-btn btn-blue" id="saveKmBtn" type="button">Kilometer speichern</button>
+      <button class="btn-blue btn-sm" id="saveKmBtn">Kilometer speichern</button>
       <div class="entry-list" id="kmList"></div>
     </div>
 
-    <div id="tab-pdfexport" class="hidden">
+    <div id="pdfexport" class="tab-panel hidden">
       <h3>PDF-Export</h3>
-      <div class="grid grid-2">
-        <div><label class="label">Monat</label><input type="month" id="exportMonth" /></div>
-        <div></div>
+      <div class="row">
+        <div><span class="label">Monat</span><input type="month" id="exportMonth"></div>
+        <div><span class="label">Sortierung</span><select id="expSort"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div>
       </div>
-      <label class="checkline"><input type="checkbox" id="expTrip" checked /> Fahrten</label>
-      <label class="checkline"><input type="checkbox" id="expHotel" checked /> Hotel</label>
-      <label class="checkline"><input type="checkbox" id="expFuel" checked /> Tanken</label>
-      <label class="checkline"><input type="checkbox" id="expKm" checked /> Kilometer</label>
-      <label class="checkline"><input type="checkbox" id="expReceipts" checked /> Belegbilder anhängen</label>
-      <label class="checkline"><input type="checkbox" id="expSort" checked /> Nach Datum sortieren</label>
-      <div class="info-box">Wenn Premium oder Gold aktiv ist, werden Firma, Fahrzeug und Kennzeichen mit in den PDF-Kopf geschrieben.</div>
-      <button class="compact-btn btn-blue" id="createPdfBtn" type="button">PDF erstellen</button>
+      <label class="inline-check"><input type="checkbox" id="expTrip" checked> Fahrten in PDF</label>
+      <label class="inline-check"><input type="checkbox" id="expHotel" checked> Hotel in PDF</label>
+      <label class="inline-check"><input type="checkbox" id="expFuel" checked> Tanken in PDF</label>
+      <label class="inline-check"><input type="checkbox" id="expKm"> Kilometer in PDF</label>
+      <label class="inline-check"><input type="checkbox" id="expReceipts" checked> Belegbilder anhängen</label>
+      <div class="notice">Premium/Gold: Firma, Fahrzeug und Kennzeichen werden mit in die PDF übernommen.</div>
+      <button class="btn-blue btn-sm" id="createPdfBtn">PDF erstellen</button>
     </div>
 
-    <div id="tab-auswertung" class="hidden">
+    <div id="auswertung" class="tab-panel hidden">
       <h3>Auswertung</h3>
-      <div class="grid grid-2">
-        <div><label class="label">Monat</label><input type="month" id="analysisMonth" /></div>
-        <div><label class="label">Jahr</label><input type="number" id="analysisYear" min="2020" max="2100" /></div>
+      <div class="row">
+        <div><span class="label">Monat</span><input type="month" id="analysisMonth"></div>
+        <div><span class="label">Jahr</span><input type="number" id="analysisYear" min="2020" max="2100"></div>
       </div>
       <div class="summary">
-        <div class="summary-box"><div class="summary-label">Monat</div><div class="summary-value" id="analysisMonthValue">0,00 €</div><div class="small-note" id="analysisMonthNote">0 Fahrten</div></div>
-        <div class="summary-box"><div class="summary-label">Jahr</div><div class="summary-value" id="analysisYearValue">0,00 €</div><div class="small-note" id="analysisYearNote">0 Einträge</div></div>
-        <div class="summary-box"><div class="summary-label">Statistik</div><div class="summary-value" id="analysisStatsValue">0</div><div class="small-note" id="analysisStatsNote">Fahrten gesamt</div></div>
+        <div class="summary-box"><div class="summary-label">Monat</div><div class="summary-value" id="analysisMonthValue">0,00 €</div></div>
+        <div class="summary-box"><div class="summary-label">Jahr</div><div class="summary-value" id="analysisYearValue">0,00 €</div></div>
+        <div class="summary-box"><div class="summary-label">Statistik</div><div class="summary-value" id="analysisStatsValue">0</div></div>
       </div>
-      <div class="info-box" id="analysisDetails">Noch keine Daten.</div>
+      <div class="notice" id="analysisDetails">Noch keine Daten vorhanden.</div>
     </div>
 
-    <div id="tab-pakete" class="hidden">
-      <h3>Pakete & kostenpflichtige Bestellung</h3>
-      <div class="small-note">Die Auswahl schaltet nichts direkt frei. Sie erstellt eine Anfrage an den Admin. Freischaltung erfolgt nach Zahlungseingang.</div>
-      <div class="package-chooser" id="packageChooser"></div>
-      <div class="card" style="background:var(--soft);margin-top:12px">
-        <h4>Zusatzmodule</h4>
-        <label class="checkline"><input type="checkbox" class="addon-check" value="sync" /> Sync – 2,99 € / 4 Wochen</label>
-        <label class="checkline"><input type="checkbox" class="addon-check" value="export" /> Export – 2,49 € / 4 Wochen</label>
-        <label class="checkline"><input type="checkbox" class="addon-check" value="fahrtenplus" /> Fahrten-Plus – 4,99 € / 4 Wochen</label>
-        <label class="checkline"><input type="checkbox" class="addon-check" value="auswertung" /> Auswertung – 4,99 € / 4 Wochen</label>
-      </div>
-      <div class="grid grid-2">
+    <div id="pakete" class="tab-panel hidden">
+      <h3>Paket auswählen &amp; kostenpflichtig bestellen</h3>
+      <div class="row">
         <div>
-          <label class="label">Laufzeit</label>
-          <select id="packageDuration">
-            <option value="28">4 Wochen</option>
-            <option value="56">8 Wochen</option>
-            <option value="84">12 Wochen</option>
+          <span class="label">Paket</span>
+          <select id="requestPackage">
+            <option value="basic">Basic</option>
+            <option value="premium">Premium</option>
+            <option value="gold">Goldmitglied</option>
           </select>
         </div>
         <div>
-          <label class="label">Gesamtpreis</label>
-          <input id="packageTotalPrice" readonly />
+          <span class="label">Laufzeit</span>
+          <select id="requestWeeks">
+            <option value="4">4 Wochen</option>
+            <option value="8">8 Wochen</option>
+            <option value="12">12 Wochen</option>
+          </select>
         </div>
       </div>
-      <div class="info-box" id="packageSummaryBox">Noch keine Auswahl.</div>
-      <div class="row" style="margin-top:10px">
-        <button class="compact-btn btn-blue" id="submitPackageRequestBtn" type="button">Paket kostenpflichtig bestellen</button>
-        <button class="compact-btn btn-ghost" id="adminContactBtn2" type="button">Admin kontaktieren</button>
+      <label class="inline-check"><input type="checkbox" id="addonSync"> Sync</label>
+      <label class="inline-check"><input type="checkbox" id="addonExport"> Export</label>
+      <label class="inline-check"><input type="checkbox" id="addonPlus"> Fahrten-Plus</label>
+      <label class="inline-check"><input type="checkbox" id="addonAuswertung"> Auswertung</label>
+      <div class="notice" id="priceSummary">Noch keine Auswahl.</div>
+      <div class="btn-row">
+        <button class="btn-yellow btn-sm" id="submitRequestBtn">Paket kostenpflichtig bestellen</button>
+        <button class="btn-ghost btn-sm" id="openMailBtn">Admin kontaktieren</button>
       </div>
-      <div class="small-note" style="margin-top:10px">
-        Nach deiner Anfrage wird eine Zahlungsnachricht vorbereitet. Nach Zahlungseingang erfolgt die Freischaltung innerhalb von bis zu 24 Stunden.
-      </div>
+      <div id="latestRequestBox"></div>
     </div>
 
-    <div id="tab-admin" class="hidden">
-      <h3>Adminbereich</h3>
-      <div id="adminBlocked" class="info-box">Dieser Bereich ist nur für den Admin sichtbar.</div>
-      <div id="adminContent" class="hidden">
-        <div class="grid grid-2">
-          <div class="admin-panel">
-            <div class="section-title">
-              <h4>Paketanfragen</h4>
-              <button class="compact-btn btn-blue" id="refreshRequestsBtn" type="button">Neu laden</button>
-            </div>
-            <div class="entry-list" id="adminRequestsList"></div>
-          </div>
-          <div class="admin-panel">
-            <div class="section-title">
-              <h4>Nutzer</h4>
-              <button class="compact-btn btn-blue" id="refreshUsersBtn" type="button">Neu laden</button>
-            </div>
-            <div class="entry-list" id="adminUsersList"></div>
-          </div>
-        </div>
-      </div>
+    <div id="werben" class="tab-panel hidden">
+      <h3>Fahrer werben</h3>
+      <div class="notice">Wenn ein neuer Fahrer über deinen Empfehlungscode kommt und später kostenpflichtig freigeschaltet wird, bekommst du automatisch <strong>7 Tage gratis</strong> dazu.</div>
+      <span class="label" style="margin-top:10px">Dein Empfehlungscode</span>
+      <input id="myRefCode" readonly>
+      <button class="btn-blue btn-sm" id="copyRefBtn">Code kopieren</button>
     </div>
-
-  </div>
-</div>
-
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="section-title">
-      <h3 id="modalTitle">Info</h3>
-      <button class="compact-btn btn-red" id="closeModalBtn" type="button">Schließen</button>
-    </div>
-    <div id="modalBody"></div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  signOut, setPersistence, browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
+  setPersistence, browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, getDocs, query, setDoc, getDoc,
-  serverTimestamp, orderBy, where
+  where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -487,291 +388,53 @@ const firebaseConfig = {
   appId: "1:722110907370:web:6d1253fb66f02fe4b76893"
 };
 
+const ADMIN_EMAIL = "tanjapischke177@gmail.com";
+const PAYPAL_EMAIL = "Tanjapischke177@gmail.com";
+const PRICE_MAP = {
+  basic: 4.99,
+  premium: 17.99,
+  gold: 30.00,
+  sync: 2.99,
+  export: 2.49,
+  plus: 4.99,
+  auswertung: 4.99
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const ADMIN_EMAIL = "tanjapischke177@gmail.com";
-const PAYPAL_EMAIL = "tanjapischke177@gmail.com";
-const REFERRAL_BONUS_DAYS = 7;
-const GOLD_TRIAL_DAYS = 7;
-
-const PACKAGES = {
-  basic: { name: "Basic", basePrice4Weeks: 4.99, profile: "basic", permissions: ["fahrt"] },
-  premium: { name: "Premium", basePrice4Weeks: 17.99, profile: "premium", permissions: ["fahrt","hotel","tanken","km","pdf","auswertung"] },
-  gold: { name: "Goldmitglied", basePrice4Weeks: 30.00, profile: "premium", permissions: ["all"] }
-};
-const ADDONS = {
-  sync: { name: "Sync", price4Weeks: 2.99 },
-  export: { name: "Export", price4Weeks: 2.49 },
-  fahrtenplus: { name: "Fahrten-Plus", price4Weeks: 4.99 },
-  auswertung: { name: "Auswertung", price4Weeks: 4.99 }
-};
+const $ = id => document.getElementById(id);
 
 let currentUser = null;
-let currentProfile = null;
+let profile = null;
 let allEntries = [];
 let editingId = null;
 let editingType = null;
-let selectedPackageKey = "basic";
+let sortMode = "desc";
+let loadingAuth = false;
 
-const $ = id => document.getElementById(id);
-
-function euro(v){ return Number(v || 0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €"; }
-function escapeHtml(str){
-  return String(str || "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+function setStatus(msg="", cls=""){
+  const el = $("actionStatus");
+  el.textContent = msg;
+  el.className = "status-msg " + cls;
 }
-function showModal(title, html){
-  $("modalTitle").textContent = title;
-  $("modalBody").innerHTML = html;
-  $("modalBackdrop").style.display = "flex";
-}
-function closeModal(){ $("modalBackdrop").style.display = "none"; }
-
-function formatDateTime(ts){
-  if(!ts) return "";
-  const d = ts instanceof Date ? ts : new Date(ts);
-  return d.toLocaleString("de-DE");
-}
-function formatDate(ts){
-  if(!ts) return "";
-  const d = ts instanceof Date ? ts : new Date(ts);
-  return d.toLocaleDateString("de-DE");
-}
+function escapeHtml(str){ return String(str || "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])); }
 function parseNumber(v){
   const cleaned = String(v ?? "").replace(/\./g, "").replace(",", ".").replace(/[^\d.-]/g, "");
   const n = Number(cleaned);
   return Number.isFinite(n) ? n : 0;
 }
-function plusDaysTs(days){
-  return Date.now() + days * 86400000;
+function formatEuro(v){ return Number(v||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €"; }
+function formatHours(hours){
+  const totalMin = Math.round(Number(hours||0)*60);
+  const h = Math.floor(totalMin/60);
+  const m = totalMin%60;
+  return m ? `${h} h ${m} min` : `${h} h`;
 }
-function daysLeft(endTs){
-  if(!endTs) return null;
-  return Math.ceil((Number(endTs) - Date.now()) / 86400000);
-}
-function activeAccess(profile){
-  if(!profile) return false;
-  if (!profile.activeUntil) return false;
-  return Number(profile.activeUntil) > Date.now() && profile.accountStatus === "active";
-}
-function packageDisplay(profile){
-  if(!profile) return "Nicht angemeldet";
-  if(profile.accountStatus === "pending_payment") return "Zahlung offen";
-  if(activeAccess(profile)) return `${profile.packageKey === "trial_gold" ? "Goldmitglied Test" : (PACKAGES[profile.packageKey]?.name || profile.packageKey)} aktiv`;
-  if(profile.trialStarted && !activeAccess(profile)) return "Abgelaufen";
-  return "Nicht aktiv";
-}
-function profileMode(profile){
-  if(!profile) return "basic";
-  if(profile.packageKey === "trial_gold") return "premium";
-  return PACKAGES[profile.packageKey]?.profile || "basic";
-}
-function currentPermissions(profile){
-  if(!profile) return [];
-  if(profile.packageKey === "trial_gold" && activeAccess(profile)) return ["all"];
-  if(!activeAccess(profile)) return ["fahrt","pakete"];
-  return PACKAGES[profile.packageKey]?.permissions || ["fahrt","pakete"];
-}
-function canUse(tabId){
-  const perms = currentPermissions(currentProfile);
-  if(tabId === "pakete") return !!currentUser;
-  if(tabId === "admin") return isAdmin();
-  if(perms.includes("all")) return true;
-  const map = { fahrt:"fahrt", hotel:"hotel", tanken:"tanken", km:"km", pdfexport:"pdf", auswertung:"auswertung" };
-  return perms.includes(map[tabId] || tabId);
-}
-function isAdmin(){ return !!currentUser && (currentUser.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase(); }
-
-function setAuthStateText(){
-  $("authStatus").textContent = currentUser ? `Angemeldet als: ${currentUser.email}` : "Nicht angemeldet.";
-}
-function renderStatusBadge(){
-  if(!currentUser){
-    $("statusBadge").textContent = "Nicht angemeldet";
-    return;
-  }
-  const left = daysLeft(currentProfile?.activeUntil);
-  let extra = "";
-  if(currentProfile?.accountStatus === "pending_payment") extra = " · Zahlung offen";
-  else if(activeAccess(currentProfile) && left !== null) extra = ` · ${left} Tage`;
-  $("statusBadge").textContent = `${currentProfile?.displayName || currentUser.email} · ${packageDisplay(currentProfile)}${extra}`;
-}
-function renderAccessInfo(){
-  const box = $("accessInfo");
-  if(!currentUser){
-    box.innerHTML = "Melde dich an, um deine Laufzeit zu sehen.";
-    return;
-  }
-  let html = `<strong>Status:</strong> ${escapeHtml(packageDisplay(currentProfile))}<br>`;
-  if(currentProfile?.activeUntil) html += `<strong>Läuft bis:</strong> ${escapeHtml(formatDateTime(currentProfile.activeUntil))}<br>`;
-  if(currentProfile?.referralBonusDays) html += `<strong>Werbe-Bonus gesammelt:</strong> ${currentProfile.referralBonusDays} Tage<br>`;
-  const left = daysLeft(currentProfile?.activeUntil);
-  if(activeAccess(currentProfile) && left !== null){
-    if(left <= 3) html += `<span class="warn"><strong>Hinweis:</strong> Dein Paket läuft in ${left} Tag(en) ab.</span>`;
-    else html += `<span class="ok"><strong>Aktiv.</strong></span>`;
-  } else if(currentProfile?.trialStarted || currentProfile?.accountStatus === "expired"){
-    html += `<span class="danger"><strong>Zugang abgelaufen.</strong> Bitte neues Paket buchen.</span>`;
-  } else {
-    html += `Noch kein aktiver Zugang.`;
-  }
-  box.innerHTML = html;
-}
-function renderProfileFields(){
-  const premium = profileMode(currentProfile) === "premium";
-  $("premiumFieldCompanyWrap").classList.toggle("hidden", !premium);
-  $("premiumFieldVehicleWrap").classList.toggle("hidden", !premium);
-  $("premiumFieldPlateWrap").classList.toggle("hidden", !premium);
-}
-function renderProfileForm(){
-  if(!currentUser){
-    $("displayName").value = "";
-    $("profileEmail").value = "";
-    $("company").value = "";
-    $("vehicle").value = "";
-    $("plate").value = "";
-    $("profileHint").textContent = "Melde dich an, um dein Profil zu sehen.";
-    $("startTrialBtn").classList.add("hidden");
-    $("shareReferralBtn").classList.add("hidden");
-    return;
-  }
-  $("displayName").value = currentProfile?.displayName || "";
-  $("profileEmail").value = currentUser.email || "";
-  $("company").value = currentProfile?.company || "";
-  $("vehicle").value = currentProfile?.vehicle || "";
-  $("plate").value = currentProfile?.plate || "";
-  $("profileHint").textContent = activeAccess(currentProfile) ? "Profil aktiv." : "Profil gespeichert. Zugang kann über Testphase oder Paketfreischaltung aktiviert werden.";
-  $("startTrialBtn").classList.toggle("hidden", !!(currentProfile?.trialStarted || activeAccess(currentProfile)));
-  $("shareReferralBtn").classList.toggle("hidden", !currentUser);
-  renderProfileFields();
-}
-function renderTabAccess(){
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    const tab = btn.dataset.tab;
-    btn.classList.toggle("hidden", !canUse(tab));
-  });
-  $("adminBlocked").classList.toggle("hidden", isAdmin());
-  $("adminContent").classList.toggle("hidden", !isAdmin());
-}
-function activateTab(tabId){
-  document.querySelectorAll("[id^='tab-']").forEach(el => el.classList.add("hidden"));
-  const target = $("tab-" + tabId);
-  if(target) target.classList.remove("hidden");
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tabId));
-}
-function defaultMonth(){
-  return new Date().toISOString().slice(0,7);
-}
-function setDefaults(){
-  $("monthPicker").value = defaultMonth();
-  $("exportMonth").value = defaultMonth();
-  $("analysisMonth").value = defaultMonth();
-  $("analysisYear").value = String(new Date().getFullYear());
-  $("fuelDate").value = new Date().toISOString().slice(0,10);
-  $("kmDate").value = new Date().toISOString().slice(0,10);
-  calcTrip();
-  calcHotelNights();
-}
-
-async function createUserProfileIfMissing(user){
-  const ref = doc(db, "users", user.uid);
-  const snap = await getDoc(ref);
-  const referralCodeFromUrl = new URLSearchParams(location.search).get("ref") || "";
-  if(!snap.exists()){
-    const isAdminUser = (user.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
-    const base = {
-      uid: user.uid,
-      email: user.email || "",
-      displayName: "",
-      company: "",
-      vehicle: "",
-      plate: "",
-      sortOrder: "desc",
-      accountStatus: isAdminUser ? "active" : "inactive",
-      packageKey: isAdminUser ? "gold" : "none",
-      activeFrom: isAdminUser ? Date.now() : 0,
-      activeUntil: isAdminUser ? plusDaysTs(3650) : 0,
-      trialStarted: false,
-      trialStartedAt: 0,
-      isAdmin: isAdminUser,
-      referralCode: user.uid,
-      referredBy: referralCodeFromUrl && referralCodeFromUrl !== user.uid ? referralCodeFromUrl : "",
-      referralBonusDays: 0,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-    await setDoc(ref, base, { merge:true });
-  }
-}
-async function loadProfile(){
-  if(!currentUser){ currentProfile = null; return; }
-  await createUserProfileIfMissing(currentUser);
-  const snap = await getDoc(doc(db, "users", currentUser.uid));
-  currentProfile = snap.exists() ? snap.data() : null;
-  if(currentProfile?.accountStatus === "active" && currentProfile?.activeUntil && Date.now() > Number(currentProfile.activeUntil) && !isAdmin()){
-    await updateDoc(doc(db, "users", currentUser.uid), {
-      accountStatus: "expired",
-      updatedAt: Date.now()
-    });
-    const s2 = await getDoc(doc(db, "users", currentUser.uid));
-    currentProfile = s2.data();
-  }
-  if(currentProfile?.sortOrder) $("sortOrderSelect").value = currentProfile.sortOrder;
-}
-
-async function saveProfile(){
-  if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
-  const data = {
-    displayName: $("displayName").value.trim(),
-    company: $("company").value.trim(),
-    vehicle: $("vehicle").value.trim(),
-    plate: $("plate").value.trim(),
-    updatedAt: Date.now()
-  };
-  await setDoc(doc(db, "users", currentUser.uid), data, { merge: true });
-  await loadProfile();
-  renderHeaderAndProfile();
-  alert("Profil gespeichert.");
-}
-async function saveSortOrder(){
-  if(!currentUser) return;
-  await setDoc(doc(db, "users", currentUser.uid), { sortOrder: $("sortOrderSelect").value, updatedAt: Date.now() }, { merge: true });
-  if(currentProfile) currentProfile.sortOrder = $("sortOrderSelect").value;
-  renderAllEntriesAndSummaries();
-}
-async function startTrial(){
-  if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
-  if(currentProfile?.trialStarted){ alert("Die Testzeit wurde bereits gestartet."); return; }
-  const now = Date.now();
-  await setDoc(doc(db, "users", currentUser.uid), {
-    trialStarted: true,
-    trialStartedAt: now,
-    accountStatus: "active",
-    packageKey: "trial_gold",
-    activeFrom: now,
-    activeUntil: plusDaysTs(GOLD_TRIAL_DAYS),
-    updatedAt: now
-  }, { merge:true });
-  await loadProfile();
-  renderHeaderAndProfile();
-  renderTabAccess();
-  alert("7 Tage Gold-Test wurden gestartet.");
-}
-function renderHeaderAndProfile(){
-  setAuthStateText();
-  renderStatusBadge();
-  renderAccessInfo();
-  renderProfileForm();
-}
-
 function durationHours(start, end){
   const diff = (new Date(end) - new Date(start)) / 36e5;
   return diff > 0 ? diff : 0;
-}
-function formatHours(hours){
-  const totalMin = Math.round(Number(hours||0) * 60);
-  const h = Math.floor(totalMin/60), m = totalMin % 60;
-  return m ? `${h} h ${m} min` : `${h} h`;
 }
 function calcSpesen(hours){
   if(hours < 8) return 0;
@@ -782,18 +445,262 @@ function calcSpesen(hours){
   if(rest >= 8) amount += 14;
   return amount;
 }
+function setNowFor(id){
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  $(id).value = local;
+}
 function calcTrip(){
   const start = $("start").value, end = $("ende").value;
   if(!start || !end){ $("tripDuration").value = ""; $("tripAmount").value = ""; return; }
-  const h = durationHours(start, end);
-  $("tripDuration").value = formatHours(h);
-  $("tripAmount").value = euro(calcSpesen(h));
+  const hours = durationHours(start, end);
+  $("tripDuration").value = formatHours(hours);
+  $("tripAmount").value = formatEuro(calcSpesen(hours));
 }
 function calcHotelNights(){
-  const ci = $("hotelCheckin").value, co = $("hotelCheckout").value;
-  if(!ci || !co){ return; }
-  const diff = (new Date(co) - new Date(ci)) / 86400000;
+  const a = $("hotelCheckin").value, b = $("hotelCheckout").value;
+  if(!a || !b){ $("hotelNights").value = ""; return; }
+  const diff = (new Date(b) - new Date(a)) / 86400000;
   $("hotelNights").value = diff > 0 ? String(diff) : "";
+}
+function makeRefCode(uid){
+  return "F" + uid.slice(0,8).toUpperCase();
+}
+function isAdmin(){
+  return !!currentUser && (currentUser.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
+}
+function packageKey(){
+  return profile?.packageKey || "none";
+}
+function packageLabel(){
+  if(!profile) return "Kein aktiver Zugang";
+  if(profile.testUntil && Date.now() <= profile.testUntil) return "Gold-Test aktiv";
+  if(profile.activeUntil && Date.now() <= profile.activeUntil){
+    if(profile.packageKey === "basic") return "Basic aktiv";
+    if(profile.packageKey === "premium") return "Premium aktiv";
+    if(profile.packageKey === "gold") return "Gold aktiv";
+  }
+  return "Kein aktiver Zugang";
+}
+function hasActiveAccess(){
+  if(!profile) return false;
+  if(profile.testUntil && Date.now() <= profile.testUntil) return true;
+  if(profile.activeUntil && Date.now() <= profile.activeUntil) return true;
+  return false;
+}
+function activeTierForFeatures(){
+  if(profile?.testUntil && Date.now() <= profile.testUntil) return "gold";
+  if(profile?.activeUntil && Date.now() <= profile.activeUntil) return profile.packageKey || "none";
+  return "none";
+}
+function showPremiumFields(){
+  const tier = activeTierForFeatures();
+  const show = tier === "premium" || tier === "gold";
+  $("premiumFields").classList.toggle("hidden", !show);
+}
+function updateTopUi(){
+  $("loginBadge").textContent = currentUser ? (profile?.displayName || currentUser.email || "Angemeldet") : "Nicht angemeldet";
+  $("packageBadge").textContent = packageLabel();
+  $("adminToggleBtn").classList.toggle("hidden", !isAdmin());
+  $("logoutBtn").classList.toggle("hidden", !currentUser);
+  $("authStatus").textContent = currentUser ? `Angemeldet als: ${currentUser.email}` : "Nicht angemeldet.";
+  $("profileEmail").value = currentUser?.email || "";
+  $("myRefCode").value = profile?.refCode || "";
+  const loggedIn = !!currentUser;
+  $("authCard").classList.toggle("hidden", loggedIn);
+  $("adminPanel").classList.toggle("hidden", !isAdmin());
+  showPremiumFields();
+  updateRuntimeBox();
+}
+function updateRuntimeBox(){
+  const box = $("runtimeBox");
+  if(!currentUser || !profile){
+    box.textContent = "Melde dich an, um deine Laufzeit zu sehen.";
+    return;
+  }
+  const now = Date.now();
+  const warn = [];
+  if(profile.testUntil && now <= profile.testUntil){
+    const days = Math.ceil((profile.testUntil - now)/86400000);
+    box.innerHTML = `<strong>Gold-Test aktiv</strong><br>Test läuft noch ${days} Tag(e).`;
+    return;
+  }
+  if(profile.activeUntil && now <= profile.activeUntil){
+    const days = Math.ceil((profile.activeUntil - now)/86400000);
+    box.innerHTML = `<strong>${packageLabel()}</strong><br>Läuft noch ${days} Tag(e) bis ${new Date(profile.activeUntil).toLocaleDateString("de-DE")}.`;
+    if(days <= 3) warn.push(`Hinweis: Dein Zugang läuft in ${days} Tag(en) ab.`);
+  } else {
+    box.innerHTML = `<strong>Kein aktiver Zugang</strong><br>Bitte neues Paket aktivieren.`;
+  }
+  if(warn.length) box.innerHTML += `<br><br>${warn.join("<br>")}`;
+}
+async function getProfile(uid){
+  const snap = await getDoc(doc(db, "users", uid));
+  if(!snap.exists()) return null;
+  return { id:snap.id, ...snap.data() };
+}
+async function saveProfile(){
+  if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
+  const payload = {
+    displayName: $("displayName").value.trim(),
+    email: currentUser.email || "",
+    companyName: $("companyName").value.trim(),
+    vehicleName: $("vehicleName").value.trim(),
+    licensePlate: $("licensePlate").value.trim(),
+    updatedAt: Date.now()
+  };
+  await setDoc(doc(db, "users", currentUser.uid), payload, { merge:true });
+  profile = await getProfile(currentUser.uid);
+  updateTopUi();
+  setStatus("Profil gespeichert.", "good");
+}
+function fillProfileUi(){
+  $("displayName").value = profile?.displayName || "";
+  $("companyName").value = profile?.companyName || "";
+  $("vehicleName").value = profile?.vehicleName || "";
+  $("licensePlate").value = profile?.licensePlate || "";
+}
+async function ensureUserDocument(user, referralCode=""){
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  if(snap.exists()) return { id:snap.id, ...snap.data() };
+  const newProfile = {
+    uid: user.uid,
+    email: user.email || "",
+    displayName: "",
+    packageKey: "none",
+    activeUntil: 0,
+    testUntil: 0,
+    refCode: makeRefCode(user.uid),
+    referredBy: referralCode || "",
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+  await setDoc(ref, newProfile, { merge:true });
+  return newProfile;
+}
+async function startTrial(){
+  if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
+  if(profile?.testUsed){ alert("Test wurde für diesen Account bereits genutzt."); return; }
+  const now = Date.now();
+  const testUntil = now + 7*86400000;
+  await setDoc(doc(db, "users", currentUser.uid), {
+    packageKey: "gold",
+    testUsed: true,
+    testUntil,
+    updatedAt: now
+  }, { merge:true });
+  profile = await getProfile(currentUser.uid);
+  updateTopUi();
+  fillProfileUi();
+  setStatus("7 Tage Gold-Test wurden gestartet.", "good");
+}
+function requireLogin(action="Diese Funktion"){
+  if(!currentUser){
+    alert(action + " ist nur möglich, wenn du angemeldet bist.");
+    return false;
+  }
+  return true;
+}
+function buildMailto(subject, body){
+  return `mailto:${PAYPAL_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+function computeRequestPrice(){
+  const pkg = $("requestPackage").value;
+  const weeks = Number($("requestWeeks").value || 4);
+  const factor = weeks / 4;
+  let total = PRICE_MAP[pkg] * factor;
+  const addons = [];
+  if($("addonSync").checked){ total += PRICE_MAP.sync * factor; addons.push("Sync"); }
+  if($("addonExport").checked){ total += PRICE_MAP.export * factor; addons.push("Export"); }
+  if($("addonPlus").checked){ total += PRICE_MAP.plus * factor; addons.push("Fahrten-Plus"); }
+  if($("addonAuswertung").checked){ total += PRICE_MAP.auswertung * factor; addons.push("Auswertung"); }
+  const pkgLabel = pkg === "basic" ? "Basic" : pkg === "premium" ? "Premium" : "Goldmitglied";
+  $("priceSummary").innerHTML = `<strong>Auswahl:</strong> ${pkgLabel} · ${weeks} Wochen${addons.length ? ` · ${addons.join(", ")}` : ""}<br><strong>Gesamtpreis:</strong> ${formatEuro(total)}`;
+  return { pkg, pkgLabel, weeks, addons, total };
+}
+async function submitRequest(){
+  if(!requireLogin("Paketbestellung")) return;
+  const calc = computeRequestPrice();
+  const request = {
+    uid: currentUser.uid,
+    email: currentUser.email || "",
+    displayName: profile?.displayName || "",
+    packageKey: calc.pkg,
+    packageLabel: calc.pkgLabel,
+    weeks: calc.weeks,
+    addons: calc.addons,
+    total: calc.total,
+    status: "angefragt",
+    createdAt: Date.now(),
+    paymentMessage:
+`Vielen Dank für Ihre Anfrage.
+
+Bitte senden Sie den Betrag von ${formatEuro(calc.total)} per PayPal an ${PAYPAL_EMAIL}.
+
+Da sich die App aktuell noch in der Beta-/Testphase befindet, senden Sie den Betrag bitte als Familie und Freunde.
+
+Nach Zahlungseingang erfolgt Ihre Freischaltung innerhalb von bis zu 24 Stunden.`
+  };
+  await addDoc(collection(db, "requests"), request);
+  $("latestRequestBox").innerHTML = `<div class="request-card"><strong>Anfrage gespeichert.</strong><br>${escapeHtml(request.paymentMessage).replace(/\n/g,"<br>")}</div>`;
+  setStatus("Paketanfrage gespeichert.", "good");
+}
+async function loadAdminData(){
+  if(!isAdmin()) return;
+  const reqSnap = await getDocs(query(collection(db, "requests")));
+  const requests = reqSnap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  $("adminRequestsList").innerHTML = requests.length ? "<h4 style='margin-top:14px'>Buchungsanfragen</h4>" + requests.map(r => `
+    <div class="request-card">
+      <div><strong>${escapeHtml(r.displayName || r.email)}</strong></div>
+      <div class="small-note">${escapeHtml(r.email || "")}</div>
+      <div class="small-note">${escapeHtml(r.packageLabel)} · ${r.weeks} Wochen${r.addons?.length ? " · " + escapeHtml(r.addons.join(", ")) : ""}</div>
+      <div class="small-note"><strong>${formatEuro(r.total || 0)}</strong></div>
+      <div class="btn-row" style="margin-top:8px">
+        <a class="btn-yellow btn-sm" style="text-decoration:none;display:inline-block" href="${buildMailto("Antwort zur Paketbuchung", r.paymentMessage || "")}">Zahlungsnachricht öffnen</a>
+        <button class="btn-blue btn-sm" onclick="window.activateRequest('${r.id}')">Zahlung bestätigt / Freischalten</button>
+      </div>
+    </div>
+  `).join("") : "<div class='small-note'>Noch keine Anfragen vorhanden.</div>";
+
+  const userSnap = await getDocs(query(collection(db, "users")));
+  const users = userSnap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  $("adminUsersList").innerHTML = "<h4 style='margin-top:14px'>Nutzer</h4>" + (users.length ? users.map(u => `
+    <div class="request-card">
+      <div><strong>${escapeHtml(u.displayName || u.email || "Unbekannt")}</strong></div>
+      <div class="small-note">${escapeHtml(u.email || "")}</div>
+      <div class="small-note">Status: ${escapeHtml((u.testUntil && Date.now() <= u.testUntil) ? "Gold-Test" : (u.packageKey || "none"))}</div>
+    </div>
+  `).join("") : "<div class='small-note'>Keine Nutzer vorhanden.</div>");
+}
+window.activateRequest = async function(requestId){
+  if(!isAdmin()) return;
+  const snap = await getDoc(doc(db, "requests", requestId));
+  if(!snap.exists()) return;
+  const r = snap.data();
+  const now = Date.now();
+  const activeUntil = now + Number(r.weeks || 4)*7*86400000;
+  await setDoc(doc(db, "users", r.uid), {
+    packageKey: r.packageKey,
+    activeUntil,
+    updatedAt: now
+  }, { merge:true });
+  await updateDoc(doc(db, "requests", requestId), { status:"freigeschaltet", activatedAt: now });
+  if(r.referredBy){
+    const refSnap = await getDocs(query(collection(db, "users"), where("refCode","==",r.referredBy)));
+    if(!refSnap.empty){
+      const refDoc = refSnap.docs[0];
+      const refUser = refDoc.data();
+      const base = Number(refUser.activeUntil || 0) > now ? Number(refUser.activeUntil) : now;
+      await setDoc(doc(db, "users", refDoc.id), { activeUntil: base + 7*86400000, updatedAt: now }, { merge:true });
+    }
+  }
+  await loadAdminData();
+  if(currentUser?.uid === r.uid){
+    profile = await getProfile(currentUser.uid);
+    updateTopUi();
+  }
+  alert("Freischaltung gespeichert.");
 }
 async function fileToCompressedDataUrl(file, maxW=1400, quality=0.78){
   if(!file || !file.type.startsWith("image/")) return "";
@@ -808,630 +715,350 @@ async function fileToCompressedDataUrl(file, maxW=1400, quality=0.78){
 }
 function setImagePreview(inputId, previewId, thumbId){
   const file = $(inputId).files?.[0], preview = $(previewId), thumb = $(thumbId);
-  if(!file){ preview.textContent = "Noch kein Beleg gewählt."; thumb.classList.add("hidden"); thumb.removeAttribute("src"); return; }
+  if(!file){
+    preview.textContent = "Noch kein Beleg gewählt.";
+    thumb.classList.add("hidden");
+    thumb.removeAttribute("src");
+    return;
+  }
   preview.textContent = "Gewählt: " + file.name;
   const reader = new FileReader();
   reader.onload = () => { thumb.src = reader.result; thumb.classList.remove("hidden"); };
   reader.readAsDataURL(file);
 }
+function getEntryCollection(){ return collection(db, "users", currentUser.uid, "entries"); }
 async function saveEntry(data){
-  if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
-  if(!activeAccess(currentProfile) && !isAdmin()){ alert("Dein Zugang ist derzeit nicht aktiv."); return; }
+  if(!requireLogin("Speichern")) return;
   const base = { ...data, userId: currentUser.uid, updatedAt: Date.now() };
   if(editingId && editingType === data.type){
     await updateDoc(doc(db, "users", currentUser.uid, "entries", editingId), base);
     editingId = null; editingType = null;
   } else {
     base.createdAt = Date.now();
-    await addDoc(collection(db, "users", currentUser.uid, "entries"), base);
+    await addDoc(getEntryCollection(), base);
   }
   await loadEntries();
 }
 async function loadEntries(){
-  if(!currentUser){ allEntries = []; renderAllEntriesAndSummaries(); return; }
-  const snap = await getDocs(collection(db, "users", currentUser.uid, "entries"));
+  if(!currentUser){ allEntries = []; renderAll(); return; }
+  const snap = await getDocs(getEntryCollection());
   allEntries = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-  renderAllEntriesAndSummaries();
+  renderAll();
 }
-function getSortedEntries(entries){
-  const order = currentProfile?.sortOrder || "desc";
-  return [...entries].sort((a,b) => order === "asc"
-    ? ((a.entryDateMs||0) - (b.entryDateMs||0) || (a.createdAt||0) - (b.createdAt||0))
-    : ((b.entryDateMs||0) - (a.entryDateMs||0) || (b.createdAt||0) - (a.createdAt||0))
-  );
+function sortedEntries(type){
+  return allEntries
+    .filter(e => e.type === type)
+    .sort((a,b) => sortMode === "asc"
+      ? ((a.entryDateMs||0)-(b.entryDateMs||0) || (a.createdAt||0)-(b.createdAt||0))
+      : ((b.entryDateMs||0)-(a.entryDateMs||0) || (b.createdAt||0)-(a.createdAt||0))
+    );
 }
-function monthMatches(entry, month){ return !month || entry.monthKey === month; }
+function monthMatches(entry, month){ return !month || (entry.monthKey || "") === month; }
 function yearMatches(entry, year){ return new Date(entry.entryDateMs || 0).getFullYear() === Number(year); }
 function sumBy(entries, field){ return entries.reduce((s,e) => s + Number(e[field] || 0), 0); }
-
 function renderEntryCard(entry){
-  const title = entry.title || entry.name || entry.station || entry.purpose || entry.type;
   const meta = [];
   if(entry.displayDate) meta.push(entry.displayDate);
-  if(entry.type === "trip"){ meta.push(entry.durationText || ""); meta.push(euro(entry.amount || 0)); }
-  if(entry.type === "hotel"){ if(entry.nights) meta.push(`${entry.nights} Nächte`); meta.push(euro(entry.price || 0)); }
-  if(entry.type === "fuel"){ if(entry.liters) meta.push(`${String(entry.liters).replace(".",",")} L`); meta.push(euro(entry.amount || 0)); }
-  if(entry.type === "km"){ if(entry.kilometers) meta.push(`${String(entry.kilometers).replace(".",",")} km`); }
+  if(entry.type === "trip"){ meta.push(entry.durationText || ""); meta.push(formatEuro(entry.amount || 0)); }
+  if(entry.type === "hotel"){ meta.push(entry.nights ? `${entry.nights} Nächte` : ""); meta.push(formatEuro(entry.price || 0)); }
+  if(entry.type === "fuel"){ meta.push(entry.liters ? `${String(entry.liters).replace(".",",")} L` : ""); meta.push(formatEuro(entry.amount || 0)); }
+  if(entry.type === "km"){ meta.push(entry.kilometers ? `${String(entry.kilometers).replace(".",",")} km` : ""); }
   return `
     <div class="entry-card">
-      <div class="entry-top">
-        <div>
-          <div class="entry-title">${escapeHtml(title)}</div>
-          <div class="entry-meta">${meta.join(" · ")}</div>
-          ${entry.note ? `<div class="entry-meta">${escapeHtml(entry.note)}</div>` : ""}
-          ${entry.receiptDataUrl ? `<span class="pill">Beleg gespeichert</span>` : ""}
-        </div>
-      </div>
+      <div class="entry-title">${escapeHtml(entry.title || entry.name || entry.station || entry.purpose || entry.type)}</div>
+      <div class="entry-meta">${meta.filter(Boolean).join(" · ")}</div>
+      ${entry.note ? `<div class="entry-meta">${escapeHtml(entry.note)}</div>` : ""}
       ${entry.receiptDataUrl ? `<img class="thumb" src="${entry.receiptDataUrl}" alt="Beleg" />` : ""}
       <div class="entry-actions">
-        <button class="compact-btn btn-ghost" onclick="window.editEntry('${entry.id}')">Bearbeiten</button>
-        <button class="compact-btn btn-red" onclick="window.deleteEntryById('${entry.id}')">Löschen</button>
+        <button class="btn-ghost btn-sm" onclick="window.editEntry('${entry.id}')">Bearbeiten</button>
+        <button class="btn-red btn-sm" onclick="window.deleteEntry('${entry.id}')">Löschen</button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
-function renderAllEntriesAndSummaries(){
-  const sorted = getSortedEntries(allEntries);
-  $("tripList").innerHTML = sorted.filter(e=>e.type==="trip").map(renderEntryCard).join("") || `<div class="small-note">Noch keine Fahrten gespeichert.</div>`;
-  $("hotelList").innerHTML = sorted.filter(e=>e.type==="hotel").map(renderEntryCard).join("") || `<div class="small-note">Noch keine Hotels gespeichert.</div>`;
-  $("fuelList").innerHTML = sorted.filter(e=>e.type==="fuel").map(renderEntryCard).join("") || `<div class="small-note">Noch keine Tankeinträge gespeichert.</div>`;
-  $("kmList").innerHTML = sorted.filter(e=>e.type==="km").map(renderEntryCard).join("") || `<div class="small-note">Noch keine Kilometer gespeichert.</div>`;
-
+function renderLists(){
+  $("tripList").innerHTML = sortedEntries("trip").map(renderEntryCard).join("") || "";
+  $("hotelList").innerHTML = sortedEntries("hotel").map(renderEntryCard).join("") || "";
+  $("fuelList").innerHTML = sortedEntries("fuel").map(renderEntryCard).join("") || "";
+  $("kmList").innerHTML = sortedEntries("km").map(renderEntryCard).join("") || "";
+  $("tripStatus").textContent = sortedEntries("trip").length ? "" : "Noch keine Fahrten gespeichert.";
+}
+function renderMonthSummary(){
   const month = $("monthPicker").value;
-  const monthEntries = sorted.filter(e => monthMatches(e, month));
-  const total = sumBy(monthEntries.filter(e=>e.type==="trip"),"amount") + sumBy(monthEntries.filter(e=>e.type==="hotel"),"price") + sumBy(monthEntries.filter(e=>e.type==="fuel"),"amount");
-  const hours = sumBy(monthEntries.filter(e=>e.type==="trip"),"durationHours");
-  $("monthTotalEuro").textContent = euro(total);
-  $("monthTotalTime").textContent = formatHours(hours);
-  renderAnalysis();
+  const entries = allEntries.filter(e => monthMatches(e, month));
+  const euro = sumBy(entries.filter(e => e.type === "trip"), "amount") + sumBy(entries.filter(e => e.type === "hotel"), "price") + sumBy(entries.filter(e => e.type === "fuel"), "amount");
+  const tripHours = sumBy(entries.filter(e => e.type === "trip"), "durationHours");
+  $("monthTotalEuro").textContent = formatEuro(euro);
+  $("monthTotalTime").textContent = formatHours(tripHours);
 }
 function renderAnalysis(){
   const month = $("analysisMonth").value, year = $("analysisYear").value;
   const monthEntries = allEntries.filter(e => monthMatches(e, month));
   const yearEntries = allEntries.filter(e => yearMatches(e, year));
-  const monthTripHours = sumBy(monthEntries.filter(e => e.type==="trip"), "durationHours");
-  const monthTripAmount = sumBy(monthEntries.filter(e => e.type==="trip"), "amount");
-  const monthHotel = sumBy(monthEntries.filter(e => e.type==="hotel"), "price");
-  const monthFuel = sumBy(monthEntries.filter(e => e.type==="fuel"), "amount");
-  const monthKm = sumBy(monthEntries.filter(e => e.type==="km"), "kilometers");
+  const monthTripHours = sumBy(monthEntries.filter(e => e.type === "trip"), "durationHours");
+  const monthTripAmount = sumBy(monthEntries.filter(e => e.type === "trip"), "amount");
+  const monthHotel = sumBy(monthEntries.filter(e => e.type === "hotel"), "price");
+  const monthFuel = sumBy(monthEntries.filter(e => e.type === "fuel"), "amount");
+  const monthKm = sumBy(monthEntries.filter(e => e.type === "km"), "kilometers");
   const monthTotal = monthTripAmount + monthHotel + monthFuel;
-  const yearTotal = sumBy(yearEntries.filter(e => e.type==="trip"), "amount") + sumBy(yearEntries.filter(e => e.type==="hotel"), "price") + sumBy(yearEntries.filter(e => e.type==="fuel"), "amount");
-  const trips = allEntries.filter(e => e.type==="trip");
-  const longest = Math.max(0, ...trips.map(e => Number(e.durationHours || 0)));
-  const avg = trips.length ? sumBy(trips, "durationHours") / trips.length : 0;
-
-  $("analysisMonthValue").textContent = euro(monthTotal);
-  $("analysisMonthNote").textContent = `${monthEntries.filter(e=>e.type==="trip").length} Fahrten · ${formatHours(monthTripHours)} · ${monthKm.toLocaleString("de-DE")} km`;
-  $("analysisYearValue").textContent = euro(yearTotal);
-  $("analysisYearNote").textContent = `${yearEntries.length} Einträge im Jahr ${year}`;
-  $("analysisStatsValue").textContent = trips.length.toString();
-  $("analysisStatsNote").textContent = `Längste Fahrt ${formatHours(longest)} · Ø ${formatHours(avg)}`;
-  $("analysisDetails").innerHTML = `
-    <strong>Monat</strong><br><br>
-    Fahrten: ${monthEntries.filter(e=>e.type==="trip").length} · ${euro(monthTripAmount)}<br>
-    Hotel: ${euro(monthHotel)}<br>
-    Tanken: ${euro(monthFuel)}<br>
-    Kilometer: ${monthKm.toLocaleString("de-DE")} km<br>
-    Gesamtzeit Fahrten: ${formatHours(monthTripHours)}<br><br>
-    <strong>Jahr</strong><br><br>
-    Gesamt: ${euro(yearTotal)}
-  `;
+  const yearTotal = sumBy(yearEntries.filter(e => e.type === "trip"), "amount") + sumBy(yearEntries.filter(e => e.type === "hotel"), "price") + sumBy(yearEntries.filter(e => e.type === "fuel"), "amount");
+  $("analysisMonthValue").textContent = formatEuro(monthTotal);
+  $("analysisYearValue").textContent = formatEuro(yearTotal);
+  $("analysisStatsValue").textContent = String(allEntries.filter(e => e.type === "trip").length);
+  $("analysisDetails").innerHTML = `Monat: ${monthEntries.filter(e => e.type === "trip").length} Fahrten · ${formatEuro(monthTripAmount)} · Hotel ${formatEuro(monthHotel)} · Tanken ${formatEuro(monthFuel)} · ${monthKm.toLocaleString("de-DE")} km · ${formatHours(monthTripHours)}<br>Jahr gesamt: ${formatEuro(yearTotal)}`;
 }
-window.deleteEntryById = async function(id){
-  if(!currentUser || !confirm("Eintrag wirklich löschen?")) return;
+function renderAll(){ renderLists(); renderMonthSummary(); renderAnalysis(); computeRequestPrice(); }
+window.deleteEntry = async function(id){
+  if(!requireLogin("Löschen")) return;
+  if(!confirm("Eintrag wirklich löschen?")) return;
   await deleteDoc(doc(db, "users", currentUser.uid, "entries", id));
-  if(editingId === id){ editingId = null; editingType = null; }
   await loadEntries();
-};
+}
 window.editEntry = function(id){
-  const e = allEntries.find(x => x.id === id); if(!e) return;
-  editingId = id; editingType = e.type;
+  const e = allEntries.find(x => x.id === id);
+  if(!e) return;
+  editingId = id;
+  editingType = e.type;
   if(e.type === "trip"){
-    $("tripTitle").value = e.title || ""; $("start").value = e.start || ""; $("ende").value = e.end || ""; $("tripNote").value = e.note || ""; calcTrip(); activateTab("fahrt");
-  } else if(e.type === "hotel"){
-    $("hotelName").value = e.name || ""; $("hotelCheckin").value = e.checkin || ""; $("hotelCheckout").value = e.checkout || ""; $("hotelNights").value = e.nights || ""; $("hotelPrice").value = String(e.price || "").replace(".", ","); $("hotelNote").value = e.note || "";
-    $("hotelPreview").textContent = e.receiptDataUrl ? "Beleg gespeichert." : "Noch kein Beleg gewählt.";
-    if(e.receiptDataUrl){ $("hotelThumb").src = e.receiptDataUrl; $("hotelThumb").classList.remove("hidden"); } else { $("hotelThumb").classList.add("hidden"); $("hotelThumb").removeAttribute("src"); }
-    activateTab("hotel");
-  } else if(e.type === "fuel"){
-    $("fuelStation").value = e.station || ""; $("fuelDate").value = e.date || ""; $("fuelTime").value = e.time || ""; $("fuelLiters").value = String(e.liters || "").replace(".", ","); $("fuelAmount").value = String(e.amount || "").replace(".", ","); $("fuelType").value = e.fuelType || ""; $("fuelPricePerLiter").value = String(e.pricePerLiter || "").replace(".", ","); $("fuelNote").value = e.note || "";
-    $("fuelPreview").textContent = e.receiptDataUrl ? "Beleg gespeichert." : "Noch kein Beleg gewählt.";
-    if(e.receiptDataUrl){ $("fuelThumb").src = e.receiptDataUrl; $("fuelThumb").classList.remove("hidden"); } else { $("fuelThumb").classList.add("hidden"); $("fuelThumb").removeAttribute("src"); }
-    activateTab("tanken");
-  } else if(e.type === "km"){
-    $("kmPurpose").value = e.purpose || ""; $("kmDate").value = e.date || ""; $("kmValue").value = String(e.kilometers || "").replace(".", ","); $("kmNote").value = e.note || ""; activateTab("km");
+    $("tripTitle").value = e.title || "";
+    $("tripNote").value = e.note || "";
+    $("start").value = e.start || "";
+    $("ende").value = e.end || "";
+    calcTrip();
+    showTab("fahrt");
   }
 };
-
-function clearTripForm(){ $("tripTitle").value=""; $("start").value=""; $("ende").value=""; $("tripDuration").value=""; $("tripAmount").value=""; $("tripNote").value=""; editingId=null; editingType=null; }
-function clearHotelForm(){ $("hotelName").value=""; $("hotelCheckin").value=""; $("hotelCheckout").value=""; $("hotelNights").value=""; $("hotelPrice").value=""; $("hotelNote").value=""; $("hotelReceipt").value=""; $("hotelPreview").textContent="Noch kein Beleg gewählt."; $("hotelThumb").classList.add("hidden"); $("hotelThumb").removeAttribute("src"); editingId=null; editingType=null; }
-function clearFuelForm(){ $("fuelStation").value=""; $("fuelDate").value=new Date().toISOString().slice(0,10); $("fuelTime").value=""; $("fuelLiters").value=""; $("fuelAmount").value=""; $("fuelType").value=""; $("fuelPricePerLiter").value=""; $("fuelNote").value=""; $("fuelReceipt").value=""; $("fuelPreview").textContent="Noch kein Beleg gewählt."; $("fuelThumb").classList.add("hidden"); $("fuelThumb").removeAttribute("src"); editingId=null; editingType=null; }
-function clearKmForm(){ $("kmPurpose").value=""; $("kmDate").value=new Date().toISOString().slice(0,10); $("kmValue").value=""; $("kmNote").value=""; editingId=null; editingType=null; }
-
 async function handleSaveTrip(){
+  if(!requireLogin("Fahrt speichern")) return;
   const title = $("tripTitle").value.trim(), start = $("start").value, end = $("ende").value, note = $("tripNote").value.trim();
   if(!title || !start || !end){ alert("Bitte Tour, Start und Ende ausfüllen."); return; }
   const hours = durationHours(start, end);
   if(hours <= 0){ alert("Ende muss nach dem Start liegen."); return; }
-  const amount = calcSpesen(hours);
   await saveEntry({
-    type:"trip", title, start, end, note, durationHours:hours, durationText:formatHours(hours), amount,
-    entryDateMs:new Date(start).getTime(), monthKey:start.slice(0,7), displayDate:formatDateTime(start)
+    type:"trip", title, start, end, note,
+    durationHours:hours, durationText:formatHours(hours), amount:calcSpesen(hours),
+    entryDateMs:new Date(start).getTime(), monthKey:start.slice(0,7), displayDate:new Date(start).toLocaleString("de-DE")
   });
-  clearTripForm();
 }
 async function handleSaveHotel(){
+  if(!requireLogin("Hotel speichern")) return;
   const name = $("hotelName").value.trim(), checkin = $("hotelCheckin").value, checkout = $("hotelCheckout").value, nights = parseNumber($("hotelNights").value), price = parseNumber($("hotelPrice").value), note = $("hotelNote").value.trim();
   if(!name || !checkin || !price){ alert("Bitte Hotelname, Anreise und Preis ausfüllen."); return; }
-  const existing = editingId ? allEntries.find(e => e.id === editingId) : null;
-  let receiptDataUrl = existing?.receiptDataUrl || "";
+  let receiptDataUrl = "";
   if($("hotelReceipt").files?.[0]) receiptDataUrl = await fileToCompressedDataUrl($("hotelReceipt").files[0]);
   await saveEntry({
     type:"hotel", name, checkin, checkout, nights, price, note, receiptDataUrl,
-    entryDateMs:new Date(checkin).getTime(), monthKey:checkin.slice(0,7), displayDate:formatDate(checkin)
+    entryDateMs:new Date(checkin).getTime(), monthKey:checkin.slice(0,7), displayDate:new Date(checkin).toLocaleDateString("de-DE")
   });
-  clearHotelForm();
 }
 async function handleSaveFuel(){
+  if(!requireLogin("Tanken speichern")) return;
   const station = $("fuelStation").value.trim(), date = $("fuelDate").value, time = $("fuelTime").value, liters = parseNumber($("fuelLiters").value), amount = parseNumber($("fuelAmount").value), fuelType = $("fuelType").value.trim(), pricePerLiter = parseNumber($("fuelPricePerLiter").value), note = $("fuelNote").value.trim();
   if(!station || !date || !amount){ alert("Bitte Tankstelle, Datum und Betrag ausfüllen."); return; }
-  const existing = editingId ? allEntries.find(e => e.id === editingId) : null;
-  let receiptDataUrl = existing?.receiptDataUrl || "";
+  let receiptDataUrl = "";
   if($("fuelReceipt").files?.[0]) receiptDataUrl = await fileToCompressedDataUrl($("fuelReceipt").files[0]);
-  const dt = time ? `${date}T${time}` : `${date}T00:00`;
+  const dateTime = time ? `${date}T${time}` : `${date}T00:00`;
   await saveEntry({
     type:"fuel", station, date, time, liters, amount, fuelType, pricePerLiter, note, receiptDataUrl,
-    entryDateMs:new Date(dt).getTime(), monthKey:date.slice(0,7), displayDate:formatDateTime(dt)
+    entryDateMs:new Date(dateTime).getTime(), monthKey:date.slice(0,7), displayDate:new Date(dateTime).toLocaleString("de-DE")
   });
-  clearFuelForm();
 }
 async function handleSaveKm(){
+  if(!requireLogin("Kilometer speichern")) return;
   const purpose = $("kmPurpose").value.trim(), date = $("kmDate").value, kilometers = parseNumber($("kmValue").value), note = $("kmNote").value.trim();
   if(!purpose || !date || !kilometers){ alert("Bitte Zweck, Datum und Kilometer ausfüllen."); return; }
   await saveEntry({
     type:"km", purpose, date, kilometers, note,
-    entryDateMs:new Date(`${date}T00:00`).getTime(), monthKey:date.slice(0,7), displayDate:formatDate(date)
-  });
-  clearKmForm();
-}
-
-function buildPackageChooser(){
-  const wrap = $("packageChooser");
-  wrap.innerHTML = Object.entries(PACKAGES).map(([key,p]) => `
-    <div class="package-card ${selectedPackageKey===key?'selected':''}" data-package="${key}">
-      <div><strong>${p.name}</strong></div>
-      <div class="small-note">${key==="basic"?"Name + E-Mail":key==="premium"?"mit Firma, Fahrzeug, Kennzeichen":"alles offen"}</div>
-      <div class="package-price">${euro(p.basePrice4Weeks)}</div>
-    </div>
-  `).join("");
-  wrap.querySelectorAll(".package-card").forEach(card => {
-    card.addEventListener("click", () => {
-      selectedPackageKey = card.dataset.package;
-      buildPackageChooser();
-      updatePackageRequestUI();
-    });
+    entryDateMs:new Date(`${date}T00:00`).getTime(), monthKey:date.slice(0,7), displayDate:new Date(`${date}T00:00`).toLocaleDateString("de-DE")
   });
 }
-function getSelectedAddons(){
-  return [...document.querySelectorAll(".addon-check:checked")].map(c => c.value);
-}
-function computePackageRequest(){
-  const durationDays = Number($("packageDuration").value || 28);
-  const factor = durationDays / 28;
-  const base = PACKAGES[selectedPackageKey];
-  const addons = getSelectedAddons();
-  let total = base.basePrice4Weeks * factor;
-  addons.forEach(a => total += ADDONS[a].price4Weeks * factor);
-  return { durationDays, factor, base, addons, total };
-}
-function updatePackageRequestUI(){
-  const c = computePackageRequest();
-  $("packageTotalPrice").value = euro(c.total);
-  $("packageSummaryBox").innerHTML = `
-    <strong>Auswahl</strong><br><br>
-    Paket: ${escapeHtml(c.base.name)}<br>
-    Laufzeit: ${c.durationDays} Tage<br>
-    Zusatzmodule: ${c.addons.length ? c.addons.map(a => ADDONS[a].name).join(", ") : "keine"}<br>
-    Gesamtpreis: <strong>${euro(c.total)}</strong><br><br>
-    Nach dem Absenden wird eine Anfrage an den Admin erstellt. Freischaltung erfolgt nach Zahlungseingang.
-  `;
-}
-async function submitPackageRequest(){
-  if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
-  const c = computePackageRequest();
-  const request = {
-    uid: currentUser.uid,
-    email: currentUser.email || "",
-    displayName: currentProfile?.displayName || "",
-    packageKey: selectedPackageKey,
-    packageName: c.base.name,
-    addons: c.addons,
-    addonNames: c.addons.map(a => ADDONS[a].name),
-    durationDays: c.durationDays,
-    total: Number(c.total.toFixed(2)),
-    status: "requested",
-    paymentMessage: generatePaymentMessage({
-      amount: c.total,
-      packageName: c.base.name,
-      durationDays: c.durationDays
-    }),
-    createdAt: Date.now(),
-    updatedAt: Date.now()
-  };
-  await addDoc(collection(db, "package_requests"), request);
-  await setDoc(doc(db, "users", currentUser.uid), {
-    accountStatus: "pending_payment",
-    requestedPackageKey: selectedPackageKey,
-    requestedDurationDays: c.durationDays,
-    requestedTotal: Number(c.total.toFixed(2)),
-    updatedAt: Date.now()
-  }, { merge:true });
-  await loadProfile();
-  renderHeaderAndProfile();
-  alert("Deine Anfrage wurde an den Admin übermittelt.");
-}
-function generatePaymentMessage({amount, packageName, durationDays}){
-  return `Vielen Dank für Ihre Anfrage.
-
-Bitte senden Sie den Betrag von ${euro(amount)} per PayPal an:
-
-${PAYPAL_EMAIL}
-
-Gewünschtes Paket: ${packageName}
-Laufzeit: ${durationDays} Tage
-
-Da sich die App aktuell noch in der Beta-/Testphase befindet, senden Sie den Betrag bitte als Familie und Freunde.
-
-Nach Zahlungseingang erfolgt Ihre Freischaltung innerhalb von bis zu 24 Stunden.`;
-}
-function openPaymentMessage(request){
-  const subject = encodeURIComponent("Zahlungsinfo Spesen-App");
-  const body = encodeURIComponent(request.paymentMessage);
-  window.open(`mailto:${request.email}?subject=${subject}&body=${body}`, "_blank");
-}
-function adminContactMail(){
-  const subject = encodeURIComponent("Frage zur Spesen-App");
-  const body = encodeURIComponent("Hallo,\n\nich habe eine Frage zur Spesen-App.\n\n");
-  window.open(`mailto:${PAYPAL_EMAIL}?subject=${subject}&body=${body}`, "_blank");
-}
-
-async function loadAdminRequests(){
-  if(!isAdmin()) return;
-  const snap = await getDocs(collection(db, "package_requests"));
-  const requests = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  $("adminRequestsList").innerHTML = requests.map(r => `
-    <div class="request-card">
-      <div><strong>${escapeHtml(r.displayName || r.email || "Unbekannt")}</strong></div>
-      <div class="entry-meta">${escapeHtml(r.email || "")}</div>
-      <div class="entry-meta">Paket: ${escapeHtml(r.packageName)} · Zusatzmodule: ${escapeHtml((r.addonNames||[]).join(", ") || "keine")} · Laufzeit: ${r.durationDays} Tage · Betrag: ${euro(r.total)}</div>
-      <div class="entry-meta">Status: ${escapeHtml(r.status || "requested")} · Anfrage: ${escapeHtml(formatDateTime(r.createdAt))}</div>
-      <div class="entry-actions">
-        <button class="compact-btn btn-blue" onclick="window.sendPaymentMessage('${r.id}')">Zahlungsnachricht</button>
-        <button class="compact-btn btn-green" onclick="window.confirmPayment('${r.id}')">Zahlung bestätigt</button>
-        <button class="compact-btn btn-red" onclick="window.rejectRequest('${r.id}')">Ablehnen</button>
-      </div>
-    </div>
-  `).join("") || `<div class="small-note">Keine Paketanfragen vorhanden.</div>`;
-}
-async function loadAdminUsers(){
-  if(!isAdmin()) return;
-  const snap = await getDocs(collection(db, "users"));
-  const users = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
-  $("adminUsersList").innerHTML = users.map(u => `
-    <div class="request-card">
-      <div><strong>${escapeHtml(u.displayName || u.email || "Unbekannt")}</strong></div>
-      <div class="entry-meta">${escapeHtml(u.email || "")}</div>
-      <div class="entry-meta">Paket: ${escapeHtml(u.packageKey || "none")} · Status: ${escapeHtml(u.accountStatus || "inactive")}</div>
-      <div class="entry-meta">Aktiv bis: ${escapeHtml(u.activeUntil ? formatDateTime(u.activeUntil) : "-")}</div>
-      <div class="entry-actions">
-        <button class="compact-btn btn-purple" onclick="window.extendBy7('${u.id}')">+7 Tage</button>
-      </div>
-    </div>
-  `).join("") || `<div class="small-note">Keine Nutzer vorhanden.</div>`;
-}
-window.sendPaymentMessage = async function(requestId){
-  const snap = await getDoc(doc(db, "package_requests", requestId));
-  if(!snap.exists()) return;
-  openPaymentMessage(snap.data());
-  await updateDoc(doc(db, "package_requests", requestId), { status:"payment_sent", updatedAt: Date.now() });
-  await loadAdminRequests();
-};
-window.confirmPayment = async function(requestId){
-  const snap = await getDoc(doc(db, "package_requests", requestId));
-  if(!snap.exists()) return;
-  const r = snap.data();
-  const now = Date.now();
-  const activeUntil = now + Number(r.durationDays || 28) * 86400000;
-  await setDoc(doc(db, "users", r.uid), {
-    accountStatus: "active",
-    packageKey: r.packageKey,
-    activeFrom: now,
-    activeUntil,
-    requestedPackageKey: "",
-    requestedDurationDays: 0,
-    requestedTotal: 0,
-    updatedAt: now
-  }, { merge:true });
-  await updateDoc(doc(db, "package_requests", requestId), { status:"paid_activated", updatedAt: now });
-
-  // referral bonus only after paid activation
-  const userSnap = await getDoc(doc(db, "users", r.uid));
-  const userData = userSnap.data();
-  if(userData?.referredBy){
-    const refSnap = await getDoc(doc(db, "users", userData.referredBy));
-    if(refSnap.exists()){
-      const refData = refSnap.data();
-      const baseEnd = Number(refData.activeUntil || Date.now());
-      const newEnd = Math.max(baseEnd, Date.now()) + REFERRAL_BONUS_DAYS * 86400000;
-      await setDoc(doc(db, "users", userData.referredBy), {
-        activeUntil: newEnd,
-        referralBonusDays: Number(refData.referralBonusDays || 0) + REFERRAL_BONUS_DAYS,
-        updatedAt: Date.now()
-      }, { merge:true });
-    }
-  }
-
-  await loadAdminRequests();
-  await loadAdminUsers();
-  alert("Freischaltung aktiviert.");
-};
-window.rejectRequest = async function(requestId){
-  await updateDoc(doc(db, "package_requests", requestId), { status:"rejected", updatedAt: Date.now() });
-  await loadAdminRequests();
-};
-window.extendBy7 = async function(uid){
-  const snap = await getDoc(doc(db, "users", uid));
-  if(!snap.exists()) return;
-  const data = snap.data();
-  const baseEnd = Math.max(Number(data.activeUntil || 0), Date.now());
-  await setDoc(doc(db, "users", uid), { activeUntil: baseEnd + 7*86400000, updatedAt: Date.now() }, { merge:true });
-  await loadAdminUsers();
-  if(currentUser?.uid === uid){ await loadProfile(); renderHeaderAndProfile(); }
-};
-
 function buildPdf(){
   const month = $("exportMonth").value;
-  let entries = allEntries.filter(e => monthMatches(e, month));
-  if($("expSort").checked){
-    entries = [...entries].sort((a,b)=>(a.entryDateMs||0)-(b.entryDateMs||0));
-  }
-  const profileHeader = (profileMode(currentProfile)==="premium" && (activeAccess(currentProfile) || currentProfile?.packageKey==="trial_gold"))
-    ? `<div><strong>${escapeHtml(currentProfile?.displayName || "")}</strong><br>${escapeHtml(currentProfile?.company || "")}<br>${escapeHtml(currentProfile?.vehicle || "")} ${currentProfile?.plate ? "· " + escapeHtml(currentProfile.plate) : ""}<br>${escapeHtml(currentUser?.email || "")}</div>`
-    : `<div><strong>${escapeHtml(currentProfile?.displayName || "")}</strong><br>${escapeHtml(currentUser?.email || "")}</div>`;
-
-  function table(title, rows){
-    if(!rows.length) return "";
-    return `<h2 style="margin:20px 0 10px 0;">${title}</h2><table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;"><thead><tr><th style="text-align:left;border-bottom:1px solid #999;padding:6px;">Datum</th><th style="text-align:left;border-bottom:1px solid #999;padding:6px;">Text</th><th style="text-align:left;border-bottom:1px solid #999;padding:6px;">Info</th><th style="text-align:right;border-bottom:1px solid #999;padding:6px;">Betrag</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="padding:6px;border-bottom:1px solid #ddd;">${escapeHtml(r.date)}</td><td style="padding:6px;border-bottom:1px solid #ddd;">${escapeHtml(r.text)}</td><td style="padding:6px;border-bottom:1px solid #ddd;">${escapeHtml(r.info)}</td><td style="padding:6px;border-bottom:1px solid #ddd;text-align:right;">${escapeHtml(r.amount)}</td></tr>`).join("")}</tbody></table>`;
-  }
-
-  const rowsTrip = entries.filter(e=>e.type==="trip").map(e => ({ date:e.displayDate||"", text:e.title||"", info:e.durationText||"", amount:euro(e.amount||0) }));
-  const rowsHotel = entries.filter(e=>e.type==="hotel").map(e => ({ date:e.displayDate||"", text:e.name||"", info:e.nights?`${e.nights} Nächte`:"", amount:euro(e.price||0) }));
-  const rowsFuel = entries.filter(e=>e.type==="fuel").map(e => ({ date:e.displayDate||"", text:e.station||"", info:[e.liters?`${String(e.liters).replace(".",",")} L`:"", e.fuelType||""].filter(Boolean).join(" · "), amount:euro(e.amount||0) }));
-  const rowsKm = entries.filter(e=>e.type==="km").map(e => ({ date:e.displayDate||"", text:e.purpose||"", info:e.kilometers?`${String(e.kilometers).replace(".",",")} km`:"", amount:"" }));
-  const total = sumBy(entries.filter(e=>e.type==="trip"),"amount") + sumBy(entries.filter(e=>e.type==="hotel"),"price") + sumBy(entries.filter(e=>e.type==="fuel"),"amount");
-
-  let html = `<html><head><meta charset="UTF-8"><title>Spesen PDF</title></head><body style="font-family:Arial,sans-serif;padding:20px;color:#111;">
-    <h1 style="margin:0 0 10px 0;">Spesen von Stil & Struktur</h1>
-    ${profileHeader}
-    <div style="margin:14px 0;">Monat: ${escapeHtml(month || "")}</div>`;
-  if($("expTrip").checked) html += table("Fahrten", rowsTrip);
-  if($("expHotel").checked) html += table("Hotel", rowsHotel);
-  if($("expFuel").checked) html += table("Tanken", rowsFuel);
-  if($("expKm").checked) html += table("Kilometer", rowsKm);
-  html += `<h2 style="margin-top:24px;">Gesamtsumme</h2><div style="font-size:20px;font-weight:bold;">${euro(total)}</div>`;
+  let filtered = allEntries.filter(e => monthMatches(e, month));
+  const pdfSort = $("expSort").value;
+  filtered = filtered.sort((a,b)=>pdfSort==="asc" ? (a.entryDateMs||0)-(b.entryDateMs||0) : (b.entryDateMs||0)-(a.entryDateMs||0));
+  const total = sumBy(filtered.filter(e => e.type === "trip"), "amount") + sumBy(filtered.filter(e => e.type === "hotel"), "price") + sumBy(filtered.filter(e => e.type === "fuel"), "amount");
+  const premiumMeta = (activeTierForFeatures()==="premium" || activeTierForFeatures()==="gold")
+    ? `<div><strong>Firma:</strong> ${escapeHtml(profile?.companyName || "")}</div>
+       <div><strong>Fahrzeug:</strong> ${escapeHtml(profile?.vehicleName || "")}</div>
+       <div><strong>Kennzeichen:</strong> ${escapeHtml(profile?.licensePlate || "")}</div>`
+    : "";
+  let html = `<html><head><meta charset="UTF-8"><title>PDF</title></head><body style="font-family:Arial,sans-serif;padding:20px">
+    <h1>Spesen von Stil & Struktur</h1>
+    <div><strong>Name:</strong> ${escapeHtml(profile?.displayName || "")}</div>
+    <div><strong>E-Mail:</strong> ${escapeHtml(currentUser?.email || "")}</div>
+    ${premiumMeta}
+    <div style="margin:14px 0"><strong>Monat:</strong> ${escapeHtml(month || "")}</div>`;
+  const blocks = [
+    ["Fahrten", "trip", e => `${escapeHtml(e.title || "")} · ${escapeHtml(e.displayDate || "")} · ${escapeHtml(e.durationText || "")} · ${formatEuro(e.amount || 0)}`],
+    ["Hotel", "hotel", e => `${escapeHtml(e.name || "")} · ${escapeHtml(e.displayDate || "")} · ${e.nights||0} Nächte · ${formatEuro(e.price || 0)}`],
+    ["Tanken", "fuel", e => `${escapeHtml(e.station || "")} · ${escapeHtml(e.displayDate || "")} · ${formatEuro(e.amount || 0)}`],
+    ["Kilometer", "km", e => `${escapeHtml(e.purpose || "")} · ${escapeHtml(e.displayDate || "")} · ${e.kilometers || 0} km`]
+  ];
+  blocks.forEach(([title, type, fmt]) => {
+    const key = type === "trip" ? "expTrip" : type === "hotel" ? "expHotel" : type === "fuel" ? "expFuel" : "expKm";
+    if(!$(key).checked) return;
+    const list = filtered.filter(e => e.type === type);
+    if(!list.length) return;
+    html += `<h2>${title}</h2><ul>${list.map(e => `<li>${fmt(e)}</li>`).join("")}</ul>`;
+  });
+  html += `<h2>Gesamtsumme</h2><div style="font-size:20px;font-weight:bold">${formatEuro(total)}</div>`;
   if($("expReceipts").checked){
-    const receipts = entries.filter(e => e.receiptDataUrl);
+    const receipts = filtered.filter(e => e.receiptDataUrl);
     if(receipts.length){
-      html += `<h2 style="margin-top:28px;">Belege</h2>`;
-      html += receipts.map(e => `<div style="page-break-inside:avoid;margin-bottom:24px;"><div style="margin-bottom:8px;"><strong>${escapeHtml(e.name || e.station || e.title || e.purpose || "")}</strong> – ${escapeHtml(e.displayDate || "")}</div><img src="${e.receiptDataUrl}" style="max-width:100%;max-height:900px;border:1px solid #ccc;border-radius:8px;" /></div>`).join("");
+      html += `<h2>Belege</h2>`;
+      html += receipts.map(e => `<div style="margin-bottom:18px"><div><strong>${escapeHtml(e.name || e.station || e.title || "")}</strong></div><img src="${e.receiptDataUrl}" style="max-width:100%;max-height:700px;border:1px solid #ccc"></div>`).join("");
     }
   }
   html += `</body></html>`;
   const win = window.open("", "_blank");
-  win.document.open();
   win.document.write(html);
   win.document.close();
-  setTimeout(() => win.print(), 250);
+  setTimeout(() => win.print(), 300);
 }
-
-function installHelpHtml(){
-  return `
-    <div class="info-box">
-      <strong>App auf dem Handy speichern – ganz einfach erklärt</strong><br><br>
-      <strong>Android (z. B. Samsung, Huawei usw.)</strong><br>
-      1. Link aus der Nachricht kopieren<br>
-      2. Google Chrome öffnen (das ist der Browser mit dem bunten Kreis)<br>
-      3. Oben in die Leiste klicken, Link einfügen und öffnen<br>
-      4. Oben rechts auf die 3 Punkte tippen<br>
-      5. „Zum Startbildschirm hinzufügen“ auswählen<br>
-      6. Dann „Installieren“ auswählen<br><br>
-
-      <strong>iPhone</strong><br>
-      1. Link in Safari öffnen<br>
-      2. Unten auf das Teilen-Symbol tippen<br>
-      3. Nach unten scrollen<br>
-      4. „Zum Home-Bildschirm“ auswählen<br>
-      5. „Hinzufügen“ tippen<br><br>
-
-      <strong>PC</strong><br>
-      Link einfach im Browser öffnen, anmelden und nutzen. Handy und PC können mit demselben Konto verwendet werden.<br><br>
-
-      <strong>Wichtig:</strong><br>
-      Die App befindet sich noch in der Beta-/Testphase.
-    </div>
-  `;
+function showTab(id){
+  document.querySelectorAll(".tab-panel").forEach(el => el.classList.add("hidden"));
+  $(id).classList.remove("hidden");
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === id));
 }
-
-function shareReferral(){
-  if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
-  const link = `${location.origin}${location.pathname}?ref=${encodeURIComponent(currentUser.uid)}`;
-  showModal("Fahrer werben", `
-    <div class="info-box">
-      Wenn über deinen Link ein neuer Fahrer kommt und später kostenpflichtig freigeschaltet wird, bekommst du <strong>${REFERRAL_BONUS_DAYS} Tage gratis</strong> dazu.
-    </div>
-    <div class="mono" id="refLinkBox">${escapeHtml(link)}</div>
-    <div class="row" style="margin-top:10px">
-      <button class="compact-btn btn-blue" id="copyRefBtn" type="button">Link kopieren</button>
-      <button class="compact-btn btn-ghost" id="shareRefBtn" type="button">Link teilen</button>
-    </div>
-  `);
-  $("copyRefBtn").onclick = async () => {
-    await navigator.clipboard.writeText(link);
-    alert("Link kopiert.");
-  };
-  $("shareRefBtn").onclick = async () => {
-    if(navigator.share){
-      try{ await navigator.share({ title:"Spesen-App", text:"Hier ist mein Empfehlungslink zur Spesen-App", url: link }); } catch(e){}
-    } else {
-      await navigator.clipboard.writeText(link);
-      alert("Teilen wird von diesem Gerät nicht direkt unterstützt. Link wurde kopiert.");
-    }
-  };
-}
-
-async function sendReset(){
-  const email = $("email").value.trim();
-  if(!email){ alert("Bitte zuerst deine E-Mail eintragen."); return; }
-  try{
-    await sendPasswordResetEmail(auth, email);
-    alert("Passwort-Reset wurde per E-Mail verschickt.");
-  } catch(err){
-    alert("Passwort-Reset fehlgeschlagen: " + err.message);
-  }
-}
-function setNow(id){
-  const now = new Date();
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0,16);
-  $(id).value = local;
-}
-function setToday(id){ $(id).value = new Date().toISOString().slice(0,10); }
-function setCurrentTime(id){ $(id).value = new Date().toTimeString().slice(0,5); }
-
-function runReceiptBeta(kind){
-  showModal("Beleg auslesen (Beta)", `
-    <div class="info-box">
-      Das automatische Beleg-Auslesen ist in dieser Version nur vorbereitet.<br><br>
-      Der Beleg wird gespeichert, aber die Felder müssen aktuell noch manuell geprüft und ausgefüllt werden.
-    </div>
-  `);
-}
-
-function bindEvents(){
-  $("closeModalBtn").addEventListener("click", closeModal);
-  $("modalBackdrop").addEventListener("click", (e)=>{ if(e.target === $("modalBackdrop")) closeModal(); });
-
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.addEventListener("click", ()=>{
-    if(!canUse(btn.dataset.tab)){
-      alert("Dieser Bereich ist mit deinem aktuellen Paket nicht freigeschaltet.");
-      return;
-    }
-    activateTab(btn.dataset.tab);
-  }));
-
-  $("togglePwBtn").addEventListener("click", ()=>{
-    const pw = $("password");
-    pw.type = pw.type === "password" ? "text" : "password";
+function bindUi(){
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.addEventListener("click", ()=>showTab(btn.dataset.tab)));
+  $("togglePwBtn").addEventListener("click", () => {
+    $("password").type = $("password").type === "password" ? "text" : "password";
   });
-  $("helpBtn").addEventListener("click", ()=> showModal("App installieren / Hilfe", installHelpHtml()));
-  $("contactBtn").addEventListener("click", adminContactMail);
-  $("adminContactBtn2").addEventListener("click", adminContactMail);
-  $("forgotPwBtn").addEventListener("click", sendReset);
-
-  $("startTrialBtn").addEventListener("click", startTrial);
-  $("shareReferralBtn").addEventListener("click", shareReferral);
-  $("saveProfileBtn").addEventListener("click", saveProfile);
-  $("sortOrderSelect").addEventListener("change", saveSortOrder);
-
-  $("startNowBtn").addEventListener("click", ()=>{ setNow("start"); calcTrip(); });
-  $("endNowBtn").addEventListener("click", ()=>{ setNow("ende"); calcTrip(); });
-  $("hotelCheckinNowBtn").addEventListener("click", ()=>{ setToday("hotelCheckin"); calcHotelNights(); });
-  $("hotelCheckoutNowBtn").addEventListener("click", ()=>{ setToday("hotelCheckout"); calcHotelNights(); });
-  $("fuelDateNowBtn").addEventListener("click", ()=> setToday("fuelDate"));
-  $("fuelTimeNowBtn").addEventListener("click", ()=> setCurrentTime("fuelTime"));
-
+  $("startNowBtn").addEventListener("click", ()=>{ setNowFor("start"); calcTrip(); });
+  $("endNowBtn").addEventListener("click", ()=>{ setNowFor("ende"); calcTrip(); });
   $("start").addEventListener("change", calcTrip);
   $("ende").addEventListener("change", calcTrip);
   $("hotelCheckin").addEventListener("change", calcHotelNights);
   $("hotelCheckout").addEventListener("change", calcHotelNights);
-
   $("saveTripBtn").addEventListener("click", handleSaveTrip);
   $("saveHotelBtn").addEventListener("click", handleSaveHotel);
   $("saveFuelBtn").addEventListener("click", handleSaveFuel);
   $("saveKmBtn").addEventListener("click", handleSaveKm);
-
-  $("hotelReceipt").addEventListener("change", ()=> setImagePreview("hotelReceipt","hotelPreview","hotelThumb"));
-  $("fuelReceipt").addEventListener("change", ()=> setImagePreview("fuelReceipt","fuelPreview","fuelThumb"));
-  $("hotelScanBtn").addEventListener("click", ()=> runReceiptBeta("hotel"));
-  $("fuelScanBtn").addEventListener("click", ()=> runReceiptBeta("fuel"));
-
-  $("monthPicker").addEventListener("change", renderAllEntriesAndSummaries);
+  $("hotelReceipt").addEventListener("change", ()=>setImagePreview("hotelReceipt","hotelPreview","hotelThumb"));
+  $("fuelReceipt").addEventListener("change", ()=>setImagePreview("fuelReceipt","fuelPreview","fuelThumb"));
+  $("sortMode").addEventListener("change", e => { sortMode = e.target.value; renderLists(); });
+  $("monthPicker").addEventListener("change", renderMonthSummary);
   $("analysisMonth").addEventListener("change", renderAnalysis);
   $("analysisYear").addEventListener("input", renderAnalysis);
   $("createPdfBtn").addEventListener("click", buildPdf);
-
-  $("packageDuration").addEventListener("change", updatePackageRequestUI);
-  document.querySelectorAll(".addon-check").forEach(c => c.addEventListener("change", updatePackageRequestUI));
-  $("submitPackageRequestBtn").addEventListener("click", submitPackageRequest);
-
-  $("refreshRequestsBtn").addEventListener("click", loadAdminRequests);
-  $("refreshUsersBtn").addEventListener("click", loadAdminUsers);
-
-  const getPersistenceMode = () => $("stayLoggedIn").checked ? browserLocalPersistence : browserSessionPersistence;
-  const runWithPersistence = async (fn) => {
-    localStorage.setItem("spesenStayLoggedIn", $("stayLoggedIn").checked ? "1" : "0");
-    await setPersistence(auth, getPersistenceMode());
-    return fn();
-  };
-  const savedStay = localStorage.getItem("spesenStayLoggedIn");
-  if(savedStay !== null) $("stayLoggedIn").checked = savedStay === "1";
-
+  $("saveProfileBtn").addEventListener("click", saveProfile);
+  $("startTrialBtn").addEventListener("click", startTrial);
+  $("requestPackage").addEventListener("change", computeRequestPrice);
+  $("requestWeeks").addEventListener("change", computeRequestPrice);
+  $("addonSync").addEventListener("change", computeRequestPrice);
+  $("addonExport").addEventListener("change", computeRequestPrice);
+  $("addonPlus").addEventListener("change", computeRequestPrice);
+  $("addonAuswertung").addEventListener("change", computeRequestPrice);
+  $("submitRequestBtn").addEventListener("click", submitRequest);
+  $("copyRefBtn").addEventListener("click", async ()=>{
+    try{
+      await navigator.clipboard.writeText($("myRefCode").value || "");
+      setStatus("Empfehlungscode kopiert.", "good");
+    } catch {
+      setStatus("Kopieren nicht möglich.", "warn");
+    }
+  });
+  $("helpBtn").addEventListener("click", ()=>{
+    alert(`App aufs Handy speichern:\n\nAndroid:\n1. Link aus der Nachricht kopieren\n2. Google Chrome öffnen\n3. Link oben einfügen und öffnen\n4. Oben rechts auf die 3 Punkte tippen\n5. „Zum Startbildschirm hinzufügen“ auswählen\n6. „Installieren“ wählen\n\niPhone:\n1. Link in Safari öffnen\n2. Auf Teilen tippen\n3. Nach unten scrollen\n4. „Zum Home-Bildschirm“ auswählen\n5. Hinzufügen\n\nPC:\nEinfach den Link im Browser öffnen und anmelden. Du kannst Handy und PC parallel mit demselben Konto nutzen.`);
+  });
+  $("betaBtn").addEventListener("click", ()=>{
+    alert("Die App befindet sich aktuell in der Beta-/Testphase. Funktionen können noch angepasst oder erweitert werden.");
+  });
+  $("contactAdminBtn").addEventListener("click", ()=>{
+    window.location.href = buildMailto("Frage zur Spesen-App", "Hallo,%0A%0Aich habe eine Frage zur Spesen-App.%0A");
+  });
+  $("openMailBtn").addEventListener("click", ()=>{
+    window.location.href = buildMailto("Frage zur Paketbuchung", "Hallo,%0A%0Aich möchte eine Frage zur Paketbuchung stellen.%0A");
+  });
+  $("forgotPwLink").addEventListener("click", async (e)=>{
+    e.preventDefault();
+    const email = $("email").value.trim();
+    if(!email){ alert("Bitte zuerst deine E-Mail eintragen."); return; }
+    try{
+      await sendPasswordResetEmail(auth, email);
+      setStatus("Passwort-Reset-Mail wurde gesendet.", "good");
+    } catch(err){
+      alert("Reset fehlgeschlagen: " + err.message);
+    }
+  });
+  $("refreshAdminBtn").addEventListener("click", loadAdminData);
+  $("readHotelReceiptBtn").addEventListener("click", ()=>alert("Beleg auslesen ist als Beta-Funktion vorbereitet. Hier werden später Datum, Betrag und Name automatisch vorgeschlagen."));
+  $("readFuelReceiptBtn").addEventListener("click", ()=>alert("Beleg auslesen ist als Beta-Funktion vorbereitet. Hier werden später Datum, Betrag und Name automatisch vorgeschlagen."));
   $("loginBtn").addEventListener("click", async ()=>{
     try{
-      await runWithPersistence(() => signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value));
+      loadingAuth = true;
+      setStatus("Anmeldung läuft...", "warn");
+      const persistence = $("stayLoggedIn").checked ? browserLocalPersistence : browserSessionPersistence;
+      await setPersistence(auth, persistence);
+      await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+      setStatus("Anmeldung erfolgreich.", "good");
     } catch(err){
       alert("Anmeldung fehlgeschlagen: " + err.message);
+      setStatus("", "");
+    } finally {
+      loadingAuth = false;
     }
   });
   $("registerBtn").addEventListener("click", async ()=>{
     try{
-      await runWithPersistence(() => createUserWithEmailAndPassword(auth, $("email").value.trim(), $("password").value));
-      alert("Registrierung erfolgreich. Bitte Profil ergänzen und dann die Testzeit starten.");
+      loadingAuth = true;
+      setStatus("Registrierung läuft...", "warn");
+      const persistence = $("stayLoggedIn").checked ? browserLocalPersistence : browserSessionPersistence;
+      await setPersistence(auth, persistence);
+      const cred = await createUserWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+      await ensureUserDocument(cred.user, $("refCodeInput").value.trim());
+      setStatus("Registrierung erfolgreich.", "good");
     } catch(err){
       alert("Registrierung fehlgeschlagen: " + err.message);
+      setStatus("", "");
+    } finally {
+      loadingAuth = false;
     }
   });
   $("logoutBtn").addEventListener("click", async ()=>{
-    try{ await signOut(auth); } catch(err){ alert("Abmelden fehlgeschlagen: " + err.message); }
+    try{
+      await signOut(auth);
+      setStatus("Abgemeldet.", "good");
+    } catch(err){
+      alert("Abmelden fehlgeschlagen: " + err.message);
+    }
   });
 }
-
-onAuthStateChanged(auth, async (user) => {
+function setDefaults(){
+  const now = new Date();
+  const month = now.toISOString().slice(0,7);
+  $("monthPicker").value = month;
+  $("exportMonth").value = month;
+  $("analysisMonth").value = month;
+  $("analysisYear").value = String(now.getFullYear());
+  $("fuelDate").value = now.toISOString().slice(0,10);
+  $("kmDate").value = now.toISOString().slice(0,10);
+  computeRequestPrice();
+}
+onAuthStateChanged(auth, async (user)=>{
   currentUser = user || null;
   if(currentUser){
-    await loadProfile();
-    await loadEntries();
-    if(isAdmin()){
-      await loadAdminRequests();
-      await loadAdminUsers();
+    try{
+      profile = await ensureUserDocument(currentUser);
+      profile = await getProfile(currentUser.uid);
+      fillProfileUi();
+      await loadEntries();
+      if(isAdmin()) await loadAdminData();
+    } catch(err){
+      console.error(err);
+      setStatus("Profil konnte nicht sauber geladen werden.", "bad");
     }
   } else {
-    currentProfile = null;
+    profile = null;
     allEntries = [];
-    $("adminRequestsList").innerHTML = "";
-    $("adminUsersList").innerHTML = "";
-    $("sortOrderSelect").value = "desc";
-    renderAllEntriesAndSummaries();
+    fillProfileUi();
+    renderAll();
   }
-  renderHeaderAndProfile();
-  renderTabAccess();
-  if(!canUse(document.querySelector(".tab-btn.active")?.dataset.tab || "fahrt")) activateTab("fahrt");
+  updateTopUi();
 });
-
-buildPackageChooser();
-updatePackageRequestUI();
-bindEvents();
+bindUi();
 setDefaults();
-activateTab("fahrt");
 </script>
 </body>
 </html>
