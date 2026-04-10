@@ -39,6 +39,7 @@
   .btn-red{background:var(--red);color:#fff}
   .btn-blue{background:var(--blue);color:#fff}
   .btn-ghost{background:var(--field);color:#fff}
+  .btn-admin{background:var(--red)!important;color:#fff!important}
   .btn-sm{padding:10px 12px;font-size:14px}
   .inline-check{display:flex;align-items:center;gap:10px;margin:6px 0 12px}
   .inline-check input{width:auto;margin:0;transform:scale(1.15)}
@@ -60,7 +61,7 @@
   .summary-label{color:var(--muted);font-size:13px;margin-bottom:6px}
   .summary-value{font-size:20px;font-weight:700}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .dt-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+  .dt-row{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px;align-items:end}
   .entry-list{display:grid;gap:10px}
   .entry-card{background:var(--card2);border-radius:14px;padding:12px}
   .entry-title{font-weight:700;font-size:16px}
@@ -230,8 +231,14 @@
         <div><span class="label">Preis €</span><input id="hotelPrice" placeholder="Preis €"></div>
       </div>
       <div class="row">
-        <div><span class="label">Anreise</span><input id="hotelCheckin" type="date"></div>
-        <div><span class="label">Abreise</span><input id="hotelCheckout" type="date"></div>
+        <div>
+          <span class="label">Anreise</span>
+          <div class="dt-row"><input id="hotelCheckin" type="datetime-local"><button class="btn-green btn-sm" type="button" id="hotelCheckinNowBtn">Start jetzt</button></div>
+        </div>
+        <div>
+          <span class="label">Abreise</span>
+          <div class="dt-row"><input id="hotelCheckout" type="datetime-local"><button class="btn-red btn-sm" type="button" id="hotelCheckoutNowBtn">Ende jetzt</button></div>
+        </div>
       </div>
       <div class="row">
         <div><span class="label">Nächte</span><input id="hotelNights" placeholder="Nächte"></div>
@@ -258,8 +265,14 @@
         <div><span class="label">Betrag €</span><input id="fuelAmount" placeholder="Betrag €"></div>
       </div>
       <div class="row">
-        <div><span class="label">Datum</span><input id="fuelDate" type="date"></div>
-        <div><span class="label">Uhrzeit</span><input id="fuelTime" type="time"></div>
+        <div>
+          <span class="label">Datum</span>
+          <div class="dt-row"><input id="fuelDate" type="date"><button class="btn-green btn-sm" type="button" id="fuelDateNowBtn">Datum jetzt</button></div>
+        </div>
+        <div>
+          <span class="label">Uhrzeit</span>
+          <div class="dt-row"><input id="fuelTime" type="time"><button class="btn-red btn-sm" type="button" id="fuelTimeNowBtn">Uhrzeit jetzt</button></div>
+        </div>
       </div>
       <div class="row">
         <div><span class="label">Liter</span><input id="fuelLiters" placeholder="Liter"></div>
@@ -450,6 +463,14 @@ function setNowFor(id){
   const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
   $(id).value = local;
 }
+function getLocalDateString(){
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+}
+function getLocalTimeString(){
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(11,16);
+}
 function calcTrip(){
   const start = $("start").value, end = $("ende").value;
   if(!start || !end){ $("tripDuration").value = ""; $("tripAmount").value = ""; return; }
@@ -502,6 +523,8 @@ function updateTopUi(){
   $("loginBadge").textContent = currentUser ? (profile?.displayName || currentUser.email || "Angemeldet") : "Nicht angemeldet";
   $("packageBadge").textContent = packageLabel();
   $("adminToggleBtn").classList.toggle("hidden", !isAdmin());
+  $("adminToggleBtn").classList.toggle("btn-admin", isAdmin());
+  $("adminToggleBtn").textContent = isAdmin() ? "Admin aktiv" : "Admin";
   $("logoutBtn").classList.toggle("hidden", !currentUser);
   $("authStatus").textContent = currentUser ? `Angemeldet als: ${currentUser.email}` : "Nicht angemeldet.";
   $("profileEmail").value = currentUser?.email || "";
@@ -829,8 +852,8 @@ window.editEntry = function(id){
 };
 async function handleSaveTrip(){
   if(!requireLogin("Fahrt speichern")) return;
-  const title = $("tripTitle").value.trim(), start = $("start").value, end = $("ende").value, note = $("tripNote").value.trim();
-  if(!title || !start || !end){ alert("Bitte Tour, Start und Ende ausfüllen."); return; }
+  const title = $("tripTitle").value.trim() || "Fahrt", start = $("start").value, end = $("ende").value, note = $("tripNote").value.trim();
+  if(!start || !end){ alert("Bitte Start und Ende ausfüllen."); return; }
   const hours = durationHours(start, end);
   if(hours <= 0){ alert("Ende muss nach dem Start liegen."); return; }
   await saveEntry({
@@ -847,7 +870,7 @@ async function handleSaveHotel(){
   if($("hotelReceipt").files?.[0]) receiptDataUrl = await fileToCompressedDataUrl($("hotelReceipt").files[0]);
   await saveEntry({
     type:"hotel", name, checkin, checkout, nights, price, note, receiptDataUrl,
-    entryDateMs:new Date(checkin).getTime(), monthKey:checkin.slice(0,7), displayDate:new Date(checkin).toLocaleDateString("de-DE")
+    entryDateMs:new Date(checkin).getTime(), monthKey:checkin.slice(0,7), displayDate:new Date(checkin).toLocaleString("de-DE")
   });
 }
 async function handleSaveFuel(){
@@ -927,6 +950,10 @@ function bindUi(){
   });
   $("startNowBtn").addEventListener("click", ()=>{ setNowFor("start"); calcTrip(); });
   $("endNowBtn").addEventListener("click", ()=>{ setNowFor("ende"); calcTrip(); });
+  $("hotelCheckinNowBtn").addEventListener("click", ()=>{ setNowFor("hotelCheckin"); calcHotelNights(); });
+  $("hotelCheckoutNowBtn").addEventListener("click", ()=>{ setNowFor("hotelCheckout"); calcHotelNights(); });
+  $("fuelDateNowBtn").addEventListener("click", ()=>{ $("fuelDate").value = getLocalDateString(); });
+  $("fuelTimeNowBtn").addEventListener("click", ()=>{ $("fuelTime").value = getLocalTimeString(); });
   $("start").addEventListener("change", calcTrip);
   $("ende").addEventListener("change", calcTrip);
   $("hotelCheckin").addEventListener("change", calcHotelNights);
@@ -1027,13 +1054,13 @@ function bindUi(){
 }
 function setDefaults(){
   const now = new Date();
-  const month = now.toISOString().slice(0,7);
+  const month = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,7);
   $("monthPicker").value = month;
   $("exportMonth").value = month;
   $("analysisMonth").value = month;
   $("analysisYear").value = String(now.getFullYear());
-  $("fuelDate").value = now.toISOString().slice(0,10);
-  $("kmDate").value = now.toISOString().slice(0,10);
+  $("fuelDate").value = getLocalDateString();
+  $("kmDate").value = getLocalDateString();
   computeRequestPrice();
 }
 onAuthStateChanged(auth, async (user)=>{
