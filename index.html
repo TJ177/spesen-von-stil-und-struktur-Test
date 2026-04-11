@@ -77,6 +77,7 @@
   .status-msg{margin-top:8px;font-size:14px;font-weight:700}
   .good{color:#86efac}.warn{color:#fde68a}.bad{color:#fca5a5}
   .request-card{background:var(--card2);padding:12px;border-radius:12px;margin-top:10px}
+  .status-fixed{min-height:22px}
   @media (max-width:900px){
     .tab-grid{grid-template-columns:repeat(4,1fr)}
     .login-grid,.profile-grid,.row,.summary{grid-template-columns:1fr}
@@ -99,6 +100,10 @@
       <button class="btn-ghost btn-sm" id="betaBtn">Info / Beta</button>
       <button class="btn-ghost btn-sm hidden" id="adminToggleBtn">Admin</button>
     </div>
+  </div>
+
+  <div class="card" id="globalStatusCard" style="padding:10px 14px">
+    <div class="status-msg status-fixed" id="globalStatus"></div>
   </div>
 
   <div class="card" id="authCard">
@@ -181,7 +186,7 @@
       <button class="tab-btn" data-tab="pdfexport">PDF</button>
       <button class="tab-btn" data-tab="auswertung">Auswertung</button>
       <button class="tab-btn" data-tab="pakete">Pakete</button>
-      <button class="tab-btn" data-tab="werben">Werben</button>
+      <button class="tab-btn" data-tab="werben">Empfehlen</button>
     </div>
 
     <div id="fahrt" class="tab-panel">
@@ -372,7 +377,7 @@
     </div>
 
     <div id="werben" class="tab-panel hidden">
-      <h3>Fahrer werben</h3>
+      <h3>Fahrer empfehlen</h3>
       <div class="notice">Wenn ein neuer Fahrer über deinen Empfehlungscode kommt und später kostenpflichtig freigeschaltet wird, bekommst du automatisch <strong>7 Tage gratis</strong> dazu.</div>
       <span class="label" style="margin-top:10px">Dein Empfehlungscode</span>
       <input id="myRefCode" readonly>
@@ -428,6 +433,9 @@ let sortMode = "desc";
 let loadingAuth = false;
 
 function setStatus(msg="", cls=""){
+  const top = $("globalStatus");
+  top.textContent = msg;
+  top.className = "status-msg status-fixed " + cls;
   const el = $("actionStatus");
   el.textContent = msg;
   el.className = "status-msg " + cls;
@@ -482,10 +490,16 @@ function calcHotelNights(){
   const a = $("hotelCheckin").value, b = $("hotelCheckout").value;
   if(!a || !b){ $("hotelNights").value = ""; return; }
   const diff = (new Date(b) - new Date(a)) / 86400000;
-  $("hotelNights").value = diff > 0 ? String(diff) : "";
+  const nights = diff > 0 ? Math.round(diff) : 0;
+  $("hotelNights").value = nights ? String(nights) : "";
 }
 function makeRefCode(uid){
   return "F" + uid.slice(0,8).toUpperCase();
+}
+function makeNameCode(name, uid=""){
+  const base = (name || "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9]/g,"").toUpperCase();
+  if(base) return base.slice(0,8) + "001";
+  return makeRefCode(uid || "USER");
 }
 function isAdmin(){
   return !!currentUser && (currentUser.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
@@ -524,7 +538,7 @@ function updateTopUi(){
   $("packageBadge").textContent = packageLabel();
   $("adminToggleBtn").classList.toggle("hidden", !isAdmin());
   $("adminToggleBtn").classList.toggle("btn-admin", isAdmin());
-  $("adminToggleBtn").textContent = isAdmin() ? "Admin aktiv" : "Admin";
+  $("adminToggleBtn").textContent = isAdmin() ? "🔴 Admin aktiv" : "Admin";
   $("logoutBtn").classList.toggle("hidden", !currentUser);
   $("authStatus").textContent = currentUser ? `Angemeldet als: ${currentUser.email}` : "Nicht angemeldet.";
   $("profileEmail").value = currentUser?.email || "";
@@ -564,24 +578,36 @@ async function getProfile(uid){
 }
 async function saveProfile(){
   if(!currentUser){ alert("Bitte zuerst anmelden."); return; }
+  const displayName = $("displayName").value.trim();
   const payload = {
-    displayName: $("displayName").value.trim(),
+    displayName,
     email: currentUser.email || "",
     companyName: $("companyName").value.trim(),
     vehicleName: $("vehicleName").value.trim(),
     licensePlate: $("licensePlate").value.trim(),
+    refCode: profile?.refCode || makeNameCode(displayName, currentUser.uid),
     updatedAt: Date.now()
   };
-  await setDoc(doc(db, "users", currentUser.uid), payload, { merge:true });
-  profile = await getProfile(currentUser.uid);
-  updateTopUi();
-  setStatus("Profil gespeichert.", "good");
+  try{
+    await setDoc(doc(db, "users", currentUser.uid), payload, { merge:true });
+    profile = await getProfile(currentUser.uid);
+    fillProfileUi();
+    updateTopUi();
+    setStatus("Profil gespeichert.", "good");
+    alert("Profil wurde gespeichert.");
+    if(isAdmin()) await loadAdminData();
+  }catch(err){
+    console.error(err);
+    setStatus("Profil konnte nicht gespeichert werden.", "bad");
+    alert("Profil konnte nicht gespeichert werden: " + err.message);
+  }
 }
 function fillProfileUi(){
   $("displayName").value = profile?.displayName || "";
   $("companyName").value = profile?.companyName || "";
   $("vehicleName").value = profile?.vehicleName || "";
   $("licensePlate").value = profile?.licensePlate || "";
+  $("myRefCode").value = profile?.refCode || makeNameCode(profile?.displayName || "", currentUser?.uid || "");
 }
 async function ensureUserDocument(user, referralCode=""){
   const ref = doc(db, "users", user.uid);
@@ -594,7 +620,7 @@ async function ensureUserDocument(user, referralCode=""){
     packageKey: "none",
     activeUntil: 0,
     testUntil: 0,
-    refCode: makeRefCode(user.uid),
+    refCode: makeNameCode("", user.uid),
     referredBy: referralCode || "",
     createdAt: Date.now(),
     updatedAt: Date.now()
@@ -607,16 +633,24 @@ async function startTrial(){
   if(profile?.testUsed){ alert("Test wurde für diesen Account bereits genutzt."); return; }
   const now = Date.now();
   const testUntil = now + 7*86400000;
-  await setDoc(doc(db, "users", currentUser.uid), {
-    packageKey: "gold",
-    testUsed: true,
-    testUntil,
-    updatedAt: now
-  }, { merge:true });
-  profile = await getProfile(currentUser.uid);
-  updateTopUi();
-  fillProfileUi();
-  setStatus("7 Tage Gold-Test wurden gestartet.", "good");
+  try{
+    await setDoc(doc(db, "users", currentUser.uid), {
+      packageKey: "gold",
+      testUsed: true,
+      testUntil,
+      updatedAt: now
+    }, { merge:true });
+    profile = await getProfile(currentUser.uid);
+    updateTopUi();
+    fillProfileUi();
+    setStatus("7 Tage Gold-Test wurden gestartet.", "good");
+    alert("7 Tage Gold-Test wurden gestartet.");
+    if(isAdmin()) await loadAdminData();
+  }catch(err){
+    console.error(err);
+    setStatus("Test konnte nicht gestartet werden.", "bad");
+    alert("Test konnte nicht gestartet werden: " + err.message);
+  }
 }
 function requireLogin(action="Diese Funktion"){
   if(!currentUser){
@@ -668,11 +702,18 @@ Nach Zahlungseingang erfolgt Ihre Freischaltung innerhalb von bis zu 24 Stunden.
   await addDoc(collection(db, "requests"), request);
   $("latestRequestBox").innerHTML = `<div class="request-card"><strong>Anfrage gespeichert.</strong><br>${escapeHtml(request.paymentMessage).replace(/\n/g,"<br>")}</div>`;
   setStatus("Paketanfrage gespeichert.", "good");
+  alert("Paketanfrage wurde gespeichert.");
 }
 async function loadAdminData(){
   if(!isAdmin()) return;
-  const reqSnap = await getDocs(query(collection(db, "requests")));
-  const requests = reqSnap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  let requests = [];
+  try{
+    const reqSnap = await getDocs(query(collection(db, "requests")));
+    requests = reqSnap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  }catch(err){
+    console.error(err);
+    setStatus("Anfragen konnten nicht vollständig geladen werden.", "warn");
+  }
   $("adminRequestsList").innerHTML = requests.length ? "<h4 style='margin-top:14px'>Buchungsanfragen</h4>" + requests.map(r => `
     <div class="request-card">
       <div><strong>${escapeHtml(r.displayName || r.email)}</strong></div>
@@ -686,8 +727,16 @@ async function loadAdminData(){
     </div>
   `).join("") : "<div class='small-note'>Noch keine Anfragen vorhanden.</div>";
 
-  const userSnap = await getDocs(query(collection(db, "users")));
-  const users = userSnap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  let users = [];
+  try{
+    const userSnap = await getDocs(query(collection(db, "users")));
+    users = userSnap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  }catch(err){
+    console.error(err);
+  }
+  if(!users.length && profile){
+    users = [{id: currentUser.uid, ...profile, email: currentUser.email || ""}];
+  }
   $("adminUsersList").innerHTML = "<h4 style='margin-top:14px'>Nutzer</h4>" + (users.length ? users.map(u => `
     <div class="request-card">
       <div><strong>${escapeHtml(u.displayName || u.email || "Unbekannt")}</strong></div>
@@ -750,6 +799,26 @@ function setImagePreview(inputId, previewId, thumbId){
   reader.readAsDataURL(file);
 }
 function getEntryCollection(){ return collection(db, "users", currentUser.uid, "entries"); }
+
+function entriesStorageKey(uid){ return `spesen_entries_${uid}`; }
+function readLocalEntries(uid){
+  try{ return JSON.parse(localStorage.getItem(entriesStorageKey(uid)) || "[]"); }catch{ return []; }
+}
+function writeLocalEntries(uid, entries){
+  try{ localStorage.setItem(entriesStorageKey(uid), JSON.stringify(entries)); }catch{}
+}
+function upsertLocalEntry(entry){
+  if(!currentUser || !entry) return;
+  const list = readLocalEntries(currentUser.uid);
+  const idx = list.findIndex(x => x.id === entry.id);
+  if(idx >= 0) list[idx] = entry; else list.push(entry);
+  writeLocalEntries(currentUser.uid, list);
+}
+function removeLocalEntry(id){
+  if(!currentUser) return;
+  const list = readLocalEntries(currentUser.uid).filter(x => x.id !== id);
+  writeLocalEntries(currentUser.uid, list);
+}
 async function saveEntry(data){
   if(!requireLogin("Speichern")) return;
   const base = { ...data, userId: currentUser.uid, updatedAt: Date.now() };
@@ -800,9 +869,9 @@ function renderEntryCard(entry){
 }
 function renderLists(){
   $("tripList").innerHTML = sortedEntries("trip").map(renderEntryCard).join("") || "";
-  $("hotelList").innerHTML = sortedEntries("hotel").map(renderEntryCard).join("") || "";
-  $("fuelList").innerHTML = sortedEntries("fuel").map(renderEntryCard).join("") || "";
-  $("kmList").innerHTML = sortedEntries("km").map(renderEntryCard).join("") || "";
+  $("hotelList").innerHTML = sortedEntries("hotel").map(renderEntryCard).join("") || "<div class='small-note'>Noch keine Hotels gespeichert.</div>";
+  $("fuelList").innerHTML = sortedEntries("fuel").map(renderEntryCard).join("") || "<div class='small-note'>Noch keine Tankeinträge gespeichert.</div>";
+  $("kmList").innerHTML = sortedEntries("km").map(renderEntryCard).join("") || "<div class='small-note'>Noch keine Kilometer gespeichert.</div>";
   $("tripStatus").textContent = sortedEntries("trip").length ? "" : "Noch keine Fahrten gespeichert.";
 }
 function renderMonthSummary(){
@@ -833,7 +902,13 @@ function renderAll(){ renderLists(); renderMonthSummary(); renderAnalysis(); com
 window.deleteEntry = async function(id){
   if(!requireLogin("Löschen")) return;
   if(!confirm("Eintrag wirklich löschen?")) return;
-  await deleteDoc(doc(db, "users", currentUser.uid, "entries", id));
+  removeLocalEntry(id);
+  try{
+    await deleteDoc(doc(db, "users", currentUser.uid, "entries", id));
+  }catch(err){
+    console.error(err);
+    setStatus("Löschen lokal ausgeführt. Firebase bitte prüfen.", "warn");
+  }
   await loadEntries();
 }
 window.editEntry = function(id){
@@ -1020,6 +1095,7 @@ function bindUi(){
       await setPersistence(auth, persistence);
       await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
       setStatus("Anmeldung erfolgreich.", "good");
+      alert("Anmeldung erfolgreich.");
     } catch(err){
       alert("Anmeldung fehlgeschlagen: " + err.message);
       setStatus("", "");
@@ -1036,6 +1112,7 @@ function bindUi(){
       const cred = await createUserWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
       await ensureUserDocument(cred.user, $("refCodeInput").value.trim());
       setStatus("Registrierung erfolgreich.", "good");
+      alert("Registrierung erfolgreich.");
     } catch(err){
       alert("Registrierung fehlgeschlagen: " + err.message);
       setStatus("", "");
@@ -1047,6 +1124,7 @@ function bindUi(){
     try{
       await signOut(auth);
       setStatus("Abgemeldet.", "good");
+      alert("Abgemeldet.");
     } catch(err){
       alert("Abmelden fehlgeschlagen: " + err.message);
     }
