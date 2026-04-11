@@ -54,7 +54,7 @@
     .status.ok{background:#12361f;color:#bcf5cf;border:1px solid #2f8f4f}
     .status.warn{background:#3d2020;color:#fecaca;border:1px solid #ef4444}
     .status.info{background:#1e3a5f;color:#bfdbfe;border:1px solid #3b82f6}
-    .login-grid{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px}
+    .login-row-top{display:grid;grid-template-columns:1.6fr 1fr auto;gap:10px;align-items:center}.login-row-bottom{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:10px;align-items:center}.login-row-top .pw-wrap{display:flex;gap:8px;align-items:center}.login-row-top .pw-wrap input{flex:1}.login-row-top button,.login-row-bottom button{margin:0}
     .danger{background:white;color:#111827;border:1px solid var(--line)}
     .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f3f4f6;font-size:12px;color:#111;margin-right:8px}
     .pill.yellow{background:#facc15}
@@ -74,7 +74,7 @@
     @media (max-width: 960px){
       .grid,.profile-grid{grid-template-columns:1fr}
       .trip{flex-direction:column}
-      .login-grid{grid-template-columns:1fr}
+      .login-row-top,.login-row-bottom{grid-template-columns:1fr}
       .row{flex-direction:column;align-items:stretch}
     }
   </style>
@@ -116,17 +116,18 @@
     <div class="grid">
       <div class="card" id="loginCard">
         <h2>Anmeldung</h2>
-        <div class="login-grid" style="margin-top:12px;">
+        <div class="login-row-top" style="margin-top:12px;">
           <input id="email" type="email" placeholder="E-Mail" autocomplete="username">
-          <div class="row" style="gap:8px">
+          <div class="pw-wrap">
             <input id="password" type="password" placeholder="Passwort" autocomplete="current-password">
             <button type="button" class="outline" style="width:auto" onclick="togglePw()">👁</button>
           </div>
+          <div></div>
+        </div>
+        <div class="login-row-bottom" style="margin-top:10px;">
+          <button type="button" class="outline" onclick="sendReset()">Passwort vergessen?</button>
           <button type="button" class="green" onclick="signInUser()">Anmelden</button>
           <button type="button" class="yellow" onclick="signUpUser()">Registrieren</button>
-        </div>
-        <div class="toolbar">
-          <button type="button" class="outline" onclick="sendReset()">Passwort vergessen?</button>
           <button type="button" class="red" onclick="signOutUser()">Abmelden</button>
         </div>
         <div id="authStatus" class="status warn">Noch nicht angemeldet.</div>
@@ -214,10 +215,16 @@
             <select id="sortTrips"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select>
           </div>
         </div>
-        <label>Tour / Titel</label>
-        <input id="tourName" placeholder="Tour / Titel">
-        <label>Bemerkung</label>
-        <textarea id="tripNote" placeholder="Bemerkung"></textarea>
+        <div class="row">
+          <div>
+            <label>Tour / Titel</label>
+            <input id="tourName" placeholder="Tour / Titel">
+          </div>
+          <div>
+            <label>Bemerkung</label>
+            <textarea id="tripNote" class="small-textarea" placeholder="Bemerkung"></textarea>
+          </div>
+        </div>
         <div class="row">
           <div>
             <label>Start</label>
@@ -800,7 +807,6 @@
     const receiptBlocks = [...monthlyHotels.filter(h=>h.receiptDataUrl).map(h=>`<div style="margin:18px 0;"><div><strong>Hotelbeleg:</strong> ${escapeHtml(h.name)}</div><img src="${h.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`), ...monthlyFuels.filter(f=>f.receiptDataUrl).map(f=>`<div style="margin:18px 0;"><div><strong>Tankbeleg:</strong> ${escapeHtml(f.station)}</div><img src="${f.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`)].join('');
     const html = `<html><head><title>Spesen ${month}</title><style>body { font-family: Arial, sans-serif; padding: 24px; color: #111; } h1 { margin-bottom: 6px; } h2 { margin: 18px 0 10px 0; font-size: 18px; } .header-box { border: 2px solid #111; padding: 14px; margin-bottom: 18px; } .meta-grid { width: 100%; border-collapse: collapse; margin-top: 12px; } .meta-grid td { border: 1px solid #111; padding: 8px; } table { width: 100%; border-collapse: collapse; margin-top: 12px; } th, td { border: 1px solid #111; padding: 8px; text-align: left; font-size: 13px; } th { background: #e5e7eb; } .sum-box { margin-top: 18px; border: 2px solid #111; padding: 12px; font-size: 16px; font-weight: bold; }</style></head><body><div class='header-box'><h1>Monatsabrechnung Spesen</h1><div>${formatMonthLabel(month)}</div><table class='meta-grid'>${profileExtras}<tr><td><strong>Anzahl Fahrten</strong></td><td>${monthlyTrips.length}</td><td><strong>Gesamtstunden</strong></td><td>${formatDuration(monthlyHours)}</td></tr><tr><td><strong>Hotelkosten</strong></td><td>${formatEuro(monthlyTotalHotels)}</td><td><strong>Tankkosten</strong></td><td>${formatEuro(monthlyTotalFuels)}</td></tr></table></div><h2>Fahrten</h2><table><thead><tr><th>Nr.</th><th>Tour</th><th>Losgefahren</th><th>Angekommen</th><th>Dauer</th><th>Spesensatz</th><th>Spesen</th></tr></thead><tbody>${rowsTrips || '<tr><td colspan="7">Keine Fahrten in diesem Monat.</td></tr>'}</tbody></table><h2>Hotel</h2><table><thead><tr><th>Nr.</th><th>Hotel</th><th>Anreise</th><th>Abreise</th><th>Nächte</th><th>Bemerkung</th><th>Preis</th></tr></thead><tbody>${rowsHotels || '<tr><td colspan="7">Keine Hotelkosten in diesem Monat.</td></tr>'}</tbody></table><h2>Tanken</h2><table><thead><tr><th>Nr.</th><th>Tankstelle</th><th>Datum</th><th>Liter</th><th>Spritart</th><th>Preis/Liter</th><th>Betrag</th></tr></thead><tbody>${rowsFuels || '<tr><td colspan="7">Keine Tankkosten in diesem Monat.</td></tr>'}</tbody></table><div class='sum-box'>Gesamtsumme Monat: ${formatEuro(grandTotal)}</div>${receiptBlocks ? `<h2>Belege</h2>${receiptBlocks}` : ''}</body></html>`;
     const w = window.open('', '_blank'); if(!w) return alert('Pop-up blockiert.'); w.document.open(); w.document.write(html); w.document.close(); w.focus(); w.print();
-  };
   };
 </script>
 </body>
