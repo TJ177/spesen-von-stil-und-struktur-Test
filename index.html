@@ -73,7 +73,7 @@
 <body>
 <div class="container">
   <div class="app-title">Spesen von Stil &amp; Struktur</div>
-  <div class="sub">Nur Spesen-App – kein Finanzsystem</div>
+  <div class="sub">Beta-Version · Spesen auf Handy und PC · gleiches Login auf beiden Geräten</div>
   <div class="badge" id="premiumBadge">Nicht angemeldet</div>
 
   <div class="card no-print">
@@ -267,15 +267,12 @@
 
     <div id="pakete" class="tab-panel hidden">
       <h3>Pakete für die Spesen-App</h3>
-      <div class="price-card"><div class="price-top"><div class="price-name">7 Tage kostenlos testen</div><div class="price-tag">0,00 €</div></div><ul><li>Kompletter Funktionsumfang</li><li>Alle Funktionen zum Ausprobieren</li><li>Für neue Nutzer</li></ul></div>
-      <div class="price-card"><div class="price-top"><div class="price-name">Basic</div><div class="price-tag">4,99 € / Monat</div></div><ul><li>Login</li><li>Fahrten erfassen</li><li>Startzeit / Endzeit</li><li>Automatische Spesenberechnung</li><li>Notizen</li><li>Basic-Ansicht</li><li>Monatsansicht</li></ul></div>
-      <div class="price-card"><div class="price-top"><div class="price-name">Sync</div><div class="price-tag">2,99 € / Monat</div></div><ul><li>Daten zwischen Handy und PC synchronisieren</li></ul></div>
-      <div class="price-card"><div class="price-top"><div class="price-name">Export</div><div class="price-tag">2,49 € / Monat</div></div><ul><li>PDF</li><li>CSV</li></ul></div>
-      <div class="price-card"><div class="price-top"><div class="price-name">Fahrten-Plus</div><div class="price-tag">4,99 € / Monat</div></div><ul><li>Hotel</li><li>Tankkosten</li><li>Kilometer</li><li>Zusatzfunktionen für Basic</li></ul></div>
-      <div class="price-card"><div class="price-top"><div class="price-name">Auswertung</div><div class="price-tag">4,99 € / Monat</div></div><ul><li>Erweiterte Monatsauswertung</li><li>Jahresübersicht</li><li>Statistik</li></ul></div>
-      <div class="price-card"><div class="price-top"><div class="price-name">Team</div><div class="price-tag">6,99 € / Monat</div></div><ul><li>Mehrere Fahrer</li><li>Eigenes Zusatzmodul</li><li>Nicht automatisch in Premium enthalten</li></ul></div>
-      <div class="price-card"><div class="price-top"><div class="price-name">Premium</div><div class="price-tag">17,99 € / Monat</div></div><ul><li>Alle Funktionen aus Basic</li><li>Sync</li><li>Export</li><li>Fahrten-Plus</li><li>Auswertung</li><li>Beleg-Upload für Hotel und Tanken</li><li>PDF-Export mit Belegen</li><li>Team ist nicht enthalten</li></ul><div class="small-note">Premium enthält alles außer Team.</div>      <div class="price-card"><div class="price-top"><div class="price-name">Goldmitglied</div><div class="price-tag">30,00 € / Monat</div></div><ul><li>Alle Funktionen ohne Einschränkung</li><li>Sämtliche neuen Funktionen sofort nutzen</li><li>Neue Features kostenlos testen</li><li>Rechnung-Modul, sobald verfügbar</li><li>Höchste Freigabestufe</li></ul><div class="small-note">Goldmitglieder dürfen alles nutzen.</div></div>
-    </div>
+      <div class="price-card"><div class="price-top"><div class="price-name">Basic</div><div class="price-tag">4,49 € / Monat</div></div><ul><li>1 Fahrer</li><li>Fahrten erfassen</li><li>Monatsübersicht nur für Fahrten</li><li>Einzel-PDF nur für Fahrten</li><li>Name + E-Mail im Profil</li><li>1 Zusatzfahrer optional möglich</li></ul></div>
+      <div class="price-card"><div class="price-top"><div class="price-name">Basic Plus</div><div class="price-tag">Basic + Add-ons</div></div><ul><li>Sync: 2,99 €</li><li>Export: 2,49 €</li><li>Fahrten Plus: 4,99 €</li><li>Auswertung: 4,99 €</li><li>max. 2 Fahrer gesamt</li></ul></div>
+      <div class="price-card"><div class="price-top"><div class="price-name">Premium</div><div class="price-tag">17,99 € / Monat</div></div><ul><li>1 Fahrer</li><li>Firma im Profil</li><li>Kennzeichen optional im Profil</li><li>Sync, Export, Fahrten Plus, Auswertung enthalten</li><li>kein Team enthalten</li></ul></div>
+      <div class="price-card"><div class="price-top"><div class="price-name">Premium Plus</div><div class="price-tag">Premium + Team</div></div><ul><li>Team 1: 6,99 € (+3 Fahrer)</li><li>Team 2: 11,99 € (+5 Fahrer)</li><li>Team 3: 16,99 € (+8 Fahrer)</li><li>Fahrer Plus: 3,99 € (+3 Fahrer)</li></ul></div>
+      <div class="price-card"><div class="price-top"><div class="price-name">Goldmitglied</div><div class="price-tag">30,00 € / Monat</div></div><ul><li>Alle Funktionen</li><li>Alle Add-ons</li><li>Neue Features früher testen</li><li>Rechnung-Modul sobald verfügbar</li></ul></div>
+    </div></div>
   </div>
 </div>
 
@@ -303,7 +300,7 @@ let editingId = null;
 let editingType = null;
 let currentProfile = { displayName:"", packageName:"Standard", activeUntil:"" };
 const ADMIN_EMAIL = "Tanjapischke177@gmail.com";
-const packagePermissions = {"Standard":["fahrt"],"Basic":["fahrt"],"Basic+":["fahrt","hotel","tanken","km"],"Premium":["fahrt","hotel","tanken","km","pdfexport","auswertung"],"Premium+":["fahrt","hotel","tanken","km","pdfexport","auswertung","rechnung"],"Goldmitglied":["alles"]};
+const packagePermissions = {"Standard":["fahrt"],"Basic":["fahrt"],"Basic+":["fahrt","hotel","tanken","km","auswertung"],"Premium":["fahrt","hotel","tanken","km","pdfexport","auswertung"],"Premium+":["fahrt","hotel","tanken","km","pdfexport","auswertung","rechnung"],"Goldmitglied":["alles"]};
 
 const $ = id => document.getElementById(id);
 
@@ -366,13 +363,13 @@ async function loadProfile(){
   if(snap.exists()){
     currentProfile = {
       displayName: snap.data().displayName || "",
-      packageName: snap.data().packageName || (currentUser.email === "info@mkberlin.de" ? "Goldmitglied" : "Standard"),
+      packageName: snap.data().packageName || (currentUser.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? "Goldmitglied" : "Standard"),
       activeUntil: snap.data().activeUntil || ""
     };
   }else{
     currentProfile = {
       displayName: "",
-      packageName: currentUser.email === "info@mkberlin.de" ? "Goldmitglied" : "Standard",
+      packageName: currentUser.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? "Goldmitglied" : "Standard",
       activeUntil: ""
     };
   }
