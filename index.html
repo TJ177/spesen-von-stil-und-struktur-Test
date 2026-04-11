@@ -7,99 +7,150 @@
   <meta name="theme-color" content="#111827" />
   <style>
     :root{
-      --bg:#0b1635; --card:#1c2a4d; --panel:#101d3c; --text:#ffffff; --muted:#b8c4dd; --line:#41557f;
-      --accent:#3b82f6; --ok:#22c55e; --warn:#ef4444; --yellow:#facc15;
+      --bg:#0b1635;
+      --card:#1c2a4d;
+      --panel:#101d3c;
+      --panel-2:#31466f;
+      --input:#3c4f75;
+      --text:#ffffff;
+      --muted:#c2cde2;
+      --line:#41557f;
+      --accent:#3b82f6;
+      --ok:#22c55e;
+      --warn:#ef4444;
+      --yellow:#facc15;
+      --shadow:0 12px 36px rgba(0,0,0,.18);
     }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1180px;margin:0 auto;padding:20px}
-    .hero,.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-    .hero{padding:24px;margin-bottom:18px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .wrap{max-width:1220px;margin:0 auto;padding:18px}
+    .hero,.card,.section,.entry-card,.package-card,.modal-box{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow)
+    }
+    .hero{padding:22px;margin-bottom:18px}
     .card{padding:20px}
-    h1{margin:0 0 8px;font-size:32px}
-    h2{margin:0 0 16px;font-size:22px}
+    .section{padding:18px;background:var(--panel)}
+    .entry-card{padding:14px;background:var(--panel-2)}
+    .package-card{padding:16px;background:var(--panel-2)}
+    h1{margin:0 0 6px;font-size:30px}
+    h2{margin:0 0 14px;font-size:20px}
     h3{margin:0 0 12px;font-size:18px}
     .muted{color:var(--muted)}
+    .hidden{display:none !important}
+    .topline,.toolbar,.hero-actions,.tabs,.entry-actions,.package-actions,.status-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .grid-3{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:18px}
+    .section-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+    .stack{display:flex;flex-direction:column;gap:12px}
     label{display:block;margin:10px 0 6px;font-weight:700}
     input,select,button,textarea{
-      width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);font-size:15px;background:#3c4f75;color:#fff
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      font-size:15px;
+      background:var(--input);
+      color:var(--text)
     }
-    textarea{min-height:72px;resize:vertical}
-    .small-textarea{min-height:64px}
-    .upload-box{border:1px dashed var(--line);border-radius:16px;padding:12px;background:#33476d;margin-top:10px}
-    .thumb{max-width:220px;max-height:140px;display:block;margin-top:8px;border-radius:10px}
-    .thumb.hidden{display:none}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .hero-actions button{width:auto;padding:10px 16px;border-radius:14px}
-    button{cursor:pointer;background:var(--accent);color:white;border:none;font-weight:700}
-    button.secondary{background:#e5e7eb;color:#111827}
-    button.outline{background:white;color:#111827;border:1px solid var(--line)}
-    button.green{background:var(--ok)}
+    input::placeholder,textarea::placeholder{color:#d6deeeaa}
+    textarea{min-height:76px;resize:vertical}
+    .compact-textarea{min-height:64px}
+    button{cursor:pointer;background:var(--accent);color:#fff;border:none;font-weight:700}
+    button:hover{filter:brightness(1.05)}
+    button.outline{background:#ffffff;color:#111827}
+    button.green{background:var(--ok);color:#08150b}
     button.red{background:var(--warn)}
     button.yellow{background:var(--yellow);color:#111}
-    .row{display:flex;gap:10px;align-items:center}
-    .row > *{flex:1}
-    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-    .stat{border:1px solid var(--line);border-radius:16px;padding:14px;background:#3c4f75}
+    button.gray{background:#dfe3ea;color:#111}
+    .btn-auto{width:auto}
+    .login-top{display:grid;grid-template-columns:1.5fr 1fr auto;gap:10px;align-items:center}
+    .login-bottom{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:10px;align-items:center;margin-top:10px}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .date-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+    .date-row button{width:168px}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .stat{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--panel-2)}
     .stat .label{font-size:13px;color:var(--muted)}
-    .stat .value{font-size:28px;font-weight:700;margin-top:8px}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .toolbar button{width:auto}
-    .small{font-size:14px;color:var(--muted);margin-top:4px}
-    .status{padding:10px 12px;border-radius:14px;margin-top:10px;font-size:14px}
-    .status.ok{background:#12361f;color:#bcf5cf;border:1px solid #2f8f4f}
-    .status.warn{background:#3d2020;color:#fecaca;border:1px solid #ef4444}
-    .status.info{background:#1e3a5f;color:#bfdbfe;border:1px solid #3b82f6}
-    .login-row-top{display:grid;grid-template-columns:1.6fr 1fr auto;gap:10px;align-items:center}
-    .login-row-bottom{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:10px;align-items:center}
-    .login-row-top .pw-wrap{display:flex;gap:8px;align-items:center}
-    .login-row-top .pw-wrap input{flex:1}
-    .danger{background:white;color:#111827;border:1px solid var(--line)}
-    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f3f4f6;font-size:12px;color:#111;margin-right:8px}
+    .stat .value{font-size:26px;font-weight:700;margin-top:8px}
+    .full-stat{grid-column:1/-1}
+    .status{padding:10px 12px;border-radius:14px;font-size:14px;border:1px solid var(--line)}
+    .status.ok{background:#10361f;color:#c7f7d5;border-color:#2f8f4f}
+    .status.warn{background:#3d2020;color:#fecaca;border-color:#ef4444}
+    .status.info{background:#18345a;color:#bfdbfe;border-color:#3b82f6}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#f3f4f6;color:#111;font-size:13px;font-weight:700}
     .pill.yellow{background:#facc15}
     .pill.red{background:#ef4444;color:#fff}
-    .topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
-    .help-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;display:none}
-    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-    .tab-btn{width:auto;padding:14px 26px;border-radius:16px;background:#e5e7eb;color:#111;font-weight:700}
+    .pill.green{background:#22c55e;color:#08150b}
+    .badge-dot{width:10px;height:10px;border-radius:50%;background:currentColor;display:inline-block}
+    .tabs{margin-bottom:18px}
+    .tab-btn{width:auto;padding:14px 24px;border-radius:16px;background:#e5e7eb;color:#111}
     .tab-btn.active{background:var(--accent);color:#fff}
     .tab-panel{display:none}
     .tab-panel.active{display:block}
-    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
-    .section{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
-    .entry-list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
-    .entry-card{border:1px solid var(--line);background:#3c4f75;border-radius:16px;padding:14px}
-    .hidden{display:none!important}
-    .compact-sort{max-width:260px}
-    @media (max-width: 960px){
-      .grid,.profile-grid{grid-template-columns:1fr}
-      .login-row-top,.login-row-bottom{grid-template-columns:1fr}
-      .row{flex-direction:column;align-items:stretch}
-      .compact-sort{max-width:none}
+    .entry-list{display:flex;flex-direction:column;gap:12px;margin-top:14px;max-height:520px;overflow:auto}
+    .entry-title{font-size:16px;font-weight:700;margin-bottom:6px}
+    .small{font-size:14px;color:var(--muted);margin-top:4px}
+    .upload-box{border:1px dashed var(--line);border-radius:16px;padding:12px;background:#33476d;margin-top:10px}
+    .thumb{max-width:240px;max-height:150px;display:block;margin-top:8px;border-radius:10px;border:1px solid var(--line)}
+    .summary-card{padding:16px;background:var(--card);border:1px solid var(--line);border-radius:18px}
+    .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .summary-item{background:var(--panel-2);border-radius:14px;padding:12px;border:1px solid var(--line)}
+    .summary-item strong{display:block;margin-bottom:6px}
+    .package-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .package-price{font-size:24px;font-weight:700;margin:6px 0 10px}
+    .package-list{margin:0;padding-left:18px;color:var(--muted)}
+    .package-list li{margin:4px 0}
+    .entry-actions button{width:auto}
+    .row-end{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+    .mini-toolbar{display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin:12px 0}
+    .mini-toolbar select,.mini-toolbar button{width:auto}
+    .anchor-btn{width:auto;padding:10px 16px}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:99}
+    .modal.show{display:flex}
+    .modal-box{width:min(760px,100%);padding:20px;background:var(--panel)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+    .close-x{background:#33476d;width:auto;padding:10px 14px}
+    .radio-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+    .radio-btn{padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--panel-2);cursor:pointer;font-weight:700;text-align:center}
+    .radio-btn.active{outline:2px solid var(--accent);background:#21457f}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .hint-box{background:#18345a;border:1px solid #3b82f6;color:#bfdbfe;padding:10px 12px;border-radius:14px}
+    @media (max-width: 980px){
+      .grid-2,.grid-3,.section-grid,.field-row,.summary-grid,.package-grid{grid-template-columns:1fr}
+      .login-top,.login-bottom{grid-template-columns:1fr}
+      .date-row{grid-template-columns:1fr}
+      .date-row button,.mini-toolbar select,.mini-toolbar button{width:100%}
+      .radio-grid{grid-template-columns:1fr}
+      .tab-btn{padding:12px 18px}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="hero">
-      <h1>Spesen von Stil &amp; Struktur</h1>
-      <div class="muted">Beta-Version – Spesen auf Handy und PC. Gleicher Login auf beiden Geräten.</div>
-
-      <div class="topbar">
-        <span class="pill yellow" id="userBadge">Nicht angemeldet</span>
-        <span class="pill" id="userNameBadge"></span>
-        <span class="pill" id="packageBadge">Kein aktiver Zugang</span>
-        <span class="pill red hidden" id="adminBadge">Admin aktiv</span>
+      <div class="row-end">
+        <div>
+          <h1>Spesen von Stil &amp; Struktur</h1>
+          <div class="muted">Beta-Version – Spesen auf Handy und PC. Gleicher Login auf beiden Geräten.</div>
+        </div>
         <div class="hero-actions">
-          <button type="button" class="outline" onclick="toggleHelp()">App installieren / Hilfe</button>
-          <button type="button" class="red hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
+          <button type="button" class="outline btn-auto" onclick="toggleHelp()">App installieren / Hilfe</button>
+          <button type="button" class="outline btn-auto hidden" id="accessTopBtn" onclick="jumpToAccess()">Zugang &amp; Laufzeit</button>
+          <button type="button" class="red btn-auto hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
         </div>
       </div>
-
-      <div id="syncStatus" class="status warn" style="display:none;"></div>
-
-      <div id="helpBox" class="help-box">
+      <div class="topline" style="margin-top:12px">
+        <span class="pill yellow" id="userBadge">Nicht angemeldet</span>
+        <span class="pill hidden" id="userNameBadge"></span>
+        <span class="pill" id="packageBadge">Kein aktiver Zugang</span>
+        <span class="pill red hidden" id="adminBadge"><span class="badge-dot"></span>Admin aktiv</span>
+      </div>
+      <div id="syncStatus" class="status warn" style="display:none;margin-top:12px"></div>
+      <div id="helpBox" class="section hidden" style="margin-top:14px">
         <strong>App aufs Handy speichern</strong><br><br>
         <strong>Android:</strong><br>
         1. Link aus der Nachricht kopieren<br>
@@ -108,47 +159,38 @@
         4. Oben rechts auf die 3 Punkte tippen<br>
         5. „Zum Startbildschirm hinzufügen“ auswählen<br>
         6. „Installieren“ auswählen<br><br>
-
         <strong>iPhone:</strong><br>
         1. Link in Safari öffnen<br>
-        2. Unten auf Teilen tippen<br>
+        2. Unten auf „Teilen“ tippen<br>
         3. „Zum Home-Bildschirm“ auswählen<br>
         4. Hinzufügen drücken<br><br>
-
         <strong>PC:</strong><br>
         Link einfach im Browser öffnen und mit demselben Konto anmelden.
       </div>
     </div>
 
-    <div class="grid">
+    <div class="grid-2">
       <div class="card" id="loginCard">
         <h2>Anmeldung</h2>
-
-        <div class="login-row-top" style="margin-top:12px;">
+        <div class="login-top">
           <input id="email" type="email" placeholder="E-Mail" autocomplete="username">
-          <div class="pw-wrap">
-            <input id="password" type="password" placeholder="Passwort" autocomplete="current-password">
-            <button type="button" class="outline" style="width:auto" onclick="togglePw()">👁</button>
-          </div>
-          <div></div>
+          <input id="password" type="password" placeholder="Passwort" autocomplete="current-password">
+          <button type="button" class="outline btn-auto" onclick="togglePw()">👁</button>
         </div>
-
-        <div class="login-row-bottom" style="margin-top:10px;">
+        <div class="login-bottom">
           <button type="button" class="outline" onclick="sendReset()">Passwort vergessen?</button>
           <button type="button" class="green" onclick="signInUser()">Anmelden</button>
           <button type="button" class="yellow" onclick="signUpUser()">Registrieren</button>
           <button type="button" class="red" onclick="signOutUser()">Abmelden</button>
         </div>
-
-        <div id="authStatus" class="status warn">Noch nicht angemeldet.</div>
+        <div id="authStatus" class="status warn" style="margin-top:12px">Noch nicht angemeldet.</div>
       </div>
 
-      <div class="card" id="globalOverviewCard">
+      <div class="card" id="monthCard">
         <h2>Monatsübersicht</h2>
         <label for="monthSelect">Monat auswählen</label>
         <select id="monthSelect"></select>
-
-        <div class="stats">
+        <div class="stats" style="margin-top:12px">
           <div class="stat">
             <div class="label">Gesamtsumme im Monat</div>
             <div class="value" id="monthlyTotal">0,00 €</div>
@@ -157,63 +199,87 @@
             <div class="label">Gesamtzeit im Monat</div>
             <div class="value" id="monthlyHours">0 Std 0 Min</div>
           </div>
+          <div class="stat full-stat">
+            <div class="label">Gesamte gespeicherte Kosten / Spesen</div>
+            <div class="value" id="overallTotal">0,00 €</div>
+          </div>
         </div>
-
-        <div class="stat" style="margin-top:12px;">
-          <div class="label">Gesamte gespeicherte Spesen</div>
-          <div class="value" id="overallTotal">0,00 €</div>
-        </div>
-
-        <div class="toolbar">
-          <button type="button" class="outline" onclick="exportCSV()">Liste exportieren</button>
-          <button type="button" onclick="exportPDF()">Als PDF exportieren</button>
-        </div>
+        <div class="small" style="margin-top:12px">Hier wird alles zusammengezählt: Fahrten, Hotel, Tanken und Kilometer-Pauschalen, soweit im Monat vorhanden.</div>
       </div>
     </div>
 
-    <div class="profile-grid">
-      <div class="section">
-        <h3>Fahrerprofil</h3>
-        <label>Name</label>
-        <input id="displayName" placeholder="Vor- und Nachname">
-
-        <label>E-Mail</label>
-        <input id="profileEmail" placeholder="wird aus dem Login übernommen" readonly>
-
-        <div id="premiumFields" class="hidden">
-          <label>Firma</label><input id="company" placeholder="Firma">
-          <label>Fahrzeug</label><input id="vehicle" placeholder="Fahrzeug">
-          <label>Kennzeichen</label><input id="plate" placeholder="Kennzeichen">
+    <div class="section-grid" style="margin-top:18px">
+      <div class="section" id="profileSection">
+        <div class="section-head">
+          <h3>Fahrerprofil</h3>
+          <button type="button" class="outline btn-auto" id="editProfileBtn" onclick="toggleProfileEditor()">Profil bearbeiten</button>
         </div>
-
-        <div class="toolbar">
-          <button type="button" onclick="saveProfile()">Profil speichern</button>
-          <button type="button" class="yellow" onclick="startTrial()">7 Tage Testzeit starten</button>
+        <div id="profileSummary" class="summary-card hidden">
+          <div class="summary-grid">
+            <div class="summary-item"><strong>Name</strong><span id="summaryName">-</span></div>
+            <div class="summary-item"><strong>E-Mail</strong><span id="summaryEmail">-</span></div>
+            <div class="summary-item hidden" id="summaryCompanyWrap"><strong>Firma</strong><span id="summaryCompany">-</span></div>
+            <div class="summary-item hidden" id="summaryVehicleWrap"><strong>Fahrzeug / Kennzeichen</strong><span id="summaryVehicle">-</span></div>
+          </div>
         </div>
-
-        <div class="small">Basic: Name + E-Mail. Premium/Gold: zusätzlich Firma, Fahrzeug, Kennzeichen.</div>
-        <div id="profileStatus" class="status info">Noch kein Profil geladen.</div>
+        <div id="profileEditor" class="stack">
+          <div class="field-row">
+            <div>
+              <label for="displayName">Vor- und Nachname</label>
+              <input id="displayName" placeholder="Vor- und Nachname">
+            </div>
+            <div>
+              <label for="profileEmail">E-Mail</label>
+              <input id="profileEmail" placeholder="wird aus dem Login übernommen" readonly>
+            </div>
+          </div>
+          <div id="premiumFields" class="field-row hidden">
+            <div>
+              <label for="company">Firma</label>
+              <input id="company" placeholder="Firma">
+            </div>
+            <div>
+              <label for="vehicle">Fahrzeug</label>
+              <input id="vehicle" placeholder="Fahrzeug">
+            </div>
+            <div>
+              <label for="plate">Kennzeichen</label>
+              <input id="plate" placeholder="Kennzeichen">
+            </div>
+          </div>
+          <div class="toolbar">
+            <button type="button" class="btn-auto" onclick="saveProfile()">Profil speichern</button>
+            <button type="button" class="yellow btn-auto" onclick="startTrial()">7 Tage Testzeit starten</button>
+          </div>
+          <div class="small">Basic: Name + E-Mail. Premium und Gold: zusätzlich Firma, Fahrzeug, Kennzeichen.</div>
+        </div>
+        <div id="profileStatus" class="status info" style="margin-top:12px">Noch kein Profil geladen.</div>
       </div>
 
-      <div class="section">
-        <h3>Zugang &amp; Laufzeit</h3>
+      <div class="section" id="accessSection">
+        <div class="section-head">
+          <h3>Zugang &amp; Laufzeit</h3>
+          <button type="button" class="outline btn-auto" onclick="openContactModal('question')">Admin kontaktieren</button>
+        </div>
         <div id="accessInfo" class="status info">Melde dich an, um deine Laufzeit zu sehen.</div>
-        <div class="toolbar">
-          <button type="button" class="outline" onclick="contactAdmin()">Admin kontaktieren</button>
+        <div class="toolbar" style="margin-top:12px">
+          <button type="button" class="outline btn-auto" onclick="openContactModal('question')">Allgemeine Frage</button>
+          <button type="button" class="outline btn-auto" onclick="openContactModal('problem')">Problem melden</button>
+          <button type="button" class="outline btn-auto" onclick="openContactModal('package')">Paket buchen</button>
         </div>
-        <div class="small">Alle starten mit einer 7-tägigen Gold-Testphase. Drei Tage vor Ablauf erscheint ein Hinweis in der App.</div>
+        <div class="hint-box" style="margin-top:12px">Alle starten mit einer 7-tägigen Gold-Testphase. Drei Tage vor Ablauf soll später ein Hinweis erscheinen. Die Freischaltung selbst macht der Admin.</div>
       </div>
     </div>
 
-    <div class="card hidden" id="adminPanel">
-      <h2>Adminbereich</h2>
-      <div class="toolbar">
-        <button type="button" onclick="loadUsers()">Anfragen / Nutzer laden</button>
+    <div class="card hidden" id="adminPanel" style="margin-top:18px">
+      <div class="section-head">
+        <h2>Adminbereich</h2>
+        <button type="button" class="btn-auto" onclick="loadUsers()">Anfragen / Nutzer laden</button>
       </div>
       <div id="adminUsersList" class="entry-list"></div>
     </div>
 
-    <div class="card" style="margin-top:18px;">
+    <div class="card" style="margin-top:18px">
       <div class="tabs">
         <button class="tab-btn active" onclick="showTab('fahrt', this)">Fahrt</button>
         <button class="tab-btn" onclick="showTab('hotel', this)">Hotel</button>
@@ -225,262 +291,304 @@
       </div>
 
       <div id="fahrt" class="tab-panel active">
-        <div class="grid">
-          <div>
-            <h2>Fahrt erfassen</h2>
-
-            <div class="row">
-              <div>
-                <label>Tour / Titel</label>
-                <input id="tourName" placeholder="Tour / Titel">
-              </div>
-              <div>
-                <label>Bemerkung</label>
-                <textarea id="tripNote" class="small-textarea" placeholder="Bemerkung"></textarea>
-              </div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label>Start</label>
-                <div class="row">
-                  <input id="startTime" type="datetime-local">
-                  <button type="button" class="green" onclick="setNowTrip('startTime')">Start jetzt</button>
-                </div>
-              </div>
-              <div>
-                <label>Ende</label>
-                <div class="row">
-                  <input id="endTime" type="datetime-local">
-                  <button type="button" class="red" onclick="setNowTrip('endTime')">Ende jetzt</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="stats">
-              <div class="stat"><div class="label">Dauer</div><div class="value" id="durationPreview">0 Std 0 Min</div></div>
-              <div class="stat"><div class="label">Spesen</div><div class="value" id="allowancePreview">0,00 €</div></div>
-            </div>
-
-            <div class="toolbar">
-              <button type="button" onclick="saveTrip()">Fahrt speichern</button>
-              <button type="button" class="outline" onclick="clearTripForm()">Felder leeren</button>
-              <select id="sortTrips" class="compact-sort">
-                <option value="desc">Jüngstes zuerst</option>
-                <option value="asc">Ältestes zuerst</option>
-              </select>
-            </div>
-
-            <div id="tripSaveStatus" class="status info">Noch keine Fahrten gespeichert.</div>
-          </div>
-
-          <div>
-            <h2>Monatsübersicht Fahrt</h2>
-            <div class="stats">
-              <div class="stat"><div class="label">Spesen Fahrt im Monat</div><div class="value" id="tripMonthlyTotal">0,00 €</div></div>
-              <div class="stat"><div class="label">Zeit Fahrt im Monat</div><div class="value" id="tripMonthlyHours">0 Std 0 Min</div></div>
-            </div>
+        <div class="section-head">
+          <h2>Fahrt erfassen</h2>
+          <div class="mini-toolbar">
+            <select id="sortTrips">
+              <option value="desc">Jüngstes zuerst</option>
+              <option value="asc">Ältestes zuerst</option>
+            </select>
+            <button type="button" class="outline btn-auto" onclick="exportCurrentTabPdf('fahrt')">Fahrten als PDF</button>
           </div>
         </div>
-
+        <div class="field-row">
+          <div>
+            <label for="tourName">Tour / Titel</label>
+            <input id="tourName" placeholder="Tour / Titel">
+          </div>
+          <div>
+            <label for="tripNote">Bemerkung</label>
+            <textarea id="tripNote" class="compact-textarea" placeholder="Bemerkung"></textarea>
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label for="startTime">Start</label>
+            <div class="date-row"><input id="startTime" type="datetime-local"><button type="button" class="green" onclick="setNowTrip('startTime');updatePreview()">Start jetzt</button></div>
+          </div>
+          <div>
+            <label for="endTime">Ende</label>
+            <div class="date-row"><input id="endTime" type="datetime-local"><button type="button" class="red" onclick="setNowTrip('endTime');updatePreview()">Ende jetzt</button></div>
+          </div>
+        </div>
+        <div class="stats" style="margin-top:12px">
+          <div class="stat"><div class="label">Dauer</div><div class="value" id="durationPreview">0 Std 0 Min</div></div>
+          <div class="stat"><div class="label">Spesen</div><div class="value" id="allowancePreview">0,00 €</div></div>
+        </div>
+        <div class="mini-toolbar">
+          <button type="button" class="btn-auto" onclick="saveTrip()">Fahrt speichern</button>
+          <button type="button" class="outline btn-auto" onclick="clearTripForm()">Felder leeren</button>
+        </div>
+        <div id="tripSaveStatus" class="status info">Noch keine Fahrten gespeichert.</div>
         <div id="tripList" class="entry-list"></div>
       </div>
 
       <div id="hotel" class="tab-panel">
-        <div class="grid">
-          <div>
-            <h2>Hotel</h2>
-
-            <div class="row">
-              <div><label>Hotelname / Ort</label><input id="hotelName" placeholder="Hotelname / Ort"></div>
-              <div><label>Preis €</label><input id="hotelPrice" placeholder="Preis €"></div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label>Anreise</label>
-                <div class="row">
-                  <input id="hotelCheckin" type="datetime-local">
-                  <button type="button" class="green" onclick="setNowTrip('hotelCheckin')">Start jetzt</button>
-                </div>
-              </div>
-              <div>
-                <label>Abreise</label>
-                <div class="row">
-                  <input id="hotelCheckout" type="datetime-local">
-                  <button type="button" class="red" onclick="setNowTrip('hotelCheckout')">Ende jetzt</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div><label>Nächte</label><input id="hotelNights" placeholder="Nächte"></div>
-            </div>
-
-            <label>Bemerkung / Zweck</label>
-            <textarea id="hotelNote" class="small-textarea"></textarea>
-
-            <div class="upload-box">
-              <label style="margin-top:0">Beleg hochladen</label>
-              <input id="hotelReceipt" type="file" accept="image/*">
-              <div class="small" id="hotelReceiptInfo">Noch kein Beleg gewählt.</div>
-              <img id="hotelReceiptThumb" class="thumb hidden" alt="Hotelbeleg Vorschau">
-            </div>
-
-            <div class="toolbar">
-              <button type="button" onclick="saveHotel()">Hotel speichern</button>
-              <button type="button" class="outline" onclick="clearHotelForm()">Felder leeren</button>
-              <select id="sortHotels" class="compact-sort">
-                <option value="desc">Jüngstes zuerst</option>
-                <option value="asc">Ältestes zuerst</option>
-              </select>
-            </div>
-
-            <div id="hotelSaveStatus" class="status info">Noch keine Hotels gespeichert.</div>
-          </div>
-
-          <div>
-            <h2>Monatsübersicht Hotel</h2>
-            <div class="stats">
-              <div class="stat"><div class="label">Hotelkosten im Monat</div><div class="value" id="hotelMonthlyTotal">0,00 €</div></div>
-              <div class="stat"><div class="label">Anzahl Hotelbuchungen</div><div class="value" id="hotelMonthlyCount">0</div></div>
-            </div>
+        <div class="section-head">
+          <h2>Hotel</h2>
+          <div class="mini-toolbar">
+            <select id="sortHotels">
+              <option value="desc">Jüngstes zuerst</option>
+              <option value="asc">Ältestes zuerst</option>
+            </select>
+            <button type="button" class="outline btn-auto" onclick="exportCurrentTabPdf('hotel')">Hotels als PDF</button>
           </div>
         </div>
-
+        <div class="field-row">
+          <div>
+            <label for="hotelName">Hotelname / Ort</label>
+            <input id="hotelName" placeholder="Hotelname / Ort">
+          </div>
+          <div>
+            <label for="hotelPrice">Preis €</label>
+            <input id="hotelPrice" placeholder="Preis €">
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label for="hotelCheckin">Anreise</label>
+            <div class="date-row"><input id="hotelCheckin" type="datetime-local"><button type="button" class="green" onclick="setNowTrip('hotelCheckin');calcHotelNights()">Start jetzt</button></div>
+          </div>
+          <div>
+            <label for="hotelCheckout">Abreise</label>
+            <div class="date-row"><input id="hotelCheckout" type="datetime-local"><button type="button" class="red" onclick="setNowTrip('hotelCheckout');calcHotelNights()">Ende jetzt</button></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label for="hotelNights">Nächte</label>
+            <input id="hotelNights" placeholder="Nächte">
+          </div>
+          <div>
+            <label for="hotelNote">Bemerkung / Zweck</label>
+            <textarea id="hotelNote" class="compact-textarea" placeholder="Bemerkung / Zweck"></textarea>
+          </div>
+        </div>
+        <div class="upload-box">
+          <label style="margin-top:0" for="hotelReceipt">Beleg hochladen</label>
+          <input id="hotelReceipt" type="file" accept="image/*">
+          <div class="small" id="hotelReceiptInfo">Noch kein Beleg gewählt.</div>
+          <img id="hotelReceiptThumb" class="thumb hidden" alt="Hotelbeleg Vorschau">
+        </div>
+        <div class="mini-toolbar">
+          <button type="button" class="btn-auto" onclick="saveHotel()">Hotel speichern</button>
+          <button type="button" class="outline btn-auto" onclick="clearHotelForm()">Felder leeren</button>
+        </div>
+        <div id="hotelSaveStatus" class="status info">Noch keine Hotels gespeichert.</div>
         <div id="hotelList" class="entry-list"></div>
       </div>
 
       <div id="tanken" class="tab-panel">
-        <div class="grid">
-          <div>
-            <h2>Tanken</h2>
-
-            <div class="row">
-              <div><label>Tankstelle / Ort</label><input id="fuelStation" placeholder="Tankstelle / Ort"></div>
-              <div><label>Betrag €</label><input id="fuelAmount" placeholder="Betrag €"></div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label>Datum</label>
-                <div class="row">
-                  <input id="fuelDate" type="date">
-                  <button type="button" class="green" onclick="setToday('fuelDate')">Datum jetzt</button>
-                </div>
-              </div>
-              <div>
-                <label>Uhrzeit</label>
-                <div class="row">
-                  <input id="fuelTime" type="time">
-                  <button type="button" class="red" onclick="setCurrentTime('fuelTime')">Uhrzeit jetzt</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div><label>Liter</label><input id="fuelLiters" placeholder="Liter"></div>
-              <div><label>Spritart</label><input id="fuelType" placeholder="Spritart"></div>
-            </div>
-
-            <div class="row">
-              <div><label>Preis / Liter</label><input id="fuelPricePerLiter" placeholder="Preis / Liter"></div>
-            </div>
-
-            <label>Bemerkung</label>
-            <textarea id="fuelNote" class="small-textarea"></textarea>
-
-            <div class="upload-box">
-              <label style="margin-top:0">Beleg hochladen</label>
-              <input id="fuelReceipt" type="file" accept="image/*">
-              <div class="small" id="fuelReceiptInfo">Noch kein Beleg gewählt.</div>
-              <img id="fuelReceiptThumb" class="thumb hidden" alt="Tankbeleg Vorschau">
-            </div>
-
-            <div class="toolbar">
-              <button type="button" onclick="saveFuel()">Tanken speichern</button>
-              <button type="button" class="outline" onclick="clearFuelForm()">Felder leeren</button>
-              <select id="sortFuel" class="compact-sort">
-                <option value="desc">Jüngstes zuerst</option>
-                <option value="asc">Ältestes zuerst</option>
-              </select>
-            </div>
-
-            <div id="fuelSaveStatus" class="status info">Noch keine Tankeinträge gespeichert.</div>
-          </div>
-
-          <div>
-            <h2>Monatsübersicht Tanken</h2>
-            <div class="stats">
-              <div class="stat"><div class="label">Tankkosten im Monat</div><div class="value" id="fuelMonthlyTotal">0,00 €</div></div>
-              <div class="stat"><div class="label">Anzahl Tankeinträge</div><div class="value" id="fuelMonthlyCount">0</div></div>
-            </div>
+        <div class="section-head">
+          <h2>Tanken</h2>
+          <div class="mini-toolbar">
+            <select id="sortFuel">
+              <option value="desc">Jüngstes zuerst</option>
+              <option value="asc">Ältestes zuerst</option>
+            </select>
+            <button type="button" class="outline btn-auto" onclick="exportCurrentTabPdf('tanken')">Tanken als PDF</button>
           </div>
         </div>
-
+        <div class="field-row">
+          <div>
+            <label for="fuelStation">Tankstelle / Ort</label>
+            <input id="fuelStation" placeholder="Tankstelle / Ort">
+          </div>
+          <div>
+            <label for="fuelAmount">Betrag €</label>
+            <input id="fuelAmount" placeholder="Betrag €">
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label for="fuelDate">Datum</label>
+            <div class="date-row"><input id="fuelDate" type="date"><button type="button" class="green" onclick="setToday('fuelDate')">Datum jetzt</button></div>
+          </div>
+          <div>
+            <label for="fuelTime">Uhrzeit</label>
+            <div class="date-row"><input id="fuelTime" type="time"><button type="button" class="red" onclick="setCurrentTime('fuelTime')">Uhrzeit jetzt</button></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label for="fuelLiters">Liter</label>
+            <input id="fuelLiters" placeholder="Liter">
+          </div>
+          <div>
+            <label for="fuelType">Spritart</label>
+            <input id="fuelType" placeholder="Spritart">
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label for="fuelPricePerLiter">Preis / Liter</label>
+            <input id="fuelPricePerLiter" placeholder="Preis / Liter">
+          </div>
+          <div>
+            <label for="fuelNote">Bemerkung</label>
+            <textarea id="fuelNote" class="compact-textarea" placeholder="Bemerkung"></textarea>
+          </div>
+        </div>
+        <div class="upload-box">
+          <label style="margin-top:0" for="fuelReceipt">Beleg hochladen</label>
+          <input id="fuelReceipt" type="file" accept="image/*">
+          <div class="small" id="fuelReceiptInfo">Noch kein Beleg gewählt.</div>
+          <img id="fuelReceiptThumb" class="thumb hidden" alt="Tankbeleg Vorschau">
+        </div>
+        <div class="mini-toolbar">
+          <button type="button" class="btn-auto" onclick="saveFuel()">Tanken speichern</button>
+          <button type="button" class="outline btn-auto" onclick="clearFuelForm()">Felder leeren</button>
+        </div>
+        <div id="fuelSaveStatus" class="status info">Noch keine Tankeinträge gespeichert.</div>
         <div id="fuelList" class="entry-list"></div>
       </div>
 
       <div id="kilometer" class="tab-panel">
-        <div class="grid">
-          <div>
-            <h2>Kilometer</h2>
-            <div class="row">
-              <div><label>Strecke / Zweck</label><input id="kmPurpose" placeholder="Strecke / Zweck"></div>
-              <div><label>Datum</label><input id="kmDate" type="date"></div>
-            </div>
-            <label>Kilometer</label><input id="kmValue" placeholder="Kilometer">
-            <label>Bemerkung</label><textarea id="kmNote" class="small-textarea"></textarea>
-            <div class="toolbar">
-              <button type="button" onclick="saveKm()">Kilometer speichern</button>
-              <button type="button" class="outline" onclick="clearKmForm()">Felder leeren</button>
-            </div>
-            <div id="kmSaveStatus" class="status info">Noch keine Kilometer gespeichert.</div>
-          </div>
-
-          <div>
-            <h2>Monatsübersicht Kilometer</h2>
-            <div class="stats">
-              <div class="stat"><div class="label">Kilometer im Monat</div><div class="value" id="kmMonthlyTotal">0</div></div>
-              <div class="stat"><div class="label">Anzahl Kilometer-Einträge</div><div class="value" id="kmMonthlyCount">0</div></div>
-            </div>
+        <div class="section-head">
+          <h2>Kilometer</h2>
+          <div class="mini-toolbar">
+            <button type="button" class="outline btn-auto" onclick="exportCurrentTabPdf('kilometer')">Kilometer als PDF</button>
           </div>
         </div>
-
+        <div class="field-row">
+          <div>
+            <label for="kmPurpose">Strecke / Zweck</label>
+            <input id="kmPurpose" placeholder="Strecke / Zweck">
+          </div>
+          <div>
+            <label for="kmDate">Datum</label>
+            <input id="kmDate" type="date">
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label for="kmValue">Kilometer</label>
+            <input id="kmValue" placeholder="Kilometer">
+          </div>
+          <div>
+            <label for="kmNote">Bemerkung</label>
+            <textarea id="kmNote" class="compact-textarea" placeholder="Bemerkung"></textarea>
+          </div>
+        </div>
+        <div class="mini-toolbar">
+          <button type="button" class="btn-auto" onclick="saveKm()">Kilometer speichern</button>
+          <button type="button" class="outline btn-auto" onclick="clearKmForm()">Felder leeren</button>
+        </div>
+        <div id="kmSaveStatus" class="status info">Noch keine Kilometer gespeichert.</div>
         <div id="kmList" class="entry-list"></div>
       </div>
 
       <div id="pdf" class="tab-panel">
-        <h2>PDF-Export</h2>
-        <div class="small">Im aktiven Reiter exportiert der obere PDF-Button nur den aktiven Bereich. Im PDF-Reiter exportiert der Button alles zusammen.</div>
+        <div class="section-head">
+          <h2>PDF-Gesamtexport</h2>
+          <button type="button" class="btn-auto" onclick="exportFullPdf()">Gesamt-PDF exportieren</button>
+        </div>
+        <div class="hint-box">Hier kommt die Sammel-PDF rein. Die einzelnen Reiter exportieren nur ihren eigenen Bereich. Alles zusammen gibt es nur hier.</div>
+        <div class="small" style="margin-top:12px">Wenn du das als Zusatzfunktion verkaufen willst, kannst du später genau diesen Reiter an Premium + PDF-Zusatz oder Gold koppeln.</div>
       </div>
 
       <div id="pakete" class="tab-panel">
         <h2>Pakete</h2>
-
-        <div class="entry-card">
-          <div class="trip-title">Basic – 0,00 €</div>
-          <div class="small">Fahrten + Monatsübersicht</div>
-        </div>
-
-        <div class="entry-card">
-          <div class="trip-title">Premium – 4,99 € / Monat</div>
-          <div class="small">Basic + Hotel + Tanken + Kilometer + Firma/Fahrzeug/Kennzeichen</div>
-          <div class="toolbar"><button onclick="contactAdmin('paket','Premium')">Paket anfragen</button></div>
-        </div>
-
-        <div class="entry-card">
-          <div class="trip-title">Goldmitglied – 9,99 € / Monat</div>
-          <div class="small">Alles offen + Test-/Beta-Funktionen</div>
-          <div class="toolbar"><button onclick="contactAdmin('paket','Goldmitglied')">Paket anfragen</button></div>
+        <div class="package-grid">
+          <div class="package-card">
+            <div class="entry-title">Basic</div>
+            <div class="package-price">0,00 € / Monat</div>
+            <ul class="package-list">
+              <li>Fahrten speichern</li>
+              <li>Monatsübersicht</li>
+              <li>Vor- und Nachname + E-Mail</li>
+              <li>Einzel-PDF nur für Fahrten</li>
+            </ul>
+          </div>
+          <div class="package-card">
+            <div class="entry-title">Premium</div>
+            <div class="package-price">4,99 € / Monat</div>
+            <ul class="package-list">
+              <li>Alles aus Basic</li>
+              <li>Hotel</li>
+              <li>Tanken</li>
+              <li>Kilometer</li>
+              <li>Firma, Fahrzeug, Kennzeichen im Profil</li>
+              <li>Einzel-PDF für Fahrten, Hotel, Tanken, Kilometer</li>
+            </ul>
+            <div class="package-actions" style="margin-top:12px"><button type="button" class="btn-auto" onclick="requestPackage('Premium','4,99 € / Monat')">Paket anfragen</button></div>
+          </div>
+          <div class="package-card">
+            <div class="entry-title">PDF-Zusatz</div>
+            <div class="package-price">2,49 € / Monat</div>
+            <ul class="package-list">
+              <li>Gesamt-PDF aus allen Bereichen</li>
+              <li>Monatsbericht mit Fahrten + Hotel + Tanken + Kilometer</li>
+              <li>Belegseiten in der Sammel-PDF</li>
+            </ul>
+            <div class="package-actions" style="margin-top:12px"><button type="button" class="btn-auto" onclick="requestPackage('PDF-Zusatz','2,49 € / Monat')">Paket anfragen</button></div>
+          </div>
+          <div class="package-card">
+            <div class="entry-title">Goldmitglied</div>
+            <div class="package-price">9,99 € / Monat</div>
+            <ul class="package-list">
+              <li>Alles aus Premium</li>
+              <li>Gesamt-PDF inklusive</li>
+              <li>Beta- und Testfunktionen</li>
+              <li>Volle Profilfelder</li>
+            </ul>
+            <div class="package-actions" style="margin-top:12px"><button type="button" class="btn-auto" onclick="requestPackage('Goldmitglied','9,99 € / Monat')">Paket anfragen</button></div>
+          </div>
         </div>
       </div>
 
       <div id="empfehlen" class="tab-panel">
         <h2>Fahrer empfehlen</h2>
-        <div class="small">Wenn ein neuer Fahrer über deinen Empfehlungscode kommt und später kostenpflichtig freigeschaltet wird, bekommst du 7 Tage gratis dazu.</div>
-        <label>Dein Empfehlungscode</label>
+        <div class="hint-box">Wenn ein neuer Fahrer über deinen Empfehlungscode kommt und später kostenpflichtig freigeschaltet wird, bekommst du 7 Tage gratis dazu.</div>
+        <label for="refCode">Dein Empfehlungscode</label>
         <input id="refCode" readonly>
+        <div class="toolbar">
+          <button type="button" class="btn-auto" onclick="copyRefCode()">Code kopieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="contactModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Admin kontaktieren</h3>
+        <button type="button" class="close-x btn-auto" onclick="closeContactModal()">Schließen</button>
+      </div>
+      <div class="radio-grid">
+        <div class="radio-btn active" data-mode="question" onclick="selectContactMode('question',this)">Allgemeine Frage</div>
+        <div class="radio-btn" data-mode="package" onclick="selectContactMode('package',this)">Paket buchen</div>
+        <div class="radio-btn" data-mode="problem" onclick="selectContactMode('problem',this)">Problem melden</div>
+      </div>
+      <div class="field-row" style="margin-top:14px">
+        <div>
+          <label for="contactPackage">Paket</label>
+          <select id="contactPackage">
+            <option value="">Bitte auswählen</option>
+            <option value="Premium – 4,99 € / Monat">Premium – 4,99 € / Monat</option>
+            <option value="PDF-Zusatz – 2,49 € / Monat">PDF-Zusatz – 2,49 € / Monat</option>
+            <option value="Goldmitglied – 9,99 € / Monat">Goldmitglied – 9,99 € / Monat</option>
+          </select>
+        </div>
+        <div>
+          <label for="contactSubject">Betreff</label>
+          <input id="contactSubject" placeholder="Betreff">
+        </div>
+      </div>
+      <label for="contactMessage">Nachricht</label>
+      <textarea id="contactMessage" placeholder="Deine Nachricht an den Admin"></textarea>
+      <div class="toolbar">
+        <button type="button" class="btn-auto" onclick="sendContactMail()">E-Mail vorbereiten</button>
       </div>
     </div>
   </div>
@@ -488,44 +596,91 @@
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
   import {
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
-    onAuthStateChanged, sendPasswordResetEmail
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence
   } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
   import {
-    getFirestore, collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc,
-    serverTimestamp, getDoc, setDoc, getDocs
+    getFirestore,
+    collection,
+    query,
+    orderBy,
+    onSnapshot,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    serverTimestamp,
+    getDoc,
+    setDoc,
+    getDocs
   } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCsqrNPEtKCaDe5vywUIoM9fK-vXqV_sr4",
-    authDomain: "spesen-test-31a53.firebaseapp.com",
-    projectId: "spesen-test-31a53",
-    storageBucket: "spesen-test-31a53.firebasestorage.app",
-    messagingSenderId: "722110907370",
-    appId: "1:722110907370:web:6d1253fb66f02fe4b76893"
+    apiKey: 'AIzaSyCsqrNPEtKCaDe5vywUIoM9fK-vXqV_sr4',
+    authDomain: 'spesen-test-31a53.firebaseapp.com',
+    projectId: 'spesen-test-31a53',
+    storageBucket: 'spesen-test-31a53.firebasestorage.app',
+    messagingSenderId: '722110907370',
+    appId: '1:722110907370:web:6d1253fb66f02fe4b76893'
   };
 
   const ADMIN_EMAIL = 'tanjapischke177@gmail.com';
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-
   const $ = (id) => document.getElementById(id);
+
   let currentUser = null;
   let trips = [];
   let hotels = [];
   let fuels = [];
   let kms = [];
-  let profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode:'' };
+  let profile = createEmptyProfile();
   let unsubTrips = null, unsubHotels = null, unsubFuels = null, unsubKms = null;
+  let currentContactMode = 'question';
 
-  function toggleHelp(){ $('helpBox').style.display = $('helpBox').style.display === 'block' ? 'none' : 'block'; }
+  function createEmptyProfile(){
+    return {
+      displayName:'',
+      packageName:'Basic',
+      activeUntil:'',
+      company:'',
+      vehicle:'',
+      plate:'',
+      referralCode:'',
+      pdfAddon:false
+    };
+  }
+
+  function isAdmin(){
+    return !!currentUser && String(currentUser.email || '').toLowerCase() === ADMIN_EMAIL;
+  }
+
+  function isPremiumLike(){
+    return ['Premium','Goldmitglied'].includes(profile.packageName);
+  }
+
+  function hasFullPdf(){
+    return profile.packageName === 'Goldmitglied' || !!profile.pdfAddon;
+  }
+
+  function toggleHelp(){ $('helpBox').classList.toggle('hidden'); }
   window.toggleHelp = toggleHelp;
+
+  function jumpToAccess(){ $('accessSection').scrollIntoView({behavior:'smooth', block:'start'}); }
+  window.jumpToAccess = jumpToAccess;
 
   function showTab(tabId, btn){
     document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    $(tabId).classList.add('active');
     if(btn) btn.classList.add('active');
   }
   window.showTab = showTab;
@@ -533,9 +688,7 @@
   function togglePw(){ $('password').type = $('password').type === 'password' ? 'text' : 'password'; }
   window.togglePw = togglePw;
 
-  function isAdmin(){ return !!currentUser && (currentUser.email || '').toLowerCase() === ADMIN_EMAIL; }
-
-  function escapeHtml(text) {
+  function escapeHtml(text){
     return String(text || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
 
@@ -545,7 +698,7 @@
   }
 
   function formatLocalDate(date){
-    const d = new Date(date.getTime() - date.getTimezoneOffset()*60000);
+    const d = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
     return d.toISOString().slice(0,10);
   }
 
@@ -559,132 +712,147 @@
     return new Date(year, month - 1, day, hour || 0, minute || 0, 0, 0);
   }
 
-  function formatGermanDate(dateString) {
+  function formatGermanDate(dateString){
     const d = parseLocalDateTime(dateString);
-    if (!d) return '-';
-    return d.toLocaleString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    if(!d) return '-';
+    return d.toLocaleString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
   }
 
-  function formatMonthKey(dateString) {
+  function formatMonthKey(dateString){
     const d = parseLocalDateTime(dateString);
-    if (!d) return '';
+    if(!d) return '';
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
   }
 
-  function formatMonthLabel(monthKey) {
-    if (!monthKey) return 'Kein Monat';
+  function formatMonthLabel(monthKey){
+    if(!monthKey) return 'Kein Monat';
     const [year, month] = monthKey.split('-');
-    const d = new Date(Number(year), Number(month)-1, 1);
-    return d.toLocaleDateString('de-DE', {month:'long', year:'numeric'});
+    return new Date(Number(year), Number(month)-1, 1).toLocaleDateString('de-DE',{month:'long', year:'numeric'});
   }
 
-  function calculateDurationHours(start, end) {
-    const startDate = parseLocalDateTime(start);
-    const endDate = parseLocalDateTime(end);
-    if (!startDate || !endDate) return 0;
-    const diffMs = endDate.getTime() - startDate.getTime();
-    if (Number.isNaN(diffMs) || diffMs <= 0) return 0;
-    return diffMs / (1000 * 60 * 60);
+  function calculateDurationHours(start, end){
+    const s = parseLocalDateTime(start);
+    const e = parseLocalDateTime(end);
+    if(!s || !e) return 0;
+    const diff = e.getTime() - s.getTime();
+    if(diff <= 0) return 0;
+    return diff / (1000*60*60);
   }
 
-  function calculateAllowance(hours) {
-    if (hours < 8) return 0;
+  function calculateAllowance(hours){
+    if(hours < 8) return 0;
     const fullDays = Math.floor(hours / 24);
-    const remainingHours = hours % 24;
+    const rest = hours % 24;
     let total = fullDays * 28;
-    if (remainingHours >= 8) total += 14;
+    if(rest >= 8) total += 14;
     return total;
   }
 
-  function getAllowanceType(amount) {
-    if (amount === 0) return '0 €';
-    if (amount === 14) return '14 €';
-    if (amount === 28) return '28 €';
-    if (amount % 28 === 0) return `${amount} € (24h-Blöcke)`;
-    if (amount > 28) return `${amount} € (24h + Rest)`;
-    return `${amount} €`;
+  function getAllowanceType(amount){
+    if(amount === 0) return '0 €';
+    if(amount === 14) return '14 €';
+    if(amount === 28) return '28 €';
+    if(amount % 28 === 0) return `${amount} € (24h-Blöcke)`;
+    return `${amount} € (24h + Rest)`;
   }
 
-  function formatDuration(hours) {
-    const totalMinutes = Math.round(Number(hours||0) * 60);
+  function formatDuration(hours){
+    const totalMinutes = Math.round(Number(hours || 0) * 60);
     const h = Math.floor(totalMinutes / 60);
     const m = totalMinutes % 60;
     return `${h} Std ${m} Min`;
   }
 
-  function formatEuro(v){ return Number(v||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
+  function formatEuro(v){
+    return Number(v || 0).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+  }
 
   function parseNumber(v){
-    const cleaned = String(v ?? '').replace(/\./g,'').replace(',', '.').replace(/[^\d.-]/g,'');
+    const cleaned = String(v ?? '').replace(/,/g,'.').replace(/[^\d.-]/g,'');
     const n = Number(cleaned);
     return Number.isFinite(n) ? n : 0;
   }
 
-  async function fileToDataUrl(file){
-    if(!file) return '';
-    return await new Promise((resolve,reject)=>{
-      const r=new FileReader();
-      r.onload=()=>resolve(r.result);
-      r.onerror=reject;
-      r.readAsDataURL(file);
-    });
-  }
-
-  function updateFilePreview(inputId, infoId, thumbId){
-    const file=$(inputId).files?.[0];
-    const info=$(infoId);
-    const thumb=$(thumbId);
-    if(!file){
-      info.textContent='Noch kein Beleg gewählt.';
-      thumb.src='';
-      thumb.classList.add('hidden');
-      return;
-    }
-    info.textContent='Gewählt: '+file.name;
-    const reader=new FileReader();
-    reader.onload=()=>{
-      thumb.src=reader.result;
-      thumb.classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function toSortableTimestamp(dateTimeString) {
+  function toSortableTimestamp(dateTimeString){
     const d = parseLocalDateTime(dateTimeString);
     return d ? d.getTime() : 0;
   }
 
   function localStatus(id, text, cls='info'){
-    const el=$(id);
-    el.className='status '+cls;
-    el.textContent=text;
+    const el = $(id);
+    if(!el) return;
+    el.className = `status ${cls}`;
+    el.textContent = text;
+  }
+
+  async function fileToDataUrl(file){
+    if(!file) return '';
+    return await new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function updateFilePreview(inputId, infoId, thumbId){
+    const file = $(inputId).files?.[0];
+    const info = $(infoId);
+    const thumb = $(thumbId);
+    if(!file){
+      info.textContent = 'Noch kein Beleg gewählt.';
+      thumb.classList.add('hidden');
+      thumb.src = '';
+      return;
+    }
+    info.textContent = `Gewählt: ${file.name}`;
+    const reader = new FileReader();
+    reader.onload = ()=>{ thumb.src = reader.result; thumb.classList.remove('hidden'); };
+    reader.readAsDataURL(file);
   }
 
   function selectedMonth(){ return $('monthSelect').value; }
 
   function computeRefCode(name,email){
-    const base = (name || email || 'fahrer').toLowerCase().replace(/[^a-z0-9äöüß]/gi,'').slice(0,10) || 'fahrer';
-    return `${base}-001`;
+    const base = (name || email || 'fahrer').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'').slice(0,10) || 'fahrer';
+    const suffix = currentUser?.uid ? currentUser.uid.slice(0,4).toUpperCase() : '0001';
+    return `${base}-${suffix}`;
+  }
+
+  function getDaysLeftText(){
+    if(!profile.activeUntil) return 'Noch keine Laufzeit aktiv.';
+    const end = new Date(`${profile.activeUntil}T23:59:59`);
+    const diff = Math.ceil((end.getTime() - Date.now()) / 86400000);
+    if(diff < 0) return `Abgelaufen seit ${Math.abs(diff)} Tag(en).`;
+    if(diff === 0) return `Läuft heute ab (${profile.packageName}).`;
+    return `${profile.packageName} aktiv bis ${profile.activeUntil} – noch ${diff} Tag(e).`;
   }
 
   function updateBadges(){
     if(!currentUser){
-      $('userBadge').textContent='Nicht angemeldet';
-      $('userNameBadge').textContent='';
-      $('packageBadge').textContent='Kein aktiver Zugang';
+      $('userBadge').textContent = 'Nicht angemeldet';
+      $('userNameBadge').classList.add('hidden');
+      $('packageBadge').textContent = 'Kein aktiver Zugang';
       $('adminBadge').classList.add('hidden');
       $('topLogoutBtn').classList.add('hidden');
-      $('authStatus').className='status warn';
-      $('authStatus').textContent='Noch nicht angemeldet.';
+      $('accessTopBtn').classList.add('hidden');
+      localStatus('authStatus','Noch nicht angemeldet.','warn');
       return;
     }
     $('userBadge').textContent = currentUser.email;
-    $('userNameBadge').textContent = profile.displayName || '';
-    $('packageBadge').textContent = profile.packageName || 'Standard';
+    if(profile.displayName){
+      $('userNameBadge').textContent = profile.displayName;
+      $('userNameBadge').classList.remove('hidden');
+    } else {
+      $('userNameBadge').classList.add('hidden');
+    }
+    let packageText = profile.packageName || 'Basic';
+    if(profile.pdfAddon && profile.packageName !== 'Goldmitglied') packageText += ' + PDF-Zusatz';
+    $('packageBadge').textContent = packageText;
     $('adminBadge').classList.toggle('hidden', !isAdmin());
     $('topLogoutBtn').classList.toggle('hidden', !currentUser);
-    $('authStatus').className='status ok';
-    $('authStatus').textContent=`Angemeldet als ${currentUser.email}`;
+    $('accessTopBtn').classList.toggle('hidden', !currentUser);
+    localStatus('authStatus', `Angemeldet als ${currentUser.email}`, 'ok');
   }
 
   function updateProfileUi(){
@@ -693,23 +861,42 @@
     $('company').value = profile.company || '';
     $('vehicle').value = profile.vehicle || '';
     $('plate').value = profile.plate || '';
-    $('refCode').value = profile.referralCode || computeRefCode(profile.displayName,currentUser?.email);
-    const showPremium = ['Premium','Goldmitglied'].includes(profile.packageName);
-    $('premiumFields').classList.toggle('hidden', !showPremium);
+    $('refCode').value = profile.referralCode || computeRefCode(profile.displayName, currentUser?.email);
 
-    if(profile.activeUntil){
-      $('accessInfo').className='status info';
-      $('accessInfo').textContent=`Aktiv: ${profile.packageName} bis ${profile.activeUntil}`;
-    }else{
-      $('accessInfo').className='status info';
-      $('accessInfo').textContent='Noch keine Laufzeit aktiv.';
-    }
+    const showPremiumFields = isPremiumLike();
+    $('premiumFields').classList.toggle('hidden', !showPremiumFields);
+
+    $('summaryName').textContent = profile.displayName || '-';
+    $('summaryEmail').textContent = currentUser?.email || '-';
+    $('summaryCompany').textContent = profile.company || '-';
+    $('summaryVehicle').textContent = [profile.vehicle || '-', profile.plate || '-'].join(' / ');
+    $('summaryCompanyWrap').classList.toggle('hidden', !showPremiumFields);
+    $('summaryVehicleWrap').classList.toggle('hidden', !showPremiumFields);
+
+    const hasSummary = !!(profile.displayName || currentUser?.email);
+    $('profileSummary').classList.toggle('hidden', !hasSummary);
+
+    const text = currentUser ? getDaysLeftText() : 'Melde dich an, um deine Laufzeit zu sehen.';
+    localStatus('accessInfo', text, 'info');
+  }
+
+  function toggleProfileEditor(forceOpen = null){
+    const editor = $('profileEditor');
+    const shouldOpen = forceOpen === null ? editor.classList.contains('hidden') : forceOpen;
+    editor.classList.toggle('hidden', !shouldOpen);
+    $('editProfileBtn').textContent = shouldOpen ? 'Profil einklappen' : 'Profil bearbeiten';
+  }
+  window.toggleProfileEditor = toggleProfileEditor;
+
+  function toggleFeatureVisibility(){
+    const premiumOnly = isPremiumLike();
+    const tripPdfButtons = document.querySelectorAll('[data-role="tripPdfOnly"]');
+    tripPdfButtons.forEach(()=>{});
+    // Reiter selbst bleiben sichtbar, aber unten steht klar, was gesperrt ist
   }
 
   function setNowTrip(id){
     $(id).value = formatDateTimeLocal(new Date());
-    if(id==='startTime'||id==='endTime') updatePreview();
-    if(id==='hotelCheckin'||id==='hotelCheckout') calcHotelNights();
   }
   window.setNowTrip = setNowTrip;
 
@@ -717,15 +904,15 @@
   window.setToday = setToday;
 
   function setCurrentTime(id){
-    const d=new Date();
+    const d = new Date();
     $(id).value = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   }
   window.setCurrentTime = setCurrentTime;
 
-  function updatePreview() {
+  function updatePreview(){
     const start = $('startTime').value;
     const end = $('endTime').value;
-    const hours = (start && end) ? calculateDurationHours(start, end) : 0;
+    const hours = (start && end) ? calculateDurationHours(start,end) : 0;
     const allowance = calculateAllowance(hours);
     $('durationPreview').textContent = formatDuration(hours);
     $('allowancePreview').textContent = formatEuro(allowance);
@@ -734,19 +921,16 @@
   function calcHotelNights(){
     const start = parseLocalDateTime($('hotelCheckin').value);
     const end = parseLocalDateTime($('hotelCheckout').value);
-    if(!start || !end){
-      $('hotelNights').value='';
-      return;
-    }
-    const diff = Math.round((end - start)/86400000);
+    if(!start || !end){ $('hotelNights').value = ''; return; }
+    const diff = Math.round((end - start) / 86400000);
     $('hotelNights').value = diff > 0 ? String(diff) : '0';
   }
 
   function clearTripForm(){
     $('tourName').value='';
+    $('tripNote').value='';
     $('startTime').value='';
     $('endTime').value='';
-    $('tripNote').value='';
     updatePreview();
   }
   window.clearTripForm = clearTripForm;
@@ -786,26 +970,27 @@
   window.clearKmForm = clearKmForm;
 
   async function signUpUser(){
-    const email=$('email').value.trim();
-    const password=$('password').value;
+    const email = $('email').value.trim();
+    const password = $('password').value;
     if(!email || !password) return alert('Bitte E-Mail und Passwort eingeben.');
     try{
+      await setPersistence(auth, browserLocalPersistence);
       await createUserWithEmailAndPassword(auth,email,password);
-      localStatus('authStatus','Registrierung erfolgreich.','ok');
     }catch(e){
-      alert('Registrierung fehlgeschlagen: '+e.message);
+      alert('Registrierung fehlgeschlagen: ' + e.message);
     }
   }
   window.signUpUser = signUpUser;
 
   async function signInUser(){
-    const email=$('email').value.trim();
-    const password=$('password').value;
+    const email = $('email').value.trim();
+    const password = $('password').value;
     if(!email || !password) return alert('Bitte E-Mail und Passwort eingeben.');
     try{
+      await setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth,email,password);
     }catch(e){
-      alert('Anmeldung fehlgeschlagen: '+e.message);
+      alert('Anmeldung fehlgeschlagen: ' + e.message);
     }
   }
   window.signInUser = signInUser;
@@ -814,13 +999,13 @@
   window.signOutUser = signOutUser;
 
   async function sendReset(){
-    const email=$('email').value.trim();
+    const email = $('email').value.trim();
     if(!email) return alert('Bitte zuerst eine E-Mail eintragen.');
     try{
       await sendPasswordResetEmail(auth,email);
       alert('Reset-Link wurde gesendet.');
     }catch(e){
-      alert('Reset fehlgeschlagen: '+e.message);
+      alert('Reset fehlgeschlagen: ' + e.message);
     }
   }
   window.sendReset = sendReset;
@@ -831,24 +1016,25 @@
       const ref = doc(db,'users',currentUser.uid,'meta','profile');
       const snap = await getDoc(ref);
       if(snap.exists()){
-        profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode:'', ...snap.data() };
-      }else{
-        profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode: computeRefCode('',currentUser.email) };
+        profile = { ...createEmptyProfile(), ...snap.data() };
+      } else {
+        profile = createEmptyProfile();
+        profile.referralCode = computeRefCode('', currentUser.email);
         await setDoc(ref, profile, {merge:true});
       }
-
       updateProfileUi();
       localStatus('profileStatus','Profil geladen.','ok');
-
       await setDoc(doc(db,'profiles',currentUser.uid), {
         email: currentUser.email,
         displayName: profile.displayName || '',
-        packageName: profile.packageName || 'Standard',
+        packageName: profile.packageName || 'Basic',
         activeUntil: profile.activeUntil || '',
+        pdfAddon: !!profile.pdfAddon,
         updatedAt: Date.now()
       }, {merge:true});
     }catch(e){
-      profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode: computeRefCode('',currentUser?.email) };
+      profile = createEmptyProfile();
+      profile.referralCode = computeRefCode('', currentUser?.email);
       updateProfileUi();
       localStatus('profileStatus','Profil leer geladen. Du kannst es jetzt speichern.','info');
     }
@@ -858,22 +1044,28 @@
     if(!currentUser) return alert('Bitte zuerst anmelden.');
     try{
       profile.displayName = $('displayName').value.trim();
-      profile.company = $('company').value.trim();
-      profile.vehicle = $('vehicle').value.trim();
-      profile.plate = $('plate').value.trim();
-      profile.referralCode = computeRefCode(profile.displayName,currentUser.email);
-
+      if(isPremiumLike()){
+        profile.company = $('company').value.trim();
+        profile.vehicle = $('vehicle').value.trim();
+        profile.plate = $('plate').value.trim();
+      } else {
+        profile.company = '';
+        profile.vehicle = '';
+        profile.plate = '';
+      }
+      profile.referralCode = computeRefCode(profile.displayName, currentUser.email);
       await setDoc(doc(db,'users',currentUser.uid,'meta','profile'), profile, {merge:true});
       await setDoc(doc(db,'profiles',currentUser.uid), {
         email: currentUser.email,
         displayName: profile.displayName || '',
-        packageName: profile.packageName || 'Standard',
+        packageName: profile.packageName || 'Basic',
         activeUntil: profile.activeUntil || '',
+        pdfAddon: !!profile.pdfAddon,
         updatedAt: Date.now()
       }, {merge:true});
-
-      updateProfileUi();
       updateBadges();
+      updateProfileUi();
+      toggleProfileEditor(false);
       localStatus('profileStatus','Profil gespeichert.','ok');
     }catch(e){
       localStatus('profileStatus','Profil konnte nicht gespeichert werden.','warn');
@@ -883,54 +1075,111 @@
 
   async function startTrial(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
-    const now = new Date();
-    const end = new Date(now.getTime() + 7*24*60*60*1000);
-    const endStr = formatLocalDate(end);
+    const end = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     profile.packageName = 'Goldmitglied';
-    profile.activeUntil = endStr;
-
+    profile.activeUntil = formatLocalDate(end);
+    profile.pdfAddon = true;
     await setDoc(doc(db,'users',currentUser.uid,'meta','profile'), profile, {merge:true});
     await setDoc(doc(db,'profiles',currentUser.uid), {
       email: currentUser.email,
       displayName: profile.displayName || '',
-      packageName: profile.packageName || 'Goldmitglied',
-      activeUntil: endStr,
+      packageName: profile.packageName,
+      activeUntil: profile.activeUntil,
+      pdfAddon: true,
       updatedAt: Date.now()
     }, {merge:true});
-
     updateBadges();
     updateProfileUi();
-    localStatus('profileStatus', `7 Tage Test gestartet bis ${endStr}.`, 'ok');
+    localStatus('profileStatus',`7 Tage Test gestartet bis ${profile.activeUntil}.`,'ok');
   }
   window.startTrial = startTrial;
 
-  function contactAdmin(mode='frage', paket=''){
-    let subject = '';
-    let body = '';
-
-    if(mode === 'frage'){
-      const choice = prompt('Was möchtest du?\\n\\n1 = Allgemeine Frage\\n2 = Paket buchen\\n3 = Problem melden');
-      if(choice === '1'){
-        subject = 'Frage zur Spesen-App';
-        body = 'Hallo,\\nich habe folgende Frage:\\n\\n';
-      }
-      if(choice === '2'){
-        subject = 'Paket buchen';
-        body = 'Hallo,\\nich möchte folgendes Paket buchen:\\n\\n';
-      }
-      if(choice === '3'){
-        subject = 'Problem melden';
-        body = 'Hallo,\\nich habe folgendes Problem:\\n\\n';
-      }
-      if(!subject) return;
+  function openContactModal(mode='question'){
+    currentContactMode = mode;
+    selectContactMode(mode);
+    $('contactModal').classList.add('show');
+    const packageSelect = $('contactPackage');
+    packageSelect.disabled = mode !== 'package';
+    if(mode === 'question'){
+      $('contactSubject').value = 'Allgemeine Frage zur Spesen-App';
+      $('contactMessage').value = 'Hallo,\n\nich habe eine allgemeine Frage zur Spesen-App:\n\n';
+    } else if(mode === 'problem'){
+      $('contactSubject').value = 'Problemmeldung Spesen-App';
+      $('contactMessage').value = 'Hallo,\n\nich möchte ein Problem zur Spesen-App melden:\n\n';
     } else {
-      subject = 'Paket buchen';
-      body = `Hallo,\\nich möchte folgendes Paket buchen:\\n\\n${paket}\\n\\n`;
+      $('contactSubject').value = 'Paketbuchung Spesen-App';
+      $('contactMessage').value = 'Hallo,\n\nich möchte ein Paket für die Spesen-App buchen.\n\nBitte sende mir die Zahlungsinfos.\n\n';
     }
-
-    window.location.href = `mailto:Tanjapischke177@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
-  window.contactAdmin = contactAdmin;
+  window.openContactModal = openContactModal;
+
+  function closeContactModal(){ $('contactModal').classList.remove('show'); }
+  window.closeContactModal = closeContactModal;
+
+  function selectContactMode(mode, btn = null){
+    currentContactMode = mode;
+    document.querySelectorAll('.radio-btn').forEach(el => el.classList.remove('active'));
+    const target = btn || document.querySelector(`.radio-btn[data-mode="${mode}"]`);
+    if(target) target.classList.add('active');
+    $('contactPackage').disabled = mode !== 'package';
+  }
+  window.selectContactMode = selectContactMode;
+
+  function requestPackage(name, price){
+    openContactModal('package');
+    $('contactPackage').value = `${name} – ${price}`;
+    $('contactSubject').value = `Paketbuchung: ${name}`;
+    $('contactMessage').value = [
+      'Hallo,',
+      '',
+      `ich möchte folgendes Paket buchen: ${name}`,
+      `Preis: ${price}`,
+      '',
+      'Bitte sende mir die Zahlungsinfos an diese E-Mail-Adresse zurück.',
+      'Da sich die App aktuell noch in der Beta befindet, kann der Betrag als Familie und Freunde per PayPal gesendet werden.',
+      '',
+      'Sobald der Geldeingang bestätigt ist, kann die Freischaltung innerhalb von 24 Stunden erfolgen.',
+      ''
+    ].join('\n');
+  }
+  window.requestPackage = requestPackage;
+
+  async function sendContactMail(){
+    const subject = $('contactSubject').value.trim() || 'Nachricht zur Spesen-App';
+    const selectedPackage = $('contactPackage').value.trim();
+    let body = $('contactMessage').value.trim();
+    if(currentContactMode === 'package'){
+      if(!selectedPackage) return alert('Bitte zuerst ein Paket auswählen.');
+      body += `\n\nGewähltes Paket: ${selectedPackage}`;
+    }
+    if(currentUser?.email) body += `\n\nAbsender: ${currentUser.email}`;
+    if(profile.displayName) body += `\nName: ${profile.displayName}`;
+    try{
+      if(currentUser){
+        await addDoc(collection(db,'requests'), {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          name: profile.displayName || '',
+          mode: currentContactMode,
+          subject,
+          package: selectedPackage || '',
+          body,
+          createdAt: serverTimestamp()
+        });
+      }
+    }catch{}
+    const mailto = `mailto:${encodeURIComponent(ADMIN_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+    closeContactModal();
+  }
+  window.sendContactMail = sendContactMail;
+
+  function copyRefCode(){
+    const value = $('refCode').value;
+    if(!value) return;
+    navigator.clipboard.writeText(value).then(()=>alert('Empfehlungscode kopiert.')).catch(()=>alert('Kopieren hat nicht geklappt.'));
+  }
+  window.copyRefCode = copyRefCode;
 
   function getSortedByOrder(source, field, order){
     const arr = [...source].sort((a,b)=> toSortableTimestamp(a[field]) - toSortableTimestamp(b[field]));
@@ -939,166 +1188,145 @@
 
   function renderMonthSelect(){
     const current = $('monthSelect').value;
-    const keys = [...new Set([
+    const keys = [
       ...trips.map(t=>formatMonthKey(t.startTime)),
       ...hotels.map(h=>formatMonthKey(h.checkin)),
-      ...fuels.map(f=>formatMonthKey(`${f.date}T${f.time||'00:00'}`)),
-      ...kms.map(k=>k.date?.slice(0,7))
-    ].filter(Boolean))].sort((a,b)=>b.localeCompare(a));
-
-    if(!keys.length){
+      ...fuels.map(f=>formatMonthKey(`${f.date}T${f.time || '00:00'}`)),
+      ...kms.map(k => String(k.date || '').slice(0,7))
+    ].filter(Boolean);
+    const unique = [...new Set(keys)].sort((a,b)=> b.localeCompare(a));
+    if(!unique.length){
       const month = formatMonthKey(formatDateTimeLocal(new Date()));
       $('monthSelect').innerHTML = `<option value="${month}">${formatMonthLabel(month)}</option>`;
       return;
     }
-
-    $('monthSelect').innerHTML = keys.map(m=>`<option value="${m}">${formatMonthLabel(m)}</option>`).join('');
-    $('monthSelect').value = keys.includes(current) ? current : keys[0];
+    $('monthSelect').innerHTML = unique.map(m => `<option value="${m}">${formatMonthLabel(m)}</option>`).join('');
+    $('monthSelect').value = unique.includes(current) ? current : unique[0];
   }
 
-  function renderGlobalOverview(){
+  function renderMonthStats(){
     const month = selectedMonth();
-    const monthlyTripTotal = trips.filter(t=>formatMonthKey(t.startTime)===month).reduce((s,t)=>s+Number(t.allowance||0),0);
-    const monthlyHotelTotal = hotels.filter(h=>formatMonthKey(h.checkin)===month).reduce((s,h)=>s+Number(h.price||0),0);
-    const monthlyFuelTotal = fuels.filter(f=>(f.date||'').slice(0,7)===month).reduce((s,f)=>s+Number(f.amount||0),0);
-    const monthlyHours = trips.filter(t=>formatMonthKey(t.startTime)===month).reduce((s,t)=>s+Number(t.hours||0),0);
-    const allTotal = trips.reduce((s,t)=>s+Number(t.allowance||0),0) + hotels.reduce((s,h)=>s+Number(h.price||0),0) + fuels.reduce((s,f)=>s+Number(f.amount||0),0);
-
-    $('monthlyTotal').textContent = formatEuro(monthlyTripTotal + monthlyHotelTotal + monthlyFuelTotal);
-    $('monthlyHours').textContent = formatDuration(monthlyHours);
-    $('overallTotal').textContent = formatEuro(allTotal);
+    const tripTotal = trips.filter(t=>formatMonthKey(t.startTime) === month).reduce((s,t)=> s + Number(t.allowance || 0), 0);
+    const tripHours = trips.filter(t=>formatMonthKey(t.startTime) === month).reduce((s,t)=> s + Number(t.hours || 0), 0);
+    const hotelTotal = hotels.filter(h=>formatMonthKey(h.checkin) === month).reduce((s,h)=> s + Number(h.price || 0), 0);
+    const fuelTotal = fuels.filter(f=>String(f.date || '').slice(0,7) === month).reduce((s,f)=> s + Number(f.amount || 0), 0);
+    const kmTotal = kms.filter(k=>String(k.date || '').slice(0,7) === month).reduce((s,k)=> s + Number(k.kilometers || 0), 0);
+    const totalMonth = tripTotal + hotelTotal + fuelTotal;
+    const overall = trips.reduce((s,t)=> s + Number(t.allowance || 0), 0) + hotels.reduce((s,h)=> s + Number(h.price || 0), 0) + fuels.reduce((s,f)=> s + Number(f.amount || 0), 0);
+    $('monthlyTotal').textContent = formatEuro(totalMonth);
+    $('monthlyHours').textContent = formatDuration(tripHours);
+    $('overallTotal').textContent = formatEuro(overall);
   }
 
   function renderTrips(){
     const month = selectedMonth();
     const order = $('sortTrips').value;
-    const monthly = getSortedByOrder(trips.filter(t=>formatMonthKey(t.startTime)===month),'startTime',order).map((trip,idx)=>({...trip, displayNumber: idx+1}));
-    const total = monthly.reduce((s,t)=>s+Number(t.allowance||0),0);
-    const hours = monthly.reduce((s,t)=>s+Number(t.hours||0),0);
-
-    $('tripMonthlyTotal').textContent = formatEuro(total);
-    $('tripMonthlyHours').textContent = formatDuration(hours);
-
+    const monthly = getSortedByOrder(trips.filter(t=>formatMonthKey(t.startTime)===month),'startTime',order).map((trip,index)=>({...trip, displayNumber:index+1}));
     $('tripList').innerHTML = monthly.length ? monthly.map(trip => `
       <div class="entry-card">
-        <div class="trip-title">Nr. ${trip.displayNumber} – ${escapeHtml(trip.tourName)}</div>
+        <div class="entry-title">Nr. ${trip.displayNumber} – ${escapeHtml(trip.tourName)}</div>
         <div class="small">${formatGermanDate(trip.startTime)} → ${formatGermanDate(trip.endTime)}</div>
-        <div class="small">Dauer: ${formatDuration(Number(trip.hours||0))}</div>
+        <div class="small">Dauer: ${formatDuration(Number(trip.hours || 0))}</div>
         <div class="small">Spesensatz: ${escapeHtml(trip.allowanceType || '')}</div>
-        <div class="small">Spesen: ${formatEuro(trip.allowance||0)}</div>
+        <div class="small">Spesen: ${formatEuro(trip.allowance || 0)}</div>
         ${trip.note ? `<div class="small">${escapeHtml(trip.note)}</div>` : ''}
-        <div class="toolbar">
-          <button type="button" class="outline" onclick="editTrip('${trip.id}')">Bearbeiten</button>
-          <button type="button" class="danger" onclick="deleteTrip('${trip.id}')">Löschen</button>
+        <div class="entry-actions" style="margin-top:10px">
+          <button type="button" class="outline btn-auto" onclick="editTrip('${trip.id}')">Bearbeiten</button>
+          <button type="button" class="red btn-auto" onclick="deleteTrip('${trip.id}')">Löschen</button>
         </div>
       </div>
     `).join('') : '<div class="muted">Keine Fahrten in diesem Monat gespeichert.</div>';
-
-    localStatus('tripSaveStatus', monthly.length ? `${monthly.length} Fahrt(en) im ausgewählten Monat.` : 'Noch keine Fahrten gespeichert.', monthly.length ? 'ok':'info');
+    localStatus('tripSaveStatus', monthly.length ? `${monthly.length} Fahrt(en) im ausgewählten Monat.` : 'Noch keine Fahrten gespeichert.','info');
   }
 
   function renderHotels(){
-    const month=selectedMonth();
-    const order=$('sortHotels').value;
-    const monthly=getSortedByOrder(hotels.filter(h=>formatMonthKey(h.checkin)===month),'checkin',order).map((item, idx)=>({...item, displayNumber: idx+1}));
-
-    $('hotelMonthlyTotal').textContent = formatEuro(monthly.reduce((s,h)=>s+Number(h.price||0),0));
-    $('hotelMonthlyCount').textContent = String(monthly.length);
-
-    $('hotelList').innerHTML = monthly.length ? monthly.map(h=>`
+    const month = selectedMonth();
+    const order = $('sortHotels').value;
+    const monthly = getSortedByOrder(hotels.filter(h=>formatMonthKey(h.checkin)===month),'checkin',order).map((item,index)=>({...item, displayNumber:index+1}));
+    $('hotelList').innerHTML = monthly.length ? monthly.map(item => `
       <div class="entry-card">
-        <div class="trip-title">Nr. ${h.displayNumber} – ${escapeHtml(h.name)}</div>
-        <div class="small">${formatGermanDate(h.checkin)} → ${formatGermanDate(h.checkout)}</div>
-        <div class="small">Nächte: ${escapeHtml(h.nights)}</div>
-        <div class="small">Preis: ${formatEuro(h.price||0)}</div>
-        ${h.note ? `<div class="small">${escapeHtml(h.note)}</div>`:''}
-        ${h.receiptDataUrl ? `<div class="small">Beleg gespeichert.</div><img src="${h.receiptDataUrl}" class="thumb" alt="Hotelbeleg">` : ''}
-        <div class="toolbar">
-          <button class="outline" onclick="editHotel('${h.id}')">Bearbeiten</button>
-          <button class="danger" onclick="deleteHotel('${h.id}')">Löschen</button>
+        <div class="entry-title">Nr. ${item.displayNumber} – ${escapeHtml(item.name)}</div>
+        <div class="small">${formatGermanDate(item.checkin)} → ${formatGermanDate(item.checkout)}</div>
+        <div class="small">Nächte: ${escapeHtml(item.nights)}</div>
+        <div class="small">Preis: ${formatEuro(item.price || 0)}</div>
+        ${item.note ? `<div class="small">${escapeHtml(item.note)}</div>` : ''}
+        ${item.receiptDataUrl ? `<img src="${item.receiptDataUrl}" class="thumb" alt="Hotelbeleg">` : ''}
+        <div class="entry-actions" style="margin-top:10px">
+          <button type="button" class="outline btn-auto" onclick="editHotel('${item.id}')">Bearbeiten</button>
+          <button type="button" class="red btn-auto" onclick="deleteHotel('${item.id}')">Löschen</button>
         </div>
       </div>
     `).join('') : '<div class="muted">Keine Hotels in diesem Monat gespeichert.</div>';
-
-    localStatus('hotelSaveStatus', monthly.length ? `${monthly.length} Hotel-Eintrag/Eingänge im Monat.` : 'Noch keine Hotels gespeichert.', monthly.length ? 'ok':'info');
+    localStatus('hotelSaveStatus', monthly.length ? `${monthly.length} Hotel-Eintrag/Eingänge im Monat.` : 'Noch keine Hotels gespeichert.','info');
   }
 
   function renderFuels(){
-    const month=selectedMonth();
-    const order=$('sortFuel').value;
-    const monthly=getSortedByOrder(fuels.filter(f=>(f.date||'').slice(0,7)===month),'date',order).map((item, idx)=>({...item, displayNumber: idx+1}));
-
-    $('fuelMonthlyTotal').textContent = formatEuro(monthly.reduce((s,f)=>s+Number(f.amount||0),0));
-    $('fuelMonthlyCount').textContent = String(monthly.length);
-
-    $('fuelList').innerHTML = monthly.length ? monthly.map(f=>`
+    const month = selectedMonth();
+    const order = $('sortFuel').value;
+    const monthly = getSortedByOrder(fuels.filter(f=>String(f.date || '').slice(0,7)===month),'date',order).map((item,index)=>({...item, displayNumber:index+1}));
+    $('fuelList').innerHTML = monthly.length ? monthly.map(item => `
       <div class="entry-card">
-        <div class="trip-title">Nr. ${f.displayNumber} – ${escapeHtml(f.station)}</div>
-        <div class="small">${escapeHtml(f.date||'')} ${escapeHtml(f.time||'')}</div>
-        <div class="small">Liter: ${escapeHtml(f.liters)}</div>
-        <div class="small">Preis: ${formatEuro(f.amount||0)}</div>
-        ${f.note ? `<div class="small">${escapeHtml(f.note)}</div>`:''}
-        ${f.receiptDataUrl ? `<div class="small">Beleg gespeichert.</div><img src="${f.receiptDataUrl}" class="thumb" alt="Tankbeleg">` : ''}
-        <div class="toolbar">
-          <button class="outline" onclick="editFuel('${f.id}')">Bearbeiten</button>
-          <button class="danger" onclick="deleteFuel('${f.id}')">Löschen</button>
+        <div class="entry-title">Nr. ${item.displayNumber} – ${escapeHtml(item.station)}</div>
+        <div class="small">${escapeHtml(item.date || '')} ${escapeHtml(item.time || '')}</div>
+        <div class="small">Liter: ${escapeHtml(item.liters || '-')}</div>
+        <div class="small">Spritart: ${escapeHtml(item.fuelType || '-')}</div>
+        <div class="small">Preis/Liter: ${item.pricePerLiter ? escapeHtml(String(item.pricePerLiter)) : '-'}</div>
+        <div class="small">Betrag: ${formatEuro(item.amount || 0)}</div>
+        ${item.note ? `<div class="small">${escapeHtml(item.note)}</div>` : ''}
+        ${item.receiptDataUrl ? `<img src="${item.receiptDataUrl}" class="thumb" alt="Tankbeleg">` : ''}
+        <div class="entry-actions" style="margin-top:10px">
+          <button type="button" class="outline btn-auto" onclick="editFuel('${item.id}')">Bearbeiten</button>
+          <button type="button" class="red btn-auto" onclick="deleteFuel('${item.id}')">Löschen</button>
         </div>
       </div>
     `).join('') : '<div class="muted">Keine Tankeinträge in diesem Monat gespeichert.</div>';
-
-    localStatus('fuelSaveStatus', monthly.length ? `${monthly.length} Tankeinträge im Monat.` : 'Noch keine Tankeinträge gespeichert.', monthly.length ? 'ok':'info');
+    localStatus('fuelSaveStatus', monthly.length ? `${monthly.length} Tankeinträge im Monat.` : 'Noch keine Tankeinträge gespeichert.','info');
   }
 
   function renderKms(){
-    const month=selectedMonth();
-    const monthly=kms.filter(k=>(k.date||'').slice(0,7)===month).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map((item, idx)=>({...item, displayNumber: idx+1}));
-
-    $('kmMonthlyTotal').textContent = String(monthly.reduce((s,k)=>s+Number(k.kilometers||0),0));
-    $('kmMonthlyCount').textContent = String(monthly.length);
-
-    $('kmList').innerHTML = monthly.length ? monthly.map(k=>`
+    const month = selectedMonth();
+    const monthly = [...kms.filter(k=>String(k.date || '').slice(0,7)===month)].sort((a,b)=> String(a.date).localeCompare(String(b.date))).map((item,index)=>({...item, displayNumber:index+1}));
+    $('kmList').innerHTML = monthly.length ? monthly.map(item => `
       <div class="entry-card">
-        <div class="trip-title">Nr. ${k.displayNumber} – ${escapeHtml(k.purpose)}</div>
-        <div class="small">${escapeHtml(k.date)}</div>
-        <div class="small">Kilometer: ${escapeHtml(k.kilometers)}</div>
-        ${k.note ? `<div class="small">${escapeHtml(k.note)}</div>`:''}
+        <div class="entry-title">Nr. ${item.displayNumber} – ${escapeHtml(item.purpose)}</div>
+        <div class="small">${escapeHtml(item.date || '')}</div>
+        <div class="small">Kilometer: ${escapeHtml(item.kilometers || '')}</div>
+        ${item.note ? `<div class="small">${escapeHtml(item.note)}</div>` : ''}
+        <div class="entry-actions" style="margin-top:10px">
+          <button type="button" class="outline btn-auto" onclick="editKm('${item.id}')">Bearbeiten</button>
+          <button type="button" class="red btn-auto" onclick="deleteKm('${item.id}')">Löschen</button>
+        </div>
       </div>
     `).join('') : '<div class="muted">Keine Kilometer in diesem Monat gespeichert.</div>';
-
-    localStatus('kmSaveStatus', monthly.length ? `${monthly.length} Kilometer-Einträge im Monat.` : 'Noch keine Kilometer gespeichert.', monthly.length ? 'ok':'info');
+    localStatus('kmSaveStatus', monthly.length ? `${monthly.length} Kilometer-Einträge im Monat.` : 'Noch keine Kilometer gespeichert.','info');
   }
 
   function renderAll(){
     renderMonthSelect();
-    renderGlobalOverview();
+    renderMonthStats();
     renderTrips();
     renderHotels();
     renderFuels();
     renderKms();
+    updateProfileUi();
+    updateBadges();
     updatePreview();
     calcHotelNights();
   }
 
   async function saveTrip(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
-
     const tourName = ($('tourName').value || '').trim() || 'Fahrt';
+    const note = ($('tripNote').value || '').trim();
     const start = $('startTime').value;
     const end = $('endTime').value;
-    const note = ($('tripNote').value||'').trim();
-
     if(!start || !end) return alert('Bitte Start und Ende eintragen.');
-
     const hours = calculateDurationHours(start,end);
     if(hours <= 0) return alert('Ende muss nach dem Start liegen.');
-
     const allowance = calculateAllowance(hours);
-
     await addDoc(collection(db,'users',currentUser.uid,'trips'), {
-      tourName, note, startTime:start, endTime:end, hours, allowance,
-      allowanceType:getAllowanceType(allowance), createdAt: serverTimestamp()
+      tourName, note, startTime:start, endTime:end, hours, allowance, allowanceType:getAllowanceType(allowance), createdAt: serverTimestamp()
     });
-
     clearTripForm();
     localStatus('tripSaveStatus','Fahrt gespeichert.','ok');
   }
@@ -1106,22 +1334,18 @@
 
   async function saveHotel(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
-
-    const name=$('hotelName').value.trim();
-    const price=parseNumber($('hotelPrice').value);
-    const checkin=$('hotelCheckin').value;
-    const checkout=$('hotelCheckout').value;
-    const nights=parseNumber($('hotelNights').value);
-    const note=$('hotelNote').value.trim();
-
+    if(!isPremiumLike()) return alert('Hotel ist erst ab Premium freigeschaltet.');
+    const name = $('hotelName').value.trim();
+    const price = parseNumber($('hotelPrice').value);
+    const checkin = $('hotelCheckin').value;
+    const checkout = $('hotelCheckout').value;
+    const nights = parseNumber($('hotelNights').value);
+    const note = $('hotelNote').value.trim();
     if(!name || !price || !checkin) return alert('Bitte Hotelname, Preis und Anreise eintragen.');
-
     const receiptDataUrl = await fileToDataUrl($('hotelReceipt').files?.[0]);
-
     await addDoc(collection(db,'users',currentUser.uid,'hotels'), {
       name, price, checkin, checkout, nights, note, receiptDataUrl, createdAt: serverTimestamp()
     });
-
     clearHotelForm();
     localStatus('hotelSaveStatus','Hotel gespeichert.','ok');
   }
@@ -1129,24 +1353,20 @@
 
   async function saveFuel(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
-
-    const station=$('fuelStation').value.trim();
-    const amount=parseNumber($('fuelAmount').value);
-    const date=$('fuelDate').value;
-    const time=$('fuelTime').value;
-    const liters=parseNumber($('fuelLiters').value);
-    const fuelType=$('fuelType').value.trim();
-    const pricePerLiter=parseNumber($('fuelPricePerLiter').value);
-    const note=$('fuelNote').value.trim();
-
+    if(!isPremiumLike()) return alert('Tanken ist erst ab Premium freigeschaltet.');
+    const station = $('fuelStation').value.trim();
+    const amount = parseNumber($('fuelAmount').value);
+    const date = $('fuelDate').value;
+    const time = $('fuelTime').value;
+    const liters = parseNumber($('fuelLiters').value);
+    const fuelType = $('fuelType').value.trim();
+    const pricePerLiter = parseNumber($('fuelPricePerLiter').value);
+    const note = $('fuelNote').value.trim();
     if(!station || !amount || !date) return alert('Bitte Tankstelle, Betrag und Datum eintragen.');
-
     const receiptDataUrl = await fileToDataUrl($('fuelReceipt').files?.[0]);
-
     await addDoc(collection(db,'users',currentUser.uid,'fuels'), {
       station, amount, date, time, liters, fuelType, pricePerLiter, note, receiptDataUrl, createdAt: serverTimestamp()
     });
-
     clearFuelForm();
     localStatus('fuelSaveStatus','Tanken gespeichert.','ok');
   }
@@ -1154,18 +1374,15 @@
 
   async function saveKm(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
-
-    const purpose=$('kmPurpose').value.trim();
-    const date=$('kmDate').value;
-    const kilometers=parseNumber($('kmValue').value);
-    const note=$('kmNote').value.trim();
-
+    if(!isPremiumLike()) return alert('Kilometer ist erst ab Premium freigeschaltet.');
+    const purpose = $('kmPurpose').value.trim();
+    const date = $('kmDate').value;
+    const kilometers = parseNumber($('kmValue').value);
+    const note = $('kmNote').value.trim();
     if(!purpose || !date || !kilometers) return alert('Bitte Zweck, Datum und Kilometer eintragen.');
-
     await addDoc(collection(db,'users',currentUser.uid,'kms'), {
       purpose, date, kilometers, note, createdAt: serverTimestamp()
     });
-
     clearKmForm();
     localStatus('kmSaveStatus','Kilometer gespeichert.','ok');
   }
@@ -1174,14 +1391,9 @@
   async function editTrip(id){
     const trip = trips.find(t=>t.id===id);
     if(!trip) return;
-    const newTour = prompt('Tour / Titel', trip.tourName);
-    if(newTour===null) return;
-    const newNote = prompt('Bemerkung', trip.note || '');
-    if(newNote===null) return;
-    await updateDoc(doc(db,'users',currentUser.uid,'trips',id), {
-      tourName:newTour.trim()||'Fahrt',
-      note:newNote.trim()
-    });
+    const tourName = prompt('Tour / Titel', trip.tourName);
+    if(tourName === null) return;
+    await updateDoc(doc(db,'users',currentUser.uid,'trips',id), {tourName: tourName.trim() || 'Fahrt'});
   }
   window.editTrip = editTrip;
 
@@ -1194,19 +1406,14 @@
   async function editHotel(id){
     const item = hotels.find(h=>h.id===id);
     if(!item) return;
-    const newName = prompt('Hotelname / Ort', item.name);
-    if(newName===null) return;
-    const newPrice = prompt('Preis', item.price);
-    if(newPrice===null) return;
-    await updateDoc(doc(db,'users',currentUser.uid,'hotels',id), {
-      name:newName.trim()||'Hotel',
-      price:parseNumber(newPrice)
-    });
+    const name = prompt('Hotelname / Ort', item.name);
+    if(name === null) return;
+    await updateDoc(doc(db,'users',currentUser.uid,'hotels',id), {name: name.trim() || item.name});
   }
   window.editHotel = editHotel;
 
   async function deleteHotel(id){
-    if(!confirm('Hotel wirklich löschen?')) return;
+    if(!confirm('Diesen Hoteleintrag wirklich löschen?')) return;
     await deleteDoc(doc(db,'users',currentUser.uid,'hotels',id));
   }
   window.deleteHotel = deleteHotel;
@@ -1214,22 +1421,32 @@
   async function editFuel(id){
     const item = fuels.find(f=>f.id===id);
     if(!item) return;
-    const newStation = prompt('Tankstelle / Ort', item.station);
-    if(newStation===null) return;
-    const newAmount = prompt('Betrag', item.amount);
-    if(newAmount===null) return;
-    await updateDoc(doc(db,'users',currentUser.uid,'fuels',id), {
-      station:newStation.trim()||'Tankstelle',
-      amount:parseNumber(newAmount)
-    });
+    const station = prompt('Tankstelle / Ort', item.station);
+    if(station === null) return;
+    await updateDoc(doc(db,'users',currentUser.uid,'fuels',id), {station: station.trim() || item.station});
   }
   window.editFuel = editFuel;
 
   async function deleteFuel(id){
-    if(!confirm('Tankeintrag wirklich löschen?')) return;
+    if(!confirm('Diesen Tankeintrag wirklich löschen?')) return;
     await deleteDoc(doc(db,'users',currentUser.uid,'fuels',id));
   }
   window.deleteFuel = deleteFuel;
+
+  async function editKm(id){
+    const item = kms.find(k=>k.id===id);
+    if(!item) return;
+    const purpose = prompt('Strecke / Zweck', item.purpose);
+    if(purpose === null) return;
+    await updateDoc(doc(db,'users',currentUser.uid,'kms',id), {purpose: purpose.trim() || item.purpose});
+  }
+  window.editKm = editKm;
+
+  async function deleteKm(id){
+    if(!confirm('Diesen Kilometer-Eintrag wirklich löschen?')) return;
+    await deleteDoc(doc(db,'users',currentUser.uid,'kms',id));
+  }
+  window.deleteKm = deleteKm;
 
   function subscribeAll(){
     if(unsubTrips) unsubTrips();
@@ -1238,100 +1455,77 @@
     if(unsubKms) unsubKms();
     if(!currentUser) return;
 
-    unsubTrips = onSnapshot(query(collection(db,'users',currentUser.uid,'trips'), orderBy('createdAt','desc')),
-      snap=>{ trips=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },
-      err=> renderSyncState('Fahrten Sync-Fehler: '+err.message,'warn')
-    );
+    unsubTrips = onSnapshot(query(collection(db,'users',currentUser.uid,'trips'), orderBy('startTime','asc')), snap=>{
+      trips = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      renderAll();
+    }, error => renderSyncState('Fahrten-Sync-Fehler: ' + error.message, 'warn'));
 
-    unsubHotels = onSnapshot(query(collection(db,'users',currentUser.uid,'hotels'), orderBy('createdAt','desc')),
-      snap=>{ hotels=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }
-    );
+    unsubHotels = onSnapshot(query(collection(db,'users',currentUser.uid,'hotels'), orderBy('checkin','asc')), snap=>{
+      hotels = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      renderAll();
+    }, error => renderSyncState('Hotel-Sync-Fehler: ' + error.message, 'warn'));
 
-    unsubFuels = onSnapshot(query(collection(db,'users',currentUser.uid,'fuels'), orderBy('createdAt','desc')),
-      snap=>{ fuels=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }
-    );
+    unsubFuels = onSnapshot(query(collection(db,'users',currentUser.uid,'fuels'), orderBy('date','asc')), snap=>{
+      fuels = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      renderAll();
+    }, error => renderSyncState('Tanken-Sync-Fehler: ' + error.message, 'warn'));
 
-    unsubKms = onSnapshot(query(collection(db,'users',currentUser.uid,'kms'), orderBy('createdAt','desc')),
-      snap=>{ kms=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }
-    );
+    unsubKms = onSnapshot(query(collection(db,'users',currentUser.uid,'kms'), orderBy('date','asc')), snap=>{
+      kms = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      renderAll();
+    }, error => renderSyncState('Kilometer-Sync-Fehler: ' + error.message, 'warn'));
   }
 
   async function loadUsers(){
     if(!isAdmin()) return;
-
-    const wrap=$('adminUsersList');
-    wrap.innerHTML='<div class="muted">Lade Nutzer…</div>';
-
+    const wrap = $('adminUsersList');
+    wrap.innerHTML = '<div class="muted">Lade Nutzer…</div>';
     try{
       const snap = await getDocs(collection(db,'profiles'));
-      const users = snap.docs.map(d=>({id:d.id,...d.data()}));
-
+      const users = snap.docs.map(d=>({id:d.id, ...d.data()}));
       wrap.innerHTML = users.length ? users.map(u=>`
         <div class="entry-card">
-          <div class="trip-title">${escapeHtml(u.displayName || u.email || 'Unbekannt')}</div>
-          <div class="small">${escapeHtml(u.email||'')}</div>
-          <div class="small">Paket: ${escapeHtml(u.packageName||'Standard')}</div>
-          <div class="small">Aktiv bis: ${escapeHtml(u.activeUntil||'-')}</div>
+          <div class="entry-title">${escapeHtml(u.displayName || u.email || 'Unbekannt')}</div>
+          <div class="small">${escapeHtml(u.email || '')}</div>
+          <div class="small">Paket: ${escapeHtml(u.packageName || 'Basic')}${u.pdfAddon ? ' + PDF-Zusatz' : ''}</div>
+          <div class="small">Aktiv bis: ${escapeHtml(u.activeUntil || '-')}</div>
         </div>
       `).join('') : '<div class="muted">Keine Nutzer vorhanden.</div>';
     }catch(e){
-      wrap.innerHTML='<div class="muted">Nutzer konnten nicht geladen werden.</div>';
+      wrap.innerHTML = '<div class="muted">Nutzer konnten nicht geladen werden.</div>';
     }
   }
   window.loadUsers = loadUsers;
 
   function renderSyncState(text, cls='info'){
-    $('syncStatus').style.display='block';
-    $('syncStatus').className='status '+cls;
-    $('syncStatus').textContent=text;
+    const el = $('syncStatus');
+    el.style.display = 'block';
+    el.className = `status ${cls}`;
+    el.textContent = text;
   }
 
-  onAuthStateChanged(auth, async (user)=>{
-    currentUser = user || null;
+  function currentTripsForMonth(){
+    const month = selectedMonth();
+    return getSortedByOrder(trips.filter(t=>formatMonthKey(t.startTime)===month),'startTime',$('sortTrips').value).map((item,index)=>({...item, displayNumber:index+1}));
+  }
 
-    if(currentUser){
-      updateBadges();
-      renderSyncState('Synchronisation aktiv.','ok');
-      $('loginCard').classList.add('hidden');
-      $('adminPanel').classList.toggle('hidden', !isAdmin());
+  function currentHotelsForMonth(){
+    const month = selectedMonth();
+    return getSortedByOrder(hotels.filter(h=>formatMonthKey(h.checkin)===month),'checkin',$('sortHotels').value).map((item,index)=>({...item, displayNumber:index+1}));
+  }
 
-      await loadProfile();
-      updateBadges();
-      updateProfileUi();
-      subscribeAll();
+  function currentFuelsForMonth(){
+    const month = selectedMonth();
+    return getSortedByOrder(fuels.filter(f=>String(f.date || '').slice(0,7)===month),'date',$('sortFuel').value).map((item,index)=>({...item, displayNumber:index+1}));
+  }
 
-      if(isAdmin()) loadUsers();
-    }else{
-      $('loginCard').classList.remove('hidden');
-      $('adminPanel').classList.add('hidden');
-      trips=[]; hotels=[]; fuels=[]; kms=[];
-      profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode:'' };
-      updateBadges();
-      updateProfileUi();
-      renderAll();
-      renderSyncState('Nicht synchronisiert. Bitte anmelden.','warn');
-    }
-  });
+  function currentKmsForMonth(){
+    const month = selectedMonth();
+    return [...kms.filter(k=>String(k.date || '').slice(0,7)===month)].sort((a,b)=> String(a.date).localeCompare(String(b.date))).map((item,index)=>({...item, displayNumber:index+1}));
+  }
 
-  $('monthSelect').addEventListener('change', renderAll);
-  $('sortTrips').addEventListener('change', renderTrips);
-  $('sortHotels').addEventListener('change', renderHotels);
-  $('sortFuel').addEventListener('change', renderFuels);
-  $('startTime').addEventListener('input', updatePreview);
-  $('endTime').addEventListener('input', updatePreview);
-  $('hotelCheckin').addEventListener('input', calcHotelNights);
-  $('hotelCheckout').addEventListener('input', calcHotelNights);
-  $('fuelDate').value = formatLocalDate(new Date());
-  $('kmDate').value = formatLocalDate(new Date());
-  $('hotelReceipt').addEventListener('change', ()=>updateFilePreview('hotelReceipt','hotelReceiptInfo','hotelReceiptThumb'));
-  $('fuelReceipt').addEventListener('change', ()=>updateFilePreview('fuelReceipt','fuelReceiptInfo','fuelReceiptThumb'));
-
-  renderAll();
-  updateProfileUi();
-  updateBadges();
-
-  function downloadFile(content, filename, type) {
-    const blob = new Blob([content], { type });
+  function downloadFile(content, filename, type){
+    const blob = new Blob([content], {type});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1343,111 +1537,36 @@
   }
 
   window.exportCSV = function(){
+    const rows = [['Bereich','Monat','Wert']];
     const month = selectedMonth();
-    const activeTab = document.querySelector('.tab-panel.active')?.id || 'fahrt';
-
-    if(activeTab === 'hotel'){
-      const monthlyHotels = getSortedByOrder(hotels.filter(h=>formatMonthKey(h.checkin)===month),'checkin',$('sortHotels').value).map((h,i)=>({...h, nr:i+1}));
-      const rows = [['Nr.','Hotel','Anreise','Abreise','Nächte','Bemerkung','Preis'],
-        ...monthlyHotels.map(h=>[h.nr,h.name,formatGermanDate(h.checkin),formatGermanDate(h.checkout),h.nights,h.note||'',formatEuro(h.price||0)])];
-      const csvContent = rows.map(row => row.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(';')).join('\\n');
-      downloadFile(csvContent, `hotel-${month}.csv`, 'text/csv;charset=utf-8;');
-      return;
-    }
-
-    if(activeTab === 'tanken'){
-      const monthlyFuels = getSortedByOrder(fuels.filter(f=>(f.date||'').slice(0,7)===month),'date',$('sortFuel').value).map((f,i)=>({...f, nr:i+1}));
-      const rows = [['Nr.','Tankstelle','Datum','Liter','Spritart','Preis/Liter','Betrag'],
-        ...monthlyFuels.map(f=>[f.nr,f.station,`${f.date||''} ${f.time||''}`,f.liters||'',f.fuelType||'',f.pricePerLiter||'',formatEuro(f.amount||0)])];
-      const csvContent = rows.map(row => row.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(';')).join('\\n');
-      downloadFile(csvContent, `tanken-${month}.csv`, 'text/csv;charset=utf-8;');
-      return;
-    }
-
-    const monthlyTrips = getSortedByOrder(trips.filter(t=>formatMonthKey(t.startTime)===month),'startTime',$('sortTrips').value).map((trip,index)=>({...trip,displayNumber:index+1}));
-    const monthlyTotal = monthlyTrips.reduce((s,t)=>s + Number(t.allowance||0),0);
-    const rows = [['Nr.','Tour','Losgefahren','Angekommen','Dauer','Spesensatz','Spesen'],
-      ...monthlyTrips.map(trip=>[trip.displayNumber, trip.tourName, formatGermanDate(trip.startTime), formatGermanDate(trip.endTime), formatDuration(Number(trip.hours||0)), trip.allowanceType, formatEuro(trip.allowance||0)]),
-      ['','','','','','Monatssumme', formatEuro(monthlyTotal)]];
-    const csvContent = rows.map(row => row.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(';')).join('\\n');
-    downloadFile(csvContent, `spesen-${month || 'monat'}.csv`, 'text/csv;charset=utf-8;');
+    currentTripsForMonth().forEach(t=> rows.push(['Fahrt', formatMonthLabel(month), `${t.tourName} | ${formatGermanDate(t.startTime)} | ${formatEuro(t.allowance || 0)}`]));
+    currentHotelsForMonth().forEach(h=> rows.push(['Hotel', formatMonthLabel(month), `${h.name} | ${formatEuro(h.price || 0)}`]));
+    currentFuelsForMonth().forEach(f=> rows.push(['Tanken', formatMonthLabel(month), `${f.station} | ${formatEuro(f.amount || 0)}`]));
+    currentKmsForMonth().forEach(k=> rows.push(['Kilometer', formatMonthLabel(month), `${k.purpose} | ${k.kilometers} km`]));
+    const csv = rows.map(row => row.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(';')).join('\n');
+    downloadFile(csv, `spesen-${month || 'monat'}.csv`, 'text/csv;charset=utf-8;');
   };
 
-  window.exportPDF = function(){
-    const month = selectedMonth();
-    const activeTab = document.querySelector('.tab-panel.active')?.id || 'fahrt';
-
-    const monthlyTrips = getSortedByOrder(trips.filter(t=>formatMonthKey(t.startTime)===month),'startTime',$('sortTrips').value).map((trip,index)=>({...trip,displayNumber:index+1}));
-    const monthlyHotels = getSortedByOrder(hotels.filter(h=>formatMonthKey(h.checkin)===month),'checkin',$('sortHotels').value).map((h,i)=>({...h, nr:i+1}));
-    const monthlyFuels = getSortedByOrder(fuels.filter(f=>(f.date||'').slice(0,7)===month),'date',$('sortFuel').value).map((f,i)=>({...f, nr:i+1}));
-
-    const monthlyTotalTrips = monthlyTrips.reduce((s,t)=>s + Number(t.allowance||0),0);
-    const monthlyTotalHotels = monthlyHotels.reduce((s,h)=>s + Number(h.price||0),0);
-    const monthlyTotalFuels = monthlyFuels.reduce((s,f)=>s + Number(f.amount||0),0);
-    const monthlyHours = monthlyTrips.reduce((s,t)=>s + Number(t.hours||0),0);
-
-    const rowsTrips = monthlyTrips.map(trip=>`<tr><td>${trip.displayNumber}</td><td>${escapeHtml(trip.tourName)}</td><td>${formatGermanDate(trip.startTime)}</td><td>${formatGermanDate(trip.endTime)}</td><td>${formatDuration(Number(trip.hours||0))}</td><td>${escapeHtml(trip.allowanceType||'')}</td><td>${formatEuro(trip.allowance||0)}</td></tr>`).join('');
-    const rowsHotels = monthlyHotels.map(h=>`<tr><td>${h.nr}</td><td>${escapeHtml(h.name)}</td><td>${formatGermanDate(h.checkin)}</td><td>${formatGermanDate(h.checkout)}</td><td>${escapeHtml(h.nights)}</td><td>${h.note ? escapeHtml(h.note) : '-'}</td><td>${formatEuro(h.price||0)}</td></tr>`).join('');
-    const rowsFuels = monthlyFuels.map(f=>`<tr><td>${f.nr}</td><td>${escapeHtml(f.station)}</td><td>${escapeHtml(f.date||'')} ${escapeHtml(f.time||'')}</td><td>${escapeHtml(f.liters||'-')}</td><td>${escapeHtml(f.fuelType||'-')}</td><td>${escapeHtml(f.pricePerLiter||'-')}</td><td>${formatEuro(f.amount||0)}</td></tr>`).join('');
-
-    const profileExtras = ['Premium','Goldmitglied'].includes(profile.packageName)
-      ? `<tr><td><strong>Firma</strong></td><td>${escapeHtml(profile.company||'-')}</td><td><strong>Fahrzeug</strong></td><td>${escapeHtml(profile.vehicle||'-')}</td></tr><tr><td><strong>Kennzeichen</strong></td><td>${escapeHtml(profile.plate||'-')}</td><td><strong>Name</strong></td><td>${escapeHtml(profile.displayName||currentUser?.email||'-')}</td></tr>`
-      : `<tr><td><strong>Name</strong></td><td>${escapeHtml(profile.displayName||currentUser?.email||'-')}</td><td><strong>E-Mail</strong></td><td>${escapeHtml(currentUser?.email||'-')}</td></tr>`;
-
-    let bodySections = '';
-    let totalBox = '';
-    let receiptBlocks = '';
-
-    if(activeTab === 'fahrt'){
-      bodySections = `<h2>Fahrten</h2><table><thead><tr><th>Nr.</th><th>Tour</th><th>Losgefahren</th><th>Angekommen</th><th>Dauer</th><th>Spesensatz</th><th>Spesen</th></tr></thead><tbody>${rowsTrips || '<tr><td colspan="7">Keine Fahrten in diesem Monat.</td></tr>'}</tbody></table>`;
-      totalBox = `<div class='sum-box'>Gesamtsumme Fahrten: ${formatEuro(monthlyTotalTrips)}</div>`;
-    } else if(activeTab === 'hotel'){
-      bodySections = `<h2>Hotel</h2><table><thead><tr><th>Nr.</th><th>Hotel</th><th>Anreise</th><th>Abreise</th><th>Nächte</th><th>Bemerkung</th><th>Preis</th></tr></thead><tbody>${rowsHotels || '<tr><td colspan="7">Keine Hotelkosten in diesem Monat.</td></tr>'}</tbody></table>`;
-      totalBox = `<div class='sum-box'>Gesamtsumme Hotel: ${formatEuro(monthlyTotalHotels)}</div>`;
-      receiptBlocks = monthlyHotels.filter(h=>h.receiptDataUrl).map(h=>`<div style="margin:18px 0;"><div><strong>Hotelbeleg:</strong> ${escapeHtml(h.name)}</div><img src="${h.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`).join('');
-    } else if(activeTab === 'tanken'){
-      bodySections = `<h2>Tanken</h2><table><thead><tr><th>Nr.</th><th>Tankstelle</th><th>Datum</th><th>Liter</th><th>Spritart</th><th>Preis/Liter</th><th>Betrag</th></tr></thead><tbody>${rowsFuels || '<tr><td colspan="7">Keine Tankkosten in diesem Monat.</td></tr>'}</tbody></table>`;
-      totalBox = `<div class='sum-box'>Gesamtsumme Tanken: ${formatEuro(monthlyTotalFuels)}</div>`;
-      receiptBlocks = monthlyFuels.filter(f=>f.receiptDataUrl).map(f=>`<div style="margin:18px 0;"><div><strong>Tankbeleg:</strong> ${escapeHtml(f.station)}</div><img src="${f.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`).join('');
-    } else {
-      const grandTotal = monthlyTotalTrips + monthlyTotalHotels + monthlyTotalFuels;
-      bodySections =
-        `<h2>Fahrten</h2><table><thead><tr><th>Nr.</th><th>Tour</th><th>Losgefahren</th><th>Angekommen</th><th>Dauer</th><th>Spesensatz</th><th>Spesen</th></tr></thead><tbody>${rowsTrips || '<tr><td colspan="7">Keine Fahrten in diesem Monat.</td></tr>'}</tbody></table>` +
-        `<h2>Hotel</h2><table><thead><tr><th>Nr.</th><th>Hotel</th><th>Anreise</th><th>Abreise</th><th>Nächte</th><th>Bemerkung</th><th>Preis</th></tr></thead><tbody>${rowsHotels || '<tr><td colspan="7">Keine Hotelkosten in diesem Monat.</td></tr>'}</tbody></table>` +
-        `<h2>Tanken</h2><table><thead><tr><th>Nr.</th><th>Tankstelle</th><th>Datum</th><th>Liter</th><th>Spritart</th><th>Preis/Liter</th><th>Betrag</th></tr></thead><tbody>${rowsFuels || '<tr><td colspan="7">Keine Tankkosten in diesem Monat.</td></tr>'}</tbody></table>`;
-      totalBox = `<div class='sum-box'>Gesamtsumme Monat: ${formatEuro(grandTotal)}</div>`;
-      receiptBlocks = [
-        ...monthlyHotels.filter(h=>h.receiptDataUrl).map(h=>`<div style="margin:18px 0;"><div><strong>Hotelbeleg:</strong> ${escapeHtml(h.name)}</div><img src="${h.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`),
-        ...monthlyFuels.filter(f=>f.receiptDataUrl).map(f=>`<div style="margin:18px 0;"><div><strong>Tankbeleg:</strong> ${escapeHtml(f.station)}</div><img src="${f.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`)
-      ].join('');
-    }
-
-    const html = `<html><head><title>Spesen ${month}</title><style>
-      body { font-family: Arial, sans-serif; padding: 24px; color: #111; }
-      h1 { margin-bottom: 6px; }
-      h2 { margin: 18px 0 10px 0; font-size: 18px; }
-      .header-box { border: 2px solid #111; padding: 14px; margin-bottom: 18px; }
-      .meta-grid { width: 100%; border-collapse: collapse; margin-top: 12px; }
-      .meta-grid td { border: 1px solid #111; padding: 8px; }
-      table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-      th, td { border: 1px solid #111; padding: 8px; text-align: left; font-size: 13px; }
-      th { background: #e5e7eb; }
-      .sum-box { margin-top: 18px; border: 2px solid #111; padding: 12px; font-size: 16px; font-weight: bold; }
-    </style></head><body>
-      <div class='header-box'>
-        <h1>Monatsabrechnung Spesen</h1>
-        <div>${formatMonthLabel(month)}</div>
-        <table class='meta-grid'>
-          ${profileExtras}
-          <tr><td><strong>Anzahl Fahrten</strong></td><td>${monthlyTrips.length}</td><td><strong>Gesamtstunden</strong></td><td>${formatDuration(monthlyHours)}</td></tr>
-          <tr><td><strong>Hotelkosten</strong></td><td>${formatEuro(monthlyTotalHotels)}</td><td><strong>Tankkosten</strong></td><td>${formatEuro(monthlyTotalFuels)}</td></tr>
-        </table>
-      </div>
-      ${bodySections}
-      ${totalBox}
-      ${receiptBlocks ? `<h2>Belege</h2>${receiptBlocks}` : ''}
-    </body></html>`;
-
+  function openPrintWindow(title, bodyHtml){
+    const html = `
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body{font-family:Arial,sans-serif;padding:24px;color:#111}
+            h1{margin-bottom:6px}
+            h2{margin:20px 0 10px}
+            .header-box{border:2px solid #111;padding:14px;margin-bottom:18px}
+            table{width:100%;border-collapse:collapse;margin-top:12px}
+            th,td{border:1px solid #111;padding:8px;text-align:left;font-size:13px;vertical-align:top}
+            th{background:#e5e7eb}
+            .sum-box{margin-top:18px;border:2px solid #111;padding:12px;font-size:16px;font-weight:bold}
+            .meta-grid td{width:25%}
+            img{max-width:100%;max-height:520px;border:1px solid #ccc;border-radius:6px}
+          </style>
+        </head>
+        <body>${bodyHtml}</body>
+      </html>`;
     const w = window.open('', '_blank');
     if(!w) return alert('Pop-up blockiert.');
     w.document.open();
@@ -1455,7 +1574,153 @@
     w.document.close();
     w.focus();
     w.print();
-  };
+  }
+
+  function getProfileRows(){
+    const name = escapeHtml(profile.displayName || currentUser?.email || '-');
+    const email = escapeHtml(currentUser?.email || '-');
+    if(isPremiumLike()){
+      return `
+        <tr><td><strong>Name</strong></td><td>${name}</td><td><strong>E-Mail</strong></td><td>${email}</td></tr>
+        <tr><td><strong>Firma</strong></td><td>${escapeHtml(profile.company || '-')}</td><td><strong>Fahrzeug</strong></td><td>${escapeHtml(profile.vehicle || '-')}</td></tr>
+        <tr><td><strong>Kennzeichen</strong></td><td>${escapeHtml(profile.plate || '-')}</td><td><strong>Paket</strong></td><td>${escapeHtml(profile.packageName || 'Basic')}${profile.pdfAddon && profile.packageName !== 'Goldmitglied' ? ' + PDF-Zusatz' : ''}</td></tr>
+      `;
+    }
+    return `
+      <tr><td><strong>Name</strong></td><td>${name}</td><td><strong>E-Mail</strong></td><td>${email}</td></tr>
+      <tr><td><strong>Paket</strong></td><td>${escapeHtml(profile.packageName || 'Basic')}${profile.pdfAddon && profile.packageName !== 'Goldmitglied' ? ' + PDF-Zusatz' : ''}</td><td><strong>Aktiv bis</strong></td><td>${escapeHtml(profile.activeUntil || '-')}</td></tr>
+    `;
+  }
+
+  function exportCurrentTabPdf(tab){
+    const month = selectedMonth();
+    const header = `
+      <div class="header-box">
+        <h1>${tab === 'fahrt' ? 'Fahrten' : tab === 'hotel' ? 'Hotel' : tab === 'tanken' ? 'Tanken' : 'Kilometer'} – Monatsübersicht</h1>
+        <div>${formatMonthLabel(month)}</div>
+        <table class="meta-grid">${getProfileRows()}</table>
+      </div>`;
+
+    if(tab === 'fahrt'){
+      const rows = currentTripsForMonth().map(t=>`<tr><td>${t.displayNumber}</td><td>${escapeHtml(t.tourName)}</td><td>${formatGermanDate(t.startTime)}</td><td>${formatGermanDate(t.endTime)}</td><td>${formatDuration(t.hours)}</td><td>${escapeHtml(t.allowanceType)}</td><td>${formatEuro(t.allowance)}</td></tr>`).join('');
+      const total = currentTripsForMonth().reduce((s,t)=> s + Number(t.allowance || 0),0);
+      openPrintWindow(`Fahrten ${month}`, `${header}<table><thead><tr><th>Nr.</th><th>Tour</th><th>Start</th><th>Ende</th><th>Dauer</th><th>Spesensatz</th><th>Spesen</th></tr></thead><tbody>${rows || '<tr><td colspan="7">Keine Fahrten in diesem Monat.</td></tr>'}</tbody></table><div class="sum-box">Fahrtensumme: ${formatEuro(total)}</div>`);
+      return;
+    }
+
+    if(tab === 'hotel'){
+      if(!isPremiumLike()) return alert('Hotels sind erst ab Premium freigeschaltet.');
+      const rows = currentHotelsForMonth().map(h=>`<tr><td>${h.displayNumber}</td><td>${escapeHtml(h.name)}</td><td>${formatGermanDate(h.checkin)}</td><td>${formatGermanDate(h.checkout)}</td><td>${escapeHtml(h.nights)}</td><td>${escapeHtml(h.note || '-')}</td><td>${formatEuro(h.price)}</td></tr>`).join('');
+      const total = currentHotelsForMonth().reduce((s,h)=> s + Number(h.price || 0),0);
+      openPrintWindow(`Hotel ${month}`, `${header}<table><thead><tr><th>Nr.</th><th>Hotel</th><th>Anreise</th><th>Abreise</th><th>Nächte</th><th>Bemerkung</th><th>Preis</th></tr></thead><tbody>${rows || '<tr><td colspan="7">Keine Hotels in diesem Monat.</td></tr>'}</tbody></table><div class="sum-box">Hotelsumme: ${formatEuro(total)}</div>`);
+      return;
+    }
+
+    if(tab === 'tanken'){
+      if(!isPremiumLike()) return alert('Tanken ist erst ab Premium freigeschaltet.');
+      const rows = currentFuelsForMonth().map(f=>`<tr><td>${f.displayNumber}</td><td>${escapeHtml(f.station)}</td><td>${escapeHtml(f.date)} ${escapeHtml(f.time || '')}</td><td>${escapeHtml(f.liters || '-')}</td><td>${escapeHtml(f.fuelType || '-')}</td><td>${escapeHtml(f.pricePerLiter || '-')}</td><td>${formatEuro(f.amount)}</td></tr>`).join('');
+      const total = currentFuelsForMonth().reduce((s,f)=> s + Number(f.amount || 0),0);
+      openPrintWindow(`Tanken ${month}`, `${header}<table><thead><tr><th>Nr.</th><th>Tankstelle</th><th>Datum</th><th>Liter</th><th>Spritart</th><th>Preis/Liter</th><th>Betrag</th></tr></thead><tbody>${rows || '<tr><td colspan="7">Keine Tankeinträge in diesem Monat.</td></tr>'}</tbody></table><div class="sum-box">Tanksumme: ${formatEuro(total)}</div>`);
+      return;
+    }
+
+    if(tab === 'kilometer'){
+      if(!isPremiumLike()) return alert('Kilometer ist erst ab Premium freigeschaltet.');
+      const rows = currentKmsForMonth().map(k=>`<tr><td>${k.displayNumber}</td><td>${escapeHtml(k.purpose)}</td><td>${escapeHtml(k.date)}</td><td>${escapeHtml(k.kilometers)}</td><td>${escapeHtml(k.note || '-')}</td></tr>`).join('');
+      const total = currentKmsForMonth().reduce((s,k)=> s + Number(k.kilometers || 0),0);
+      openPrintWindow(`Kilometer ${month}`, `${header}<table><thead><tr><th>Nr.</th><th>Zweck</th><th>Datum</th><th>Kilometer</th><th>Bemerkung</th></tr></thead><tbody>${rows || '<tr><td colspan="5">Keine Kilometer in diesem Monat.</td></tr>'}</tbody></table><div class="sum-box">Kilometer gesamt: ${total.toLocaleString('de-DE')} km</div>`);
+    }
+  }
+  window.exportCurrentTabPdf = exportCurrentTabPdf;
+
+  function exportFullPdf(){
+    if(!hasFullPdf()){
+      alert('Die Sammel-PDF ist nur mit PDF-Zusatz oder Goldmitglied freigeschaltet.');
+      return;
+    }
+    const month = selectedMonth();
+    const tripRows = currentTripsForMonth().map(t=>`<tr><td>${t.displayNumber}</td><td>${escapeHtml(t.tourName)}</td><td>${formatGermanDate(t.startTime)}</td><td>${formatGermanDate(t.endTime)}</td><td>${formatDuration(t.hours)}</td><td>${escapeHtml(t.allowanceType)}</td><td>${formatEuro(t.allowance)}</td></tr>`).join('');
+    const hotelRows = currentHotelsForMonth().map(h=>`<tr><td>${h.displayNumber}</td><td>${escapeHtml(h.name)}</td><td>${formatGermanDate(h.checkin)}</td><td>${formatGermanDate(h.checkout)}</td><td>${escapeHtml(h.nights)}</td><td>${escapeHtml(h.note || '-')}</td><td>${formatEuro(h.price)}</td></tr>`).join('');
+    const fuelRows = currentFuelsForMonth().map(f=>`<tr><td>${f.displayNumber}</td><td>${escapeHtml(f.station)}</td><td>${escapeHtml(f.date)} ${escapeHtml(f.time || '')}</td><td>${escapeHtml(f.liters || '-')}</td><td>${escapeHtml(f.fuelType || '-')}</td><td>${escapeHtml(f.pricePerLiter || '-')}</td><td>${formatEuro(f.amount)}</td></tr>`).join('');
+    const kmRows = currentKmsForMonth().map(k=>`<tr><td>${k.displayNumber}</td><td>${escapeHtml(k.purpose)}</td><td>${escapeHtml(k.date)}</td><td>${escapeHtml(k.kilometers)}</td><td>${escapeHtml(k.note || '-')}</td></tr>`).join('');
+
+    const tripTotal = currentTripsForMonth().reduce((s,t)=> s + Number(t.allowance || 0),0);
+    const hotelTotal = currentHotelsForMonth().reduce((s,h)=> s + Number(h.price || 0),0);
+    const fuelTotal = currentFuelsForMonth().reduce((s,f)=> s + Number(f.amount || 0),0);
+    const kmTotal = currentKmsForMonth().reduce((s,k)=> s + Number(k.kilometers || 0),0);
+    const tripHours = currentTripsForMonth().reduce((s,t)=> s + Number(t.hours || 0),0);
+
+    const receipts = [
+      ...currentHotelsForMonth().filter(h=>h.receiptDataUrl).map(h=>`<div style="margin:18px 0"><div><strong>Hotelbeleg:</strong> ${escapeHtml(h.name)}</div><img src="${h.receiptDataUrl}" alt="Hotelbeleg"></div>`),
+      ...currentFuelsForMonth().filter(f=>f.receiptDataUrl).map(f=>`<div style="margin:18px 0"><div><strong>Tankbeleg:</strong> ${escapeHtml(f.station)}</div><img src="${f.receiptDataUrl}" alt="Tankbeleg"></div>`)
+    ].join('');
+
+    const body = `
+      <div class="header-box">
+        <h1>Monatsabrechnung Spesen</h1>
+        <div>${formatMonthLabel(month)}</div>
+        <table class="meta-grid">${getProfileRows()}
+          <tr><td><strong>Anzahl Fahrten</strong></td><td>${currentTripsForMonth().length}</td><td><strong>Gesamtstunden</strong></td><td>${formatDuration(tripHours)}</td></tr>
+          <tr><td><strong>Hotelkosten</strong></td><td>${formatEuro(hotelTotal)}</td><td><strong>Tankkosten</strong></td><td>${formatEuro(fuelTotal)}</td></tr>
+          <tr><td><strong>Kilometer</strong></td><td>${kmTotal.toLocaleString('de-DE')} km</td><td><strong>Gesamtsumme</strong></td><td>${formatEuro(tripTotal + hotelTotal + fuelTotal)}</td></tr>
+        </table>
+      </div>
+      <h2>Fahrten</h2>
+      <table><thead><tr><th>Nr.</th><th>Tour</th><th>Losgefahren</th><th>Angekommen</th><th>Dauer</th><th>Spesensatz</th><th>Spesen</th></tr></thead><tbody>${tripRows || '<tr><td colspan="7">Keine Fahrten in diesem Monat.</td></tr>'}</tbody></table>
+      <h2>Hotel</h2>
+      <table><thead><tr><th>Nr.</th><th>Hotel</th><th>Anreise</th><th>Abreise</th><th>Nächte</th><th>Bemerkung</th><th>Preis</th></tr></thead><tbody>${hotelRows || '<tr><td colspan="7">Keine Hotels in diesem Monat.</td></tr>'}</tbody></table>
+      <h2>Tanken</h2>
+      <table><thead><tr><th>Nr.</th><th>Tankstelle</th><th>Datum</th><th>Liter</th><th>Spritart</th><th>Preis/Liter</th><th>Betrag</th></tr></thead><tbody>${fuelRows || '<tr><td colspan="7">Keine Tankeinträge in diesem Monat.</td></tr>'}</tbody></table>
+      <h2>Kilometer</h2>
+      <table><thead><tr><th>Nr.</th><th>Zweck</th><th>Datum</th><th>Kilometer</th><th>Bemerkung</th></tr></thead><tbody>${kmRows || '<tr><td colspan="5">Keine Kilometer in diesem Monat.</td></tr>'}</tbody></table>
+      <div class="sum-box">Gesamtsumme Monat: ${formatEuro(tripTotal + hotelTotal + fuelTotal)}</div>
+      ${receipts ? `<h2>Belege</h2>${receipts}` : ''}
+    `;
+    openPrintWindow(`Spesen ${month}`, body);
+  }
+  window.exportFullPdf = exportFullPdf;
+
+  onAuthStateChanged(auth, async (user)=>{
+    currentUser = user || null;
+    if(currentUser){
+      $('loginCard').classList.add('hidden');
+      $('adminPanel').classList.toggle('hidden', !isAdmin());
+      renderSyncState('Synchronisation aktiv.','ok');
+      await loadProfile();
+      updateBadges();
+      updateProfileUi();
+      subscribeAll();
+      if(isAdmin()) loadUsers();
+    } else {
+      $('loginCard').classList.remove('hidden');
+      $('adminPanel').classList.add('hidden');
+      trips = []; hotels = []; fuels = []; kms = [];
+      profile = createEmptyProfile();
+      updateBadges();
+      updateProfileUi();
+      renderAll();
+      renderSyncState('Nicht synchronisiert. Bitte anmelden.','warn');
+      if(unsubTrips) unsubTrips();
+      if(unsubHotels) unsubHotels();
+      if(unsubFuels) unsubFuels();
+      if(unsubKms) unsubKms();
+    }
+  });
+
+  $('monthSelect').addEventListener('change', renderAll);
+  $('sortTrips').addEventListener('change', renderTrips);
+  $('sortHotels').addEventListener('change', renderHotels);
+  $('sortFuel').addEventListener('change', renderFuels);
+  $('startTime').addEventListener('input', updatePreview);
+  $('endTime').addEventListener('input', updatePreview);
+  $('hotelCheckin').addEventListener('input', calcHotelNights);
+  $('hotelCheckout').addEventListener('input', calcHotelNights);
+  $('hotelReceipt').addEventListener('change', ()=>updateFilePreview('hotelReceipt','hotelReceiptInfo','hotelReceiptThumb'));
+  $('fuelReceipt').addEventListener('change', ()=>updateFilePreview('fuelReceipt','fuelReceiptInfo','fuelReceiptThumb'));
+
+  $('fuelDate').value = formatLocalDate(new Date());
+  $('kmDate').value = formatLocalDate(new Date());
+  renderAll();
 </script>
 </body>
 </html>
