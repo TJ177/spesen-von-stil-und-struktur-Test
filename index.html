@@ -115,7 +115,7 @@
         <button class="btn btn-dark btn-small" id="helpToggleBtn">App-Installation & Hilfe</button>
         <button class="btn btn-dark btn-small" id="accessToggleBtn">Zugang & Laufzeit</button>
         <button class="btn btn-dark btn-small hidden" id="adminToggleBtn">Admin</button>
-        <button class="btn btn-white btn-small" id="logoutTopBtn">Abmelden</button>
+        <button class="btn btn-red btn-small" id="logoutTopBtn">Abmelden</button>
       </div>
     </div>
 
@@ -273,7 +273,7 @@
       </div>
     </div>
     <div class="profile-actions">
-      <button class="btn btn-blue btn-small" id="loginBtn">Anmelden</button>
+      <button class="btn btn-green btn-small" id="loginBtn">Anmelden</button>
       <button class="btn btn-white btn-small" id="registerBtn">Registrieren</button>
       <button class="btn btn-dark btn-small" id="togglePasswordBtn">PW zeigen</button>
     </div>
@@ -293,11 +293,6 @@
 
   <div class="tab-panel active" id="tripTab">
     <div class="card">
-      <div class="top-actions-inline no-print">
-        <div class="metric-mini" id="tripMonthMetric">0 h · 0 €</div>
-        <select id="tripSort" class="small-select"><option value="new">Jüngstes zuerst</option><option value="old">Ältestes zuerst</option></select>
-        <button class="btn btn-white btn-small" id="tripPdfBtn">Fahrten als PDF</button>
-      </div>
       <h3>Fahrt erfassen</h3>
       <div class="row">
         <div>
@@ -335,9 +330,12 @@
           <div class="boxvalue" id="tripAmountView">0,00 €</div>
         </div>
       </div>
-      <div class="profile-actions no-print" style="justify-content:flex-start;margin-top:14px">
+      <div class="profile-actions no-print" style="justify-content:flex-start;margin-top:14px;flex-wrap:wrap">
         <button class="btn btn-blue btn-small" id="saveTripBtn">Fahrt speichern</button>
         <button class="btn btn-white btn-small" id="clearTripBtn">Feld leeren</button>
+        <div class="metric-mini" id="tripMonthMetric">0 h · 0 €</div>
+        <select id="tripSort" class="small-select"><option value="new">Jüngstes zuerst</option><option value="old">Ältestes zuerst</option></select>
+        <button class="btn btn-white btn-small" id="tripPdfBtn">Fahrten als PDF</button>
       </div>
       <div class="entry-list" id="tripList"></div>
     </div>
@@ -542,12 +540,12 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWith
 import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy, where, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCBXgseuSjsviWSq3c3SJv0-__8IFUTEWw",
-  authDomain: "micha-spesen.firebaseapp.com",
-  projectId: "micha-spesen",
-  storageBucket: "micha-spesen.firebasestorage.app",
-  messagingSenderId: "877124543127",
-  appId: "1:877124543127:web:56b36e85454b0805883fd2"
+  apiKey: "AIzaSyCsqrNPEtKCaDe5vywUIoM9fK-vXqV_sr4",
+  authDomain: "spesen-test-31a53.firebaseapp.com",
+  projectId: "spesen-test-31a53",
+  storageBucket: "spesen-test-31a53.firebasestorage.app",
+  messagingSenderId: "722110907370",
+  appId: "1:722110907370:web:6d1253fb66f02fe4b76893"
 };
 const ADMIN_EMAIL = "Tanjapischke177@gmail.com";
 const PAYPAL_EMAIL = "Tanjapischke177@gmail.com";
@@ -567,9 +565,9 @@ const PRICE = {
 };
 const packageDescriptions = [
   { title:"Basic", price:"4,49 € / Monat", lines:["1 Fahrer", "Fahrten speichern", "Monatsübersicht nur für Fahrten", "Einzel-PDF nur für Fahrten", "Name + E-Mail im Profil", "1 Zusatzfahrer optional möglich"]},
-  { title:"Basic Plus", price:"Basic + Add-ons", lines:["Sync möglich", "Export möglich", "Fahrten Plus möglich", "Auswertung möglich", "max. 2 Fahrer gesamt"]},
+  { title:"Basic Plus", price:"Basic + Add-ons", lines:["Sync: 2,99 € / Monat", "Export: 2,49 € / Monat", "Fahrten Plus: 4,99 € / Monat", "Auswertung: 4,99 € / Monat", "Zusatzfahrer Basic: 3,99 € / Monat", "max. 2 Fahrer gesamt"]},
   { title:"Premium", price:"17,99 € / Monat", lines:["1 Fahrer", "Firma im Profil", "Kennzeichen optional im Profil", "Sync, Export, Fahrten Plus, Auswertung enthalten", "kein Team enthalten"]},
-  { title:"Premium Plus", price:"Premium + Team", lines:["Team 1: +3 Fahrer", "Team 2: +5 Fahrer", "Team 3: +8 Fahrer", "Fahrer Plus: +3 Fahrer zusätzlich"]},
+  { title:"Premium Plus", price:"Premium + Team", lines:["Team 1: 6,99 € / Monat · +3 Fahrer", "Team 2: 11,99 € / Monat · +5 Fahrer", "Team 3: 16,99 € / Monat · +8 Fahrer", "Fahrer Plus: 3,99 € / Monat · +3 Fahrer zusätzlich"]},
   { title:"Goldmitglied", price:"30,00 € / Monat", lines:["alle Funktionen", "alle Add-ons", "früher Zugriff auf neue Features", "Testfunktionen früher nutzbar"]}
 ];
 const app = initializeApp(firebaseConfig);
