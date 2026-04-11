@@ -25,7 +25,13 @@
     input,select,button,textarea{
       width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);font-size:15px;background:#3c4f75;color:#fff
     }
-    textarea{min-height:96px;resize:vertical}
+    textarea{min-height:72px;resize:vertical}
+    .small-textarea{min-height:64px}
+    .upload-box{border:1px dashed var(--line);border-radius:16px;padding:12px;background:#33476d;margin-top:10px}
+    .thumb{max-width:220px;max-height:140px;display:block;margin-top:8px;border-radius:10px}
+    .thumb.hidden{display:none}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .hero-actions button{width:auto;padding:10px 16px;border-radius:14px}
     button{cursor:pointer;background:var(--accent);color:white;border:none;font-weight:700}
     button.secondary{background:#e5e7eb;color:#111827}
     button.outline{background:white;color:#111827;border:1px solid var(--line)}
@@ -82,7 +88,10 @@
         <span class="pill yellow" id="userBadge">Nicht angemeldet</span>
         <span class="pill" id="packageBadge">Kein aktiver Zugang</span>
         <span class="pill red hidden" id="adminBadge">Admin aktiv</span>
-        <button type="button" class="outline" onclick="toggleHelp()">App installieren / Hilfe</button>
+        <div class="hero-actions">
+          <button type="button" class="outline" onclick="toggleHelp()">App installieren / Hilfe</button>
+          <button type="button" class="red hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
+        </div>
       </div>
       <div id="syncStatus" class="status warn" style="display:none;"></div>
       <div id="helpBox" class="help-box">
@@ -245,7 +254,13 @@
           <div><label>Nächte</label><input id="hotelNights" placeholder="Nächte"></div>
           <div><label>Beleg-Sortierung</label><select id="sortHotels"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div>
         </div>
-        <label>Bemerkung / Zweck</label><textarea id="hotelNote"></textarea>
+        <label>Bemerkung / Zweck</label><textarea id="hotelNote" class="small-textarea"></textarea>
+        <div class="upload-box">
+          <label style="margin-top:0">Beleg hochladen</label>
+          <input id="hotelReceipt" type="file" accept="image/*">
+          <div class="small" id="hotelReceiptInfo">Noch kein Beleg gewählt.</div>
+          <img id="hotelReceiptThumb" class="thumb hidden" alt="Hotelbeleg Vorschau">
+        </div>
         <div class="toolbar"><button type="button" onclick="saveHotel()">Hotel speichern</button><button type="button" class="outline" onclick="clearHotelForm()">Felder leeren</button></div>
         <div id="hotelSaveStatus" class="status info">Noch keine Hotels gespeichert.</div>
         <div id="hotelList" class="entry-list"></div>
@@ -266,7 +281,13 @@
           <div><label>Spritart</label><input id="fuelType" placeholder="Spritart"></div>
         </div>
         <div class="row"><div><label>Preis / Liter</label><input id="fuelPricePerLiter" placeholder="Preis / Liter"></div><div><label>Beleg-Sortierung</label><select id="sortFuel"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div></div>
-        <label>Bemerkung</label><textarea id="fuelNote"></textarea>
+        <label>Bemerkung</label><textarea id="fuelNote" class="small-textarea"></textarea>
+        <div class="upload-box">
+          <label style="margin-top:0">Beleg hochladen</label>
+          <input id="fuelReceipt" type="file" accept="image/*">
+          <div class="small" id="fuelReceiptInfo">Noch kein Beleg gewählt.</div>
+          <img id="fuelReceiptThumb" class="thumb hidden" alt="Tankbeleg Vorschau">
+        </div>
         <div class="toolbar"><button type="button" onclick="saveFuel()">Tanken speichern</button><button type="button" class="outline" onclick="clearFuelForm()">Felder leeren</button></div>
         <div id="fuelSaveStatus" class="status info">Noch keine Tankeinträge gespeichert.</div>
         <div id="fuelList" class="entry-list"></div>
@@ -289,7 +310,10 @@
 
       <div id="pakete" class="tab-panel">
         <h2>Pakete</h2>
-        <div class="small">Paketlogik kommt als nächster sauberer Schritt oben auf diesen stabilen Stand.</div>
+        <div class="small">Die Paketlogik ist vorbereitet. Für die Freischaltung bleibt der Ablauf: Paket wählen → Admin kontaktieren → Zahlung bestätigen → Freischaltung setzen.</div>
+        <div class="entry-card"><div class="trip-title">Basic</div><div class="small">Fahrten + Monatsübersicht</div></div>
+        <div class="entry-card"><div class="trip-title">Premium</div><div class="small">Basic + Hotel + Tanken + Kilometer + erweiterte PDF-Daten</div></div>
+        <div class="entry-card"><div class="trip-title">Goldmitglied</div><div class="small">Alles offen + Test-/Beta-Funktionen</div></div>
       </div>
 
       <div id="empfehlen" class="tab-panel">
@@ -437,6 +461,20 @@
     const n = Number(cleaned);
     return Number.isFinite(n) ? n : 0;
   }
+  async function fileToDataUrl(file){
+    if(!file) return '';
+    return await new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=reject; r.readAsDataURL(file); });
+  }
+  function updateFilePreview(inputId, infoId, thumbId){
+    const file=$(inputId).files?.[0];
+    const info=$(infoId); const thumb=$(thumbId);
+    if(!file){ info.textContent='Noch kein Beleg gewählt.'; thumb.src=''; thumb.classList.add('hidden'); return; }
+    info.textContent='Gewählt: '+file.name;
+    const reader=new FileReader();
+    reader.onload=()=>{ thumb.src=reader.result; thumb.classList.remove('hidden'); };
+    reader.readAsDataURL(file);
+  }
+
   function toSortableTimestamp(dateTimeString) {
     const d = parseLocalDateTime(dateTimeString);
     return d ? d.getTime() : 0;
@@ -452,6 +490,7 @@
       $('userBadge').textContent='Nicht angemeldet';
       $('packageBadge').textContent='Kein aktiver Zugang';
       $('adminBadge').classList.add('hidden');
+      $('topLogoutBtn').classList.add('hidden');
       $('authStatus').className='status warn';
       $('authStatus').textContent='Noch nicht angemeldet.';
       return;
@@ -459,6 +498,7 @@
     $('userBadge').textContent = currentUser.email;
     $('packageBadge').textContent = profile.packageName || 'Standard';
     $('adminBadge').classList.toggle('hidden', !isAdmin());
+    $('topLogoutBtn').classList.toggle('hidden', !currentUser);
     $('authStatus').className='status ok';
     $('authStatus').textContent=`Angemeldet als ${currentUser.email}`;
   }
@@ -502,9 +542,9 @@
   }
   function clearTripForm(){ $('tourName').value=''; $('startTime').value=''; $('endTime').value=''; $('tripNote').value=''; updatePreview(); }
   window.clearTripForm = clearTripForm;
-  function clearHotelForm(){ $('hotelName').value=''; $('hotelPrice').value=''; $('hotelCheckin').value=''; $('hotelCheckout').value=''; $('hotelNights').value=''; $('hotelNote').value=''; }
+  function clearHotelForm(){ $('hotelName').value=''; $('hotelPrice').value=''; $('hotelCheckin').value=''; $('hotelCheckout').value=''; $('hotelNights').value=''; $('hotelNote').value=''; $('hotelReceipt').value=''; updateFilePreview('hotelReceipt','hotelReceiptInfo','hotelReceiptThumb'); }
   window.clearHotelForm = clearHotelForm;
-  function clearFuelForm(){ $('fuelStation').value=''; $('fuelAmount').value=''; $('fuelDate').value=formatLocalDate(new Date()); $('fuelTime').value=''; $('fuelLiters').value=''; $('fuelType').value=''; $('fuelPricePerLiter').value=''; $('fuelNote').value=''; }
+  function clearFuelForm(){ $('fuelStation').value=''; $('fuelAmount').value=''; $('fuelDate').value=formatLocalDate(new Date()); $('fuelTime').value=''; $('fuelLiters').value=''; $('fuelType').value=''; $('fuelPricePerLiter').value=''; $('fuelNote').value=''; $('fuelReceipt').value=''; updateFilePreview('fuelReceipt','fuelReceiptInfo','fuelReceiptThumb'); }
   window.clearFuelForm = clearFuelForm;
   function clearKmForm(){ $('kmPurpose').value=''; $('kmDate').value=formatLocalDate(new Date()); $('kmValue').value=''; $('kmNote').value=''; }
   window.clearKmForm = clearKmForm;
@@ -546,7 +586,9 @@
       localStatus('profileStatus','Profil geladen.','ok');
       await setDoc(doc(db,'profiles',currentUser.uid), { email: currentUser.email, displayName: profile.displayName || '', packageName: profile.packageName || 'Standard', activeUntil: profile.activeUntil || '', updatedAt: Date.now() }, {merge:true});
     }catch(e){
-      localStatus('profileStatus','Profil konnte nicht sauber geladen werden.','warn');
+      profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode: computeRefCode('',currentUser?.email) };
+      updateProfileUi();
+      localStatus('profileStatus','Profil leer geladen. Du kannst es jetzt speichern.','info');
     }
   }
   async function saveProfile(){
@@ -614,13 +656,13 @@
   function renderHotels(){
     const month=selectedMonth(); const order=$('sortHotels').value;
     const monthly=getSortedByOrder(hotels.filter(h=>formatMonthKey(h.checkin)===month),'checkin',order);
-    $('hotelList').innerHTML = monthly.length ? monthly.map(h=>`<div class="entry-card"><div class="trip-title">${escapeHtml(h.name)}</div><div class="small">${formatGermanDate(h.checkin)} → ${formatGermanDate(h.checkout)}</div><div class="small">Nächte: ${escapeHtml(h.nights)}</div><div class="small">Preis: ${formatEuro(h.price||0)}</div>${h.note ? `<div class="small">${escapeHtml(h.note)}</div>`:''}</div>`).join('') : '<div class="muted">Keine Hotels in diesem Monat gespeichert.</div>';
+    $('hotelList').innerHTML = monthly.length ? monthly.map(h=>`<div class="entry-card"><div class="trip-title">${escapeHtml(h.name)}</div><div class="small">${formatGermanDate(h.checkin)} → ${formatGermanDate(h.checkout)}</div><div class="small">Nächte: ${escapeHtml(h.nights)}</div><div class="small">Preis: ${formatEuro(h.price||0)}</div>${h.note ? `<div class="small">${escapeHtml(h.note)}</div>`:''}${h.receiptDataUrl ? `<div class="small">Beleg gespeichert.</div><img src="${h.receiptDataUrl}" class="thumb" alt="Hotelbeleg">` : ''}</div>`).join('') : '<div class="muted">Keine Hotels in diesem Monat gespeichert.</div>';
     localStatus('hotelSaveStatus', monthly.length ? `${monthly.length} Hotel-Eintrag/Eingänge im Monat.` : 'Noch keine Hotels gespeichert.', monthly.length ? 'ok':'info');
   }
   function renderFuels(){
     const month=selectedMonth(); const order=$('sortFuel').value;
     const monthly=getSortedByOrder(fuels.filter(f=>(f.date||'').slice(0,7)===month),'date',order);
-    $('fuelList').innerHTML = monthly.length ? monthly.map(f=>`<div class="entry-card"><div class="trip-title">${escapeHtml(f.station)}</div><div class="small">${escapeHtml(f.date)} ${escapeHtml(f.time||'')}</div><div class="small">Liter: ${escapeHtml(f.liters)}</div><div class="small">Preis: ${formatEuro(f.amount||0)}</div>${f.note ? `<div class="small">${escapeHtml(f.note)}</div>`:''}</div>`).join('') : '<div class="muted">Keine Tankeinträge in diesem Monat gespeichert.</div>';
+    $('fuelList').innerHTML = monthly.length ? monthly.map(f=>`<div class="entry-card"><div class="trip-title">${escapeHtml(f.station)}</div><div class="small">${escapeHtml(f.date)} ${escapeHtml(f.time||'')}</div><div class="small">Liter: ${escapeHtml(f.liters)}</div><div class="small">Preis: ${formatEuro(f.amount||0)}</div>${f.note ? `<div class="small">${escapeHtml(f.note)}</div>`:''}${f.receiptDataUrl ? `<div class="small">Beleg gespeichert.</div><img src="${f.receiptDataUrl}" class="thumb" alt="Tankbeleg">` : ''}</div>`).join('') : '<div class="muted">Keine Tankeinträge in diesem Monat gespeichert.</div>';
     localStatus('fuelSaveStatus', monthly.length ? `${monthly.length} Tankeinträge im Monat.` : 'Noch keine Tankeinträge gespeichert.', monthly.length ? 'ok':'info');
   }
   function renderKms(){
@@ -648,7 +690,8 @@
     if(!currentUser) return alert('Bitte zuerst anmelden.');
     const name=$('hotelName').value.trim(); const price=parseNumber($('hotelPrice').value); const checkin=$('hotelCheckin').value; const checkout=$('hotelCheckout').value; const nights=parseNumber($('hotelNights').value); const note=$('hotelNote').value.trim();
     if(!name || !price || !checkin) return alert('Bitte Hotelname, Preis und Anreise eintragen.');
-    await addDoc(collection(db,'users',currentUser.uid,'hotels'), { name, price, checkin, checkout, nights, note, createdAt: serverTimestamp() });
+    const receiptDataUrl = await fileToDataUrl($('hotelReceipt').files?.[0]);
+    await addDoc(collection(db,'users',currentUser.uid,'hotels'), { name, price, checkin, checkout, nights, note, receiptDataUrl, createdAt: serverTimestamp() });
     clearHotelForm(); localStatus('hotelSaveStatus','Hotel gespeichert.','ok');
   }
   window.saveHotel = saveHotel;
@@ -656,7 +699,8 @@
     if(!currentUser) return alert('Bitte zuerst anmelden.');
     const station=$('fuelStation').value.trim(); const amount=parseNumber($('fuelAmount').value); const date=$('fuelDate').value; const time=$('fuelTime').value; const liters=parseNumber($('fuelLiters').value); const fuelType=$('fuelType').value.trim(); const pricePerLiter=parseNumber($('fuelPricePerLiter').value); const note=$('fuelNote').value.trim();
     if(!station || !amount || !date) return alert('Bitte Tankstelle, Betrag und Datum eintragen.');
-    await addDoc(collection(db,'users',currentUser.uid,'fuels'), { station, amount, date, time, liters, fuelType, pricePerLiter, note, createdAt: serverTimestamp() });
+    const receiptDataUrl = await fileToDataUrl($('fuelReceipt').files?.[0]);
+    await addDoc(collection(db,'users',currentUser.uid,'fuels'), { station, amount, date, time, liters, fuelType, pricePerLiter, note, receiptDataUrl, createdAt: serverTimestamp() });
     clearFuelForm(); localStatus('fuelSaveStatus','Tanken gespeichert.','ok');
   }
   window.saveFuel = saveFuel;
@@ -721,6 +765,8 @@
   $('hotelCheckout').addEventListener('input', calcHotelNights);
   $('fuelDate').value = formatLocalDate(new Date());
   $('kmDate').value = formatLocalDate(new Date());
+  $('hotelReceipt').addEventListener('change', ()=>updateFilePreview('hotelReceipt','hotelReceiptInfo','hotelReceiptThumb'));
+  $('fuelReceipt').addEventListener('change', ()=>updateFilePreview('fuelReceipt','fuelReceiptInfo','fuelReceiptThumb'));
   renderAll(); updateProfileUi(); updateBadges();
 
   function downloadFile(content, filename, type) {
@@ -740,12 +786,21 @@
   window.exportPDF = function(){
     const month = selectedMonth();
     const monthlyTrips = getSortedByOrder(trips.filter(t=>formatMonthKey(t.startTime)===month),'startTime',$('sortTrips').value).map((trip,index)=>({...trip,displayNumber:index+1}));
-    const monthlyTotal = monthlyTrips.reduce((s,t)=>s + Number(t.allowance||0),0);
+    const monthlyHotels = getSortedByOrder(hotels.filter(h=>formatMonthKey(h.checkin)===month),'checkin',$('sortHotels').value);
+    const monthlyFuels = getSortedByOrder(fuels.filter(f=>(f.date||'').slice(0,7)===month),'date',$('sortFuel').value);
+    const monthlyTotalTrips = monthlyTrips.reduce((s,t)=>s + Number(t.allowance||0),0);
+    const monthlyTotalHotels = monthlyHotels.reduce((s,h)=>s + Number(h.price||0),0);
+    const monthlyTotalFuels = monthlyFuels.reduce((s,f)=>s + Number(f.amount||0),0);
     const monthlyHours = monthlyTrips.reduce((s,t)=>s + Number(t.hours||0),0);
-    const rowsHtml = monthlyTrips.map(trip=>`<tr><td>${trip.displayNumber}</td><td>${escapeHtml(trip.tourName)}</td><td>${formatGermanDate(trip.startTime)}</td><td>${formatGermanDate(trip.endTime)}</td><td>${formatDuration(Number(trip.hours||0))}</td><td>${escapeHtml(trip.allowanceType||'')}</td><td>${formatEuro(trip.allowance||0)}</td></tr>`).join('');
+    const rowsTrips = monthlyTrips.map(trip=>`<tr><td>${trip.displayNumber}</td><td>${escapeHtml(trip.tourName)}</td><td>${formatGermanDate(trip.startTime)}</td><td>${formatGermanDate(trip.endTime)}</td><td>${formatDuration(Number(trip.hours||0))}</td><td>${escapeHtml(trip.allowanceType||'')}</td><td>${formatEuro(trip.allowance||0)}</td></tr>`).join('');
+    const rowsHotels = monthlyHotels.map((h,idx)=>`<tr><td>${idx+1}</td><td>${escapeHtml(h.name)}</td><td>${formatGermanDate(h.checkin)}</td><td>${formatGermanDate(h.checkout)}</td><td>${escapeHtml(h.nights)}</td><td>${h.note ? escapeHtml(h.note) : '-'}</td><td>${formatEuro(h.price||0)}</td></tr>`).join('');
+    const rowsFuels = monthlyFuels.map((f,idx)=>`<tr><td>${idx+1}</td><td>${escapeHtml(f.station)}</td><td>${escapeHtml(f.date||'')} ${escapeHtml(f.time||'')}</td><td>${escapeHtml(f.liters||'-')}</td><td>${escapeHtml(f.fuelType||'-')}</td><td>${escapeHtml(f.pricePerLiter||'-')}</td><td>${formatEuro(f.amount||0)}</td></tr>`).join('');
     const profileExtras = ['Premium','Goldmitglied'].includes(profile.packageName) ? `<tr><td><strong>Firma</strong></td><td>${escapeHtml(profile.company||'-')}</td><td><strong>Fahrzeug</strong></td><td>${escapeHtml(profile.vehicle||'-')}</td></tr><tr><td><strong>Kennzeichen</strong></td><td>${escapeHtml(profile.plate||'-')}</td><td><strong>Name</strong></td><td>${escapeHtml(profile.displayName||currentUser?.email||'-')}</td></tr>` : `<tr><td><strong>Name</strong></td><td>${escapeHtml(profile.displayName||currentUser?.email||'-')}</td><td><strong>E-Mail</strong></td><td>${escapeHtml(currentUser?.email||'-')}</td></tr>`;
-    const html = `<html><head><title>Spesen ${month}</title><style>body { font-family: Arial, sans-serif; padding: 24px; color: #111; } h1 { margin-bottom: 6px; } h2 { margin: 0 0 20px 0; font-size: 16px; font-weight: normal; } .header-box { border: 2px solid #111; padding: 14px; margin-bottom: 18px; } .meta-grid { width: 100%; border-collapse: collapse; margin-top: 12px; } .meta-grid td { border: 1px solid #111; padding: 8px; } table { width: 100%; border-collapse: collapse; margin-top: 16px; } th, td { border: 1px solid #111; padding: 8px; text-align: left; font-size: 13px; } th { background: #e5e7eb; } .sum-box { margin-top: 18px; border: 2px solid #111; padding: 12px; font-size: 16px; font-weight: bold; }</style></head><body><div class='header-box'><h1>Monatsabrechnung Spesen</h1><h2>${formatMonthLabel(month)}</h2><table class='meta-grid'>${profileExtras}<tr><td><strong>Anzahl Fahrten</strong></td><td>${monthlyTrips.length}</td><td><strong>Gesamtstunden</strong></td><td>${formatDuration(monthlyHours)}</td></tr></table></div><table><thead><tr><th>Nr.</th><th>Tour</th><th>Losgefahren</th><th>Angekommen</th><th>Dauer</th><th>Spesensatz</th><th>Spesen</th></tr></thead><tbody>${rowsHtml || '<tr><td colspan="7">Keine Fahrten in diesem Monat.</td></tr>'}</tbody></table><div class='sum-box'>Monatssumme Spesen: ${formatEuro(monthlyTotal)}</div></body></html>`;
+    const grandTotal = monthlyTotalTrips + monthlyTotalHotels + monthlyTotalFuels;
+    const receiptBlocks = [...monthlyHotels.filter(h=>h.receiptDataUrl).map(h=>`<div style="margin:18px 0;"><div><strong>Hotelbeleg:</strong> ${escapeHtml(h.name)}</div><img src="${h.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`), ...monthlyFuels.filter(f=>f.receiptDataUrl).map(f=>`<div style="margin:18px 0;"><div><strong>Tankbeleg:</strong> ${escapeHtml(f.station)}</div><img src="${f.receiptDataUrl}" style="max-width:100%;max-height:500px;border:1px solid #ccc;border-radius:8px;" /></div>`)].join('');
+    const html = `<html><head><title>Spesen ${month}</title><style>body { font-family: Arial, sans-serif; padding: 24px; color: #111; } h1 { margin-bottom: 6px; } h2 { margin: 18px 0 10px 0; font-size: 18px; } .header-box { border: 2px solid #111; padding: 14px; margin-bottom: 18px; } .meta-grid { width: 100%; border-collapse: collapse; margin-top: 12px; } .meta-grid td { border: 1px solid #111; padding: 8px; } table { width: 100%; border-collapse: collapse; margin-top: 12px; } th, td { border: 1px solid #111; padding: 8px; text-align: left; font-size: 13px; } th { background: #e5e7eb; } .sum-box { margin-top: 18px; border: 2px solid #111; padding: 12px; font-size: 16px; font-weight: bold; }</style></head><body><div class='header-box'><h1>Monatsabrechnung Spesen</h1><div>${formatMonthLabel(month)}</div><table class='meta-grid'>${profileExtras}<tr><td><strong>Anzahl Fahrten</strong></td><td>${monthlyTrips.length}</td><td><strong>Gesamtstunden</strong></td><td>${formatDuration(monthlyHours)}</td></tr><tr><td><strong>Hotelkosten</strong></td><td>${formatEuro(monthlyTotalHotels)}</td><td><strong>Tankkosten</strong></td><td>${formatEuro(monthlyTotalFuels)}</td></tr></table></div><h2>Fahrten</h2><table><thead><tr><th>Nr.</th><th>Tour</th><th>Losgefahren</th><th>Angekommen</th><th>Dauer</th><th>Spesensatz</th><th>Spesen</th></tr></thead><tbody>${rowsTrips || '<tr><td colspan="7">Keine Fahrten in diesem Monat.</td></tr>'}</tbody></table><h2>Hotel</h2><table><thead><tr><th>Nr.</th><th>Hotel</th><th>Anreise</th><th>Abreise</th><th>Nächte</th><th>Bemerkung</th><th>Preis</th></tr></thead><tbody>${rowsHotels || '<tr><td colspan="7">Keine Hotelkosten in diesem Monat.</td></tr>'}</tbody></table><h2>Tanken</h2><table><thead><tr><th>Nr.</th><th>Tankstelle</th><th>Datum</th><th>Liter</th><th>Spritart</th><th>Preis/Liter</th><th>Betrag</th></tr></thead><tbody>${rowsFuels || '<tr><td colspan="7">Keine Tankkosten in diesem Monat.</td></tr>'}</tbody></table><div class='sum-box'>Gesamtsumme Monat: ${formatEuro(grandTotal)}</div>${receiptBlocks ? `<h2>Belege</h2>${receiptBlocks}` : ''}</body></html>`;
     const w = window.open('', '_blank'); if(!w) return alert('Pop-up blockiert.'); w.document.open(); w.document.write(html); w.document.close(); w.focus(); w.print();
+  };
   };
 </script>
 </body>
