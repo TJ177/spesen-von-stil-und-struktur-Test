@@ -547,22 +547,30 @@ window.toggleAdmin = toggleAdmin;
     return `${base}-001`;
   }
   function updateBadges(){
-    if(!currentUser){
-      $('userBadge').textContent='Nicht angemeldet';
-      $('packageBadge').textContent='Kein aktiver Zugang';
-      $('adminBadge').classList.add('hidden');
-      $('topLogoutBtn').classList.add('hidden');
-      $('authStatus').className='status warn';
-      $('authStatus').textContent='Noch nicht angemeldet.';
-      return;
-    }
-    $('userBadge').textContent = currentUser.email;
-    $('packageBadge').textContent = profile.packageName || 'Standard';
-    $('adminBadge').classList.toggle('hidden', !isAdmin());
-    $('topLogoutBtn').classList.toggle('hidden', !currentUser);
-    $('authStatus').className='status ok';
-    $('authStatus').textContent=`Angemeldet als ${currentUser.email}`;
+  if(!currentUser){
+    $('nameBadge').textContent = 'Nicht angemeldet';
+    $('emailBadge').textContent = '—';
+    $('packageBadge').textContent = 'Kein aktiver Zugang';
+    $('adminBadge').classList.add('hidden');
+    $('topAdminBtn').classList.add('hidden');
+    $('topLogoutBtn').classList.add('hidden');
+    $('authStatus').className='status warn';
+    $('authStatus').textContent='Noch nicht angemeldet.';
+    return;
   }
+
+  const displayName = (profile.displayName || '').trim() || (currentUser.email || '').split('@')[0];
+
+  $('nameBadge').textContent = displayName;
+  $('emailBadge').textContent = currentUser.email || '—';
+  $('packageBadge').textContent = profile.packageName || 'Standard';
+  $('adminBadge').classList.toggle('hidden', !isAdmin());
+  $('topAdminBtn').classList.toggle('hidden', !isAdmin());
+  $('topLogoutBtn').classList.remove('hidden');
+
+  $('authStatus').className='status ok';
+  $('authStatus').textContent = `Angemeldet als ${currentUser.email}`;
+}
   function updateProfileUi(){
     $('profileEmail').value = currentUser?.email || '';
     $('displayName').value = profile.displayName || '';
