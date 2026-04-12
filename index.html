@@ -54,7 +54,11 @@
     .status.ok{background:#12361f;color:#bcf5cf;border:1px solid #2f8f4f}
     .status.warn{background:#3d2020;color:#fecaca;border:1px solid #ef4444}
     .status.info{background:#1e3a5f;color:#bfdbfe;border:1px solid #3b82f6}
-    .login-row-top{display:grid;grid-template-columns:1.6fr 1fr auto;gap:10px;align-items:center}.login-row-bottom{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:10px;align-items:center}.login-row-top .pw-wrap{display:flex;gap:8px;align-items:center}.login-row-top .pw-wrap input{flex:1}.login-row-top button,.login-row-bottom button{margin:0}
+    .login-row-top{display:grid;grid-template-columns:1.6fr 1fr auto;gap:10px;align-items:center}
+    .login-row-bottom{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:10px;align-items:center}
+    .login-row-top .pw-wrap{display:flex;gap:8px;align-items:center}
+    .login-row-top .pw-wrap input{flex:1}
+    .login-row-top button,.login-row-bottom button{margin:0}
     .danger{background:white;color:#111827;border:1px solid var(--line)}
     .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f3f4f6;font-size:12px;color:#111;margin-right:8px}
     .pill.yellow{background:#facc15}
@@ -65,7 +69,6 @@
     .hero-panel.show{display:block}
     .hero-panel .toolbar{margin-top:10px}
     .hero-panel h3{margin:0 0 10px}
-    .help-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;display:none}
     .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
     .tab-btn{width:auto;padding:14px 26px;border-radius:16px;background:#e5e7eb;color:#111;font-weight:700}
     .tab-btn.active{background:var(--accent);color:#fff}
@@ -89,72 +92,57 @@
     <div class="hero">
       <h1>Spesen von Stil &amp; Struktur</h1>
       <div class="muted">Beta-Version – Spesen auf Handy und PC. Gleicher Login auf beiden Geräten.</div>
+
       <div class="topbar">
-  <span class="pill yellow" id="nameBadge">Nicht angemeldet</span>
-  <span class="pill" id="emailBadge">—</span>
-  <span class="pill" id="packageBadge">Kein aktiver Zugang</span>
-  <span class="pill red hidden" id="adminBadge">Admin aktiv</span>
+        <span class="pill yellow" id="nameBadge">Nicht angemeldet</span>
+        <span class="pill" id="emailBadge">—</span>
+        <span class="pill" id="packageBadge">Kein aktiver Zugang</span>
+        <span class="pill red hidden" id="adminBadge">Admin aktiv</span>
 
-  <div class="hero-actions">
-    <button type="button" class="outline" onclick="toggleHelp()">App installieren / Hilfe</button>
-    <button type="button" class="outline" onclick="toggleAccess()">Zugang &amp; Laufzeit</button>
-    <button type="button" class="outline hidden" id="topAdminBtn" onclick="toggleAdmin()">Admin</button>
-    <button type="button" class="red hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
-  </div>
-</div>
+        <div class="hero-actions">
+          <button type="button" class="outline" onclick="toggleHelp()">App installieren / Hilfe</button>
+          <button type="button" class="outline" onclick="toggleAccess()">Zugang &amp; Laufzeit</button>
+          <button type="button" class="outline hidden" id="topAdminBtn" onclick="toggleAdmin()">Admin</button>
+          <button type="button" class="red hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
+        </div>
+      </div>
 
-<div id="syncStatus" class="status warn" style="display:none;"></div>
+      <div id="syncStatus" class="status warn" style="display:none;"></div>
 
-<div class="top-panels">
-  <div id="helpBox" class="hero-panel">
-    <strong>App aufs Handy speichern</strong><br><br>
-    <strong>Android:</strong><br>
-    1. Link aus der Nachricht kopieren<br>
-    2. Chrome öffnen<br>
-    3. Link oben einfügen und öffnen<br>
-    4. Oben rechts auf die 3 Punkte tippen<br>
-    5. „Zum Startbildschirm hinzufügen“ auswählen<br>
-    6. „Installieren“ auswählen<br><br>
-    <strong>iPhone:</strong><br>
-    1. Link in Safari öffnen<br>
-    2. Unten auf Teilen tippen<br>
-    3. „Zum Home-Bildschirm“ auswählen<br>
-    4. Hinzufügen drücken<br><br>
-    <strong>PC:</strong><br>
-    Link einfach im Browser öffnen und mit demselben Konto anmelden.
-  </div>
+      <div class="top-panels">
+        <div id="helpBox" class="hero-panel">
+          <strong>App aufs Handy speichern</strong><br><br>
+          <strong>Android:</strong><br>
+          1. Link aus der Nachricht kopieren<br>
+          2. Chrome öffnen<br>
+          3. Link oben einfügen und öffnen<br>
+          4. Oben rechts auf die 3 Punkte tippen<br>
+          5. „Zum Startbildschirm hinzufügen“ auswählen<br>
+          6. „Installieren“ auswählen<br><br>
+          <strong>iPhone:</strong><br>
+          1. Link in Safari öffnen<br>
+          2. Unten auf Teilen tippen<br>
+          3. „Zum Home-Bildschirm“ auswählen<br>
+          4. Hinzufügen drücken<br><br>
+          <strong>PC:</strong><br>
+          Link einfach im Browser öffnen und mit demselben Konto anmelden.
+        </div>
 
-  <div id="accessBox" class="hero-panel">
-    <h3>Zugang &amp; Laufzeit</h3>
-    <div id="accessInfo" class="status info">Melde dich an, um deine Laufzeit zu sehen.</div>
-    <div class="toolbar">
-      <button type="button" class="outline" onclick="contactAdmin()">Admin kontaktieren</button>
-    </div>
-  </div>
+        <div id="accessBox" class="hero-panel">
+          <h3>Zugang &amp; Laufzeit</h3>
+          <div id="accessInfo" class="status info">Melde dich an, um deine Laufzeit zu sehen.</div>
+          <div class="toolbar">
+            <button type="button" class="outline" onclick="contactAdmin()">Admin kontaktieren</button>
+          </div>
+        </div>
 
-  <div id="adminPanel" class="hero-panel hidden">
-    <h3>Adminbereich</h3>
-    <div class="toolbar">
-      <button type="button" onclick="loadUsers()">Nutzer laden</button>
-    </div>
-    <div id="adminUsersList" class="entry-list"></div>
-  </div>
-</div>
-        <strong>App aufs Handy speichern</strong><br><br>
-        <strong>Android:</strong><br>
-        1. Link aus der Nachricht kopieren<br>
-        2. Chrome öffnen<br>
-        3. Link oben einfügen und öffnen<br>
-        4. Oben rechts auf die 3 Punkte tippen<br>
-        5. „Zum Startbildschirm hinzufügen“ auswählen<br>
-        6. „Installieren“ auswählen<br><br>
-        <strong>iPhone:</strong><br>
-        1. Link in Safari öffnen<br>
-        2. Unten auf Teilen tippen<br>
-        3. „Zum Home-Bildschirm“ auswählen<br>
-        4. Hinzufügen drücken<br><br>
-        <strong>PC:</strong><br>
-        Link einfach im Browser öffnen und mit demselben Konto anmelden.
+        <div id="adminPanel" class="hero-panel hidden">
+          <h3>Adminbereich</h3>
+          <div class="toolbar">
+            <button type="button" onclick="loadUsers()">Nutzer laden</button>
+          </div>
+          <div id="adminUsersList" class="entry-list"></div>
+        </div>
       </div>
     </div>
 
@@ -223,143 +211,139 @@
         <div id="profileStatus" class="status info">Noch kein Profil geladen.</div>
       </div>
 
-      
+      <div class="card" style="margin-top:0;">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="showTab('fahrt', this)">Fahrt</button>
+          <button class="tab-btn" onclick="showTab('hotel', this)">Hotel</button>
+          <button class="tab-btn" onclick="showTab('tanken', this)">Tanken</button>
+          <button class="tab-btn" onclick="showTab('kilometer', this)">Kilometer</button>
+          <button class="tab-btn" onclick="showTab('pdf', this)">PDF</button>
+          <button class="tab-btn" onclick="showTab('pakete', this)">Pakete</button>
+          <button class="tab-btn" onclick="showTab('empfehlen', this)">Empfehlen</button>
+        </div>
 
-    
-      
-
-    <div class="card" style="margin-top:18px;">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('fahrt', this)">Fahrt</button>
-        <button class="tab-btn" onclick="showTab('hotel', this)">Hotel</button>
-        <button class="tab-btn" onclick="showTab('tanken', this)">Tanken</button>
-        <button class="tab-btn" onclick="showTab('kilometer', this)">Kilometer</button>
-        <button class="tab-btn" onclick="showTab('pdf', this)">PDF</button>
-        <button class="tab-btn" onclick="showTab('pakete', this)">Pakete</button>
-        <button class="tab-btn" onclick="showTab('empfehlen', this)">Empfehlen</button>
-      </div>
-
-      <div id="fahrt" class="tab-panel active">
-        <h2>Fahrt erfassen</h2>
-        <div class="row">
-          <div>
-            <label>Sortierung</label>
-            <select id="sortTrips"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select>
+        <div id="fahrt" class="tab-panel active">
+          <h2>Fahrt erfassen</h2>
+          <div class="row">
+            <div>
+              <label>Sortierung</label>
+              <select id="sortTrips"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Tour / Titel</label>
-            <input id="tourName" placeholder="Tour / Titel">
+          <div class="row">
+            <div>
+              <label>Tour / Titel</label>
+              <input id="tourName" placeholder="Tour / Titel">
+            </div>
+            <div>
+              <label>Bemerkung</label>
+              <textarea id="tripNote" class="small-textarea" placeholder="Bemerkung"></textarea>
+            </div>
           </div>
-          <div>
-            <label>Bemerkung</label>
-            <textarea id="tripNote" class="small-textarea" placeholder="Bemerkung"></textarea>
+          <div class="row">
+            <div>
+              <label>Start</label>
+              <div class="row"><input id="startTime" type="datetime-local"><button type="button" class="green" onclick="setNowTrip('startTime')">Start jetzt</button></div>
+            </div>
+            <div>
+              <label>Ende</label>
+              <div class="row"><input id="endTime" type="datetime-local"><button type="button" class="red" onclick="setNowTrip('endTime')">Ende jetzt</button></div>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Start</label>
-            <div class="row"><input id="startTime" type="datetime-local"><button type="button" class="green" onclick="setNowTrip('startTime')">Start jetzt</button></div>
+          <div class="stats">
+            <div class="stat"><div class="label">Dauer</div><div class="value" id="durationPreview">0 Std 0 Min</div></div>
+            <div class="stat"><div class="label">Spesen</div><div class="value" id="allowancePreview">0,00 €</div></div>
           </div>
-          <div>
-            <label>Ende</label>
-            <div class="row"><input id="endTime" type="datetime-local"><button type="button" class="red" onclick="setNowTrip('endTime')">Ende jetzt</button></div>
+          <div class="toolbar">
+            <button type="button" onclick="saveTrip()">Fahrt speichern</button>
+            <button type="button" class="outline" onclick="clearTripForm()">Felder leeren</button>
           </div>
+          <div id="tripSaveStatus" class="status info">Noch keine Fahrten gespeichert.</div>
+          <div id="tripList" class="entry-list"></div>
         </div>
-        <div class="stats">
-          <div class="stat"><div class="label">Dauer</div><div class="value" id="durationPreview">0 Std 0 Min</div></div>
-          <div class="stat"><div class="label">Spesen</div><div class="value" id="allowancePreview">0,00 €</div></div>
-        </div>
-        <div class="toolbar">
-          <button type="button" onclick="saveTrip()">Fahrt speichern</button>
-          <button type="button" class="outline" onclick="clearTripForm()">Felder leeren</button>
-        </div>
-        <div id="tripSaveStatus" class="status info">Noch keine Fahrten gespeichert.</div>
-        <div id="tripList" class="entry-list"></div>
-      </div>
 
-      <div id="hotel" class="tab-panel">
-        <h2>Hotel</h2>
-        <div class="row">
-          <div><label>Hotelname / Ort</label><input id="hotelName" placeholder="Hotelname / Ort"></div>
-          <div><label>Preis €</label><input id="hotelPrice" placeholder="Preis €"></div>
+        <div id="hotel" class="tab-panel">
+          <h2>Hotel</h2>
+          <div class="row">
+            <div><label>Hotelname / Ort</label><input id="hotelName" placeholder="Hotelname / Ort"></div>
+            <div><label>Preis €</label><input id="hotelPrice" placeholder="Preis €"></div>
+          </div>
+          <div class="row">
+            <div><label>Anreise</label><div class="row"><input id="hotelCheckin" type="datetime-local"><button type="button" class="green" onclick="setNowTrip('hotelCheckin')">Start jetzt</button></div></div>
+            <div><label>Abreise</label><div class="row"><input id="hotelCheckout" type="datetime-local"><button type="button" class="red" onclick="setNowTrip('hotelCheckout')">Ende jetzt</button></div></div>
+          </div>
+          <div class="row">
+            <div><label>Nächte</label><input id="hotelNights" placeholder="Nächte"></div>
+            <div><label>Beleg-Sortierung</label><select id="sortHotels"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div>
+          </div>
+          <label>Bemerkung / Zweck</label><textarea id="hotelNote" class="small-textarea"></textarea>
+          <div class="upload-box">
+            <label style="margin-top:0">Beleg hochladen</label>
+            <input id="hotelReceipt" type="file" accept="image/*">
+            <div class="small" id="hotelReceiptInfo">Noch kein Beleg gewählt.</div>
+            <img id="hotelReceiptThumb" class="thumb hidden" alt="Hotelbeleg Vorschau">
+          </div>
+          <div class="toolbar"><button type="button" onclick="saveHotel()">Hotel speichern</button><button type="button" class="outline" onclick="clearHotelForm()">Felder leeren</button></div>
+          <div id="hotelSaveStatus" class="status info">Noch keine Hotels gespeichert.</div>
+          <div id="hotelList" class="entry-list"></div>
         </div>
-        <div class="row">
-          <div><label>Anreise</label><div class="row"><input id="hotelCheckin" type="datetime-local"><button type="button" class="green" onclick="setNowTrip('hotelCheckin')">Start jetzt</button></div></div>
-          <div><label>Abreise</label><div class="row"><input id="hotelCheckout" type="datetime-local"><button type="button" class="red" onclick="setNowTrip('hotelCheckout')">Ende jetzt</button></div></div>
-        </div>
-        <div class="row">
-          <div><label>Nächte</label><input id="hotelNights" placeholder="Nächte"></div>
-          <div><label>Beleg-Sortierung</label><select id="sortHotels"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div>
-        </div>
-        <label>Bemerkung / Zweck</label><textarea id="hotelNote" class="small-textarea"></textarea>
-        <div class="upload-box">
-          <label style="margin-top:0">Beleg hochladen</label>
-          <input id="hotelReceipt" type="file" accept="image/*">
-          <div class="small" id="hotelReceiptInfo">Noch kein Beleg gewählt.</div>
-          <img id="hotelReceiptThumb" class="thumb hidden" alt="Hotelbeleg Vorschau">
-        </div>
-        <div class="toolbar"><button type="button" onclick="saveHotel()">Hotel speichern</button><button type="button" class="outline" onclick="clearHotelForm()">Felder leeren</button></div>
-        <div id="hotelSaveStatus" class="status info">Noch keine Hotels gespeichert.</div>
-        <div id="hotelList" class="entry-list"></div>
-      </div>
 
-      <div id="tanken" class="tab-panel">
-        <h2>Tanken</h2>
-        <div class="row">
-          <div><label>Tankstelle / Ort</label><input id="fuelStation" placeholder="Tankstelle / Ort"></div>
-          <div><label>Betrag €</label><input id="fuelAmount" placeholder="Betrag €"></div>
+        <div id="tanken" class="tab-panel">
+          <h2>Tanken</h2>
+          <div class="row">
+            <div><label>Tankstelle / Ort</label><input id="fuelStation" placeholder="Tankstelle / Ort"></div>
+            <div><label>Betrag €</label><input id="fuelAmount" placeholder="Betrag €"></div>
+          </div>
+          <div class="row">
+            <div><label>Datum</label><div class="row"><input id="fuelDate" type="date"><button type="button" class="green" onclick="setToday('fuelDate')">Datum jetzt</button></div></div>
+            <div><label>Uhrzeit</label><div class="row"><input id="fuelTime" type="time"><button type="button" class="red" onclick="setCurrentTime('fuelTime')">Uhrzeit jetzt</button></div></div>
+          </div>
+          <div class="row">
+            <div><label>Liter</label><input id="fuelLiters" placeholder="Liter"></div>
+            <div><label>Spritart</label><input id="fuelType" placeholder="Spritart"></div>
+          </div>
+          <div class="row"><div><label>Preis / Liter</label><input id="fuelPricePerLiter" placeholder="Preis / Liter"></div><div><label>Beleg-Sortierung</label><select id="sortFuel"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div></div>
+          <label>Bemerkung</label><textarea id="fuelNote" class="small-textarea"></textarea>
+          <div class="upload-box">
+            <label style="margin-top:0">Beleg hochladen</label>
+            <input id="fuelReceipt" type="file" accept="image/*">
+            <div class="small" id="fuelReceiptInfo">Noch kein Beleg gewählt.</div>
+            <img id="fuelReceiptThumb" class="thumb hidden" alt="Tankbeleg Vorschau">
+          </div>
+          <div class="toolbar"><button type="button" onclick="saveFuel()">Tanken speichern</button><button type="button" class="outline" onclick="clearFuelForm()">Felder leeren</button></div>
+          <div id="fuelSaveStatus" class="status info">Noch keine Tankeinträge gespeichert.</div>
+          <div id="fuelList" class="entry-list"></div>
         </div>
-        <div class="row">
-          <div><label>Datum</label><div class="row"><input id="fuelDate" type="date"><button type="button" class="green" onclick="setToday('fuelDate')">Datum jetzt</button></div></div>
-          <div><label>Uhrzeit</label><div class="row"><input id="fuelTime" type="time"><button type="button" class="red" onclick="setCurrentTime('fuelTime')">Uhrzeit jetzt</button></div></div>
+
+        <div id="kilometer" class="tab-panel">
+          <h2>Kilometer</h2>
+          <div class="row"><div><label>Strecke / Zweck</label><input id="kmPurpose" placeholder="Strecke / Zweck"></div><div><label>Datum</label><input id="kmDate" type="date"></div></div>
+          <label>Kilometer</label><input id="kmValue" placeholder="Kilometer">
+          <label>Bemerkung</label><textarea id="kmNote"></textarea>
+          <div class="toolbar"><button type="button" onclick="saveKm()">Kilometer speichern</button><button type="button" class="outline" onclick="clearKmForm()">Felder leeren</button></div>
+          <div id="kmSaveStatus" class="status info">Noch keine Kilometer gespeichert.</div>
+          <div id="kmList" class="entry-list"></div>
         </div>
-        <div class="row">
-          <div><label>Liter</label><input id="fuelLiters" placeholder="Liter"></div>
-          <div><label>Spritart</label><input id="fuelType" placeholder="Spritart"></div>
+
+        <div id="pdf" class="tab-panel">
+          <h2>PDF-Export</h2>
+          <div class="small">Nutze oben die Monatsauswahl und exportiere dann deine Daten als CSV oder PDF.</div>
         </div>
-        <div class="row"><div><label>Preis / Liter</label><input id="fuelPricePerLiter" placeholder="Preis / Liter"></div><div><label>Beleg-Sortierung</label><select id="sortFuel"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div></div>
-        <label>Bemerkung</label><textarea id="fuelNote" class="small-textarea"></textarea>
-        <div class="upload-box">
-          <label style="margin-top:0">Beleg hochladen</label>
-          <input id="fuelReceipt" type="file" accept="image/*">
-          <div class="small" id="fuelReceiptInfo">Noch kein Beleg gewählt.</div>
-          <img id="fuelReceiptThumb" class="thumb hidden" alt="Tankbeleg Vorschau">
+
+        <div id="pakete" class="tab-panel">
+          <h2>Pakete</h2>
+          <div class="small">Die Paketlogik ist vorbereitet. Für die Freischaltung bleibt der Ablauf: Paket wählen → Admin kontaktieren → Zahlung bestätigen → Freischaltung setzen.</div>
+          <div class="entry-card"><div class="trip-title">Basic</div><div class="small">Fahrten + Monatsübersicht</div></div>
+          <div class="entry-card"><div class="trip-title">Premium</div><div class="small">Basic + Hotel + Tanken + Kilometer + erweiterte PDF-Daten</div></div>
+          <div class="entry-card"><div class="trip-title">Goldmitglied</div><div class="small">Alles offen + Test-/Beta-Funktionen</div></div>
         </div>
-        <div class="toolbar"><button type="button" onclick="saveFuel()">Tanken speichern</button><button type="button" class="outline" onclick="clearFuelForm()">Felder leeren</button></div>
-        <div id="fuelSaveStatus" class="status info">Noch keine Tankeinträge gespeichert.</div>
-        <div id="fuelList" class="entry-list"></div>
-      </div>
 
-      <div id="kilometer" class="tab-panel">
-        <h2>Kilometer</h2>
-        <div class="row"><div><label>Strecke / Zweck</label><input id="kmPurpose" placeholder="Strecke / Zweck"></div><div><label>Datum</label><input id="kmDate" type="date"></div></div>
-        <label>Kilometer</label><input id="kmValue" placeholder="Kilometer">
-        <label>Bemerkung</label><textarea id="kmNote"></textarea>
-        <div class="toolbar"><button type="button" onclick="saveKm()">Kilometer speichern</button><button type="button" class="outline" onclick="clearKmForm()">Felder leeren</button></div>
-        <div id="kmSaveStatus" class="status info">Noch keine Kilometer gespeichert.</div>
-        <div id="kmList" class="entry-list"></div>
-      </div>
-
-      <div id="pdf" class="tab-panel">
-        <h2>PDF-Export</h2>
-        <div class="small">Nutze oben die Monatsauswahl und exportiere dann deine Daten als CSV oder PDF.</div>
-      </div>
-
-      <div id="pakete" class="tab-panel">
-        <h2>Pakete</h2>
-        <div class="small">Die Paketlogik ist vorbereitet. Für die Freischaltung bleibt der Ablauf: Paket wählen → Admin kontaktieren → Zahlung bestätigen → Freischaltung setzen.</div>
-        <div class="entry-card"><div class="trip-title">Basic</div><div class="small">Fahrten + Monatsübersicht</div></div>
-        <div class="entry-card"><div class="trip-title">Premium</div><div class="small">Basic + Hotel + Tanken + Kilometer + erweiterte PDF-Daten</div></div>
-        <div class="entry-card"><div class="trip-title">Goldmitglied</div><div class="small">Alles offen + Test-/Beta-Funktionen</div></div>
-      </div>
-
-      <div id="empfehlen" class="tab-panel">
-        <h2>Fahrer empfehlen</h2>
-        <div class="small">Wenn ein neuer Fahrer über deinen Empfehlungscode kommt und später kostenpflichtig freigeschaltet wird, bekommst du 7 Tage gratis dazu.</div>
-        <label>Dein Empfehlungscode</label>
-        <input id="refCode" readonly>
+        <div id="empfehlen" class="tab-panel">
+          <h2>Fahrer empfehlen</h2>
+          <div class="small">Wenn ein neuer Fahrer über deinen Empfehlungscode kommt und später kostenpflichtig freigeschaltet wird, bekommst du 7 Tage gratis dazu.</div>
+          <label>Dein Empfehlungscode</label>
+          <input id="refCode" readonly>
+        </div>
       </div>
     </div>
   </div>
