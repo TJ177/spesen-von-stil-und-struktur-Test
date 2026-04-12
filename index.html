@@ -60,6 +60,11 @@
     .pill.yellow{background:#facc15}
     .pill.red{background:#ef4444;color:#fff}
     .topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+    .top-panels{display:grid;gap:14px;margin-top:14px}
+    .hero-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:none}
+    .hero-panel.show{display:block}
+    .hero-panel .toolbar{margin-top:10px}
+    .hero-panel h3{margin:0 0 10px}
     .help-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;display:none}
     .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
     .tab-btn{width:auto;padding:14px 26px;border-radius:16px;background:#e5e7eb;color:#111;font-weight:700}
@@ -85,16 +90,56 @@
       <h1>Spesen von Stil &amp; Struktur</h1>
       <div class="muted">Beta-Version – Spesen auf Handy und PC. Gleicher Login auf beiden Geräten.</div>
       <div class="topbar">
-        <span class="pill yellow" id="userBadge">Nicht angemeldet</span>
-        <span class="pill" id="packageBadge">Kein aktiver Zugang</span>
-        <span class="pill red hidden" id="adminBadge">Admin aktiv</span>
-        <div class="hero-actions">
-          <button type="button" class="outline" onclick="toggleHelp()">App installieren / Hilfe</button>
-          <button type="button" class="red hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
-        </div>
-      </div>
-      <div id="syncStatus" class="status warn" style="display:none;"></div>
-      <div id="helpBox" class="help-box">
+  <span class="pill yellow" id="nameBadge">Nicht angemeldet</span>
+  <span class="pill" id="emailBadge">—</span>
+  <span class="pill" id="packageBadge">Kein aktiver Zugang</span>
+  <span class="pill red hidden" id="adminBadge">Admin aktiv</span>
+
+  <div class="hero-actions">
+    <button type="button" class="outline" onclick="toggleHelp()">App installieren / Hilfe</button>
+    <button type="button" class="outline" onclick="toggleAccess()">Zugang &amp; Laufzeit</button>
+    <button type="button" class="outline hidden" id="topAdminBtn" onclick="toggleAdmin()">Admin</button>
+    <button type="button" class="red hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
+  </div>
+</div>
+
+<div id="syncStatus" class="status warn" style="display:none;"></div>
+
+<div class="top-panels">
+  <div id="helpBox" class="hero-panel">
+    <strong>App aufs Handy speichern</strong><br><br>
+    <strong>Android:</strong><br>
+    1. Link aus der Nachricht kopieren<br>
+    2. Chrome öffnen<br>
+    3. Link oben einfügen und öffnen<br>
+    4. Oben rechts auf die 3 Punkte tippen<br>
+    5. „Zum Startbildschirm hinzufügen“ auswählen<br>
+    6. „Installieren“ auswählen<br><br>
+    <strong>iPhone:</strong><br>
+    1. Link in Safari öffnen<br>
+    2. Unten auf Teilen tippen<br>
+    3. „Zum Home-Bildschirm“ auswählen<br>
+    4. Hinzufügen drücken<br><br>
+    <strong>PC:</strong><br>
+    Link einfach im Browser öffnen und mit demselben Konto anmelden.
+  </div>
+
+  <div id="accessBox" class="hero-panel">
+    <h3>Zugang &amp; Laufzeit</h3>
+    <div id="accessInfo" class="status info">Melde dich an, um deine Laufzeit zu sehen.</div>
+    <div class="toolbar">
+      <button type="button" class="outline" onclick="contactAdmin()">Admin kontaktieren</button>
+    </div>
+  </div>
+
+  <div id="adminPanel" class="hero-panel hidden">
+    <h3>Adminbereich</h3>
+    <div class="toolbar">
+      <button type="button" onclick="loadUsers()">Nutzer laden</button>
+    </div>
+    <div id="adminUsersList" class="entry-list"></div>
+  </div>
+</div>
         <strong>App aufs Handy speichern</strong><br><br>
         <strong>Android:</strong><br>
         1. Link aus der Nachricht kopieren<br>
@@ -188,13 +233,8 @@
       </div>
     </div>
 
-    <div class="card hidden" id="adminPanel">
-      <h2>Adminbereich</h2>
-      <div class="toolbar">
-        <button type="button" onclick="loadUsers()">Anfragen / Nutzer laden</button>
-      </div>
-      <div id="adminUsersList" class="entry-list"></div>
-    </div>
+    
+      
 
     <div class="card" style="margin-top:18px;">
       <div class="tabs">
@@ -384,8 +424,22 @@
   let profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode:'' };
   let unsubTrips = null, unsubHotels = null, unsubFuels = null, unsubKms = null;
 
-  function toggleHelp(){ $('helpBox').style.display = $('helpBox').style.display === 'block' ? 'none' : 'block'; }
-  window.toggleHelp = toggleHelp;
+
+window.toggleAdmin = toggleAdmin;
+  function toggleHelp(){
+  $('helpBox').classList.toggle('show');
+}
+window.toggleHelp = toggleHelp;
+
+function toggleAccess(){
+  $('accessBox').classList.toggle('show');
+}
+window.toggleAccess = toggleAccess;
+
+function toggleAdmin(){
+  $('adminPanel').classList.toggle('show');
+}
+window.toggleAdmin = toggleAdmin;
   function showTab(tabId, btn){
     document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
