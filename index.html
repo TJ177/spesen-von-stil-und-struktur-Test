@@ -762,13 +762,64 @@ window.toggleAdmin = toggleAdmin;
   async function deleteTrip(id){ if(!confirm('Diese Fahrt wirklich löschen?')) return; await deleteDoc(doc(db,'users',currentUser.uid,'trips',id)); }
   window.deleteTrip = deleteTrip;
   function subscribeAll(){
-    if(unsubTrips) unsubTrips(); if(unsubHotels) unsubHotels(); if(unsubFuels) unsubFuels(); if(unsubKms) unsubKms();
-    if(!currentUser) return;
-    unsubTrips = onSnapshot(query(collection(db,'users',currentUser.uid,'trips'), orderBy('startTime','asc')), snap=>{ trips=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, err=> $('syncStatus').textContent='Fahrten Sync-Fehler: '+err.message);
-    unsubHotels = onSnapshot(query(collection(db,'users',currentUser.uid,'hotels'), orderBy('checkin','asc')), snap=>{ hotels=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
-    unsubFuels = onSnapshot(query(collection(db,'users',currentUser.uid,'fuels'), orderBy('date','asc')), snap=>{ fuels=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
-    unsubKms = onSnapshot(query(collection(db,'users',currentUser.uid,'kms'), orderBy('date','asc')), snap=>{ kms=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{});
-  }
+  if(unsubTrips) unsubTrips();
+  if(unsubHotels) unsubHotels();
+  if(unsubFuels) unsubFuels();
+  if(unsubKms) unsubKms();
+
+  if(!currentUser) return;
+
+  console.log('SUBSCRIBE gestartet für:', currentUser.uid);
+
+  unsubTrips = onSnapshot(
+    collection(db,'users',currentUser.uid,'trips'),
+    snap => {
+      trips = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      console.log('Trips geladen:', trips.length);
+      renderAll();
+    },
+    err => {
+      console.log('Trips Fehler:', err);
+      $('syncStatus').textContent = 'Fahrten Sync-Fehler: ' + err.message;
+    }
+  );
+
+  unsubHotels = onSnapshot(
+    collection(db,'users',currentUser.uid,'hotels'),
+    snap => {
+      hotels = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      console.log('Hotels geladen:', hotels.length);
+      renderAll();
+    },
+    err => {
+      console.log('Hotels Fehler:', err);
+    }
+  );
+
+  unsubFuels = onSnapshot(
+    collection(db,'users',currentUser.uid,'fuels'),
+    snap => {
+      fuels = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      console.log('Fuels geladen:', fuels.length);
+      renderAll();
+    },
+    err => {
+      console.log('Fuels Fehler:', err);
+    }
+  );
+
+  unsubKms = onSnapshot(
+    collection(db,'users',currentUser.uid,'kms'),
+    snap => {
+      kms = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      console.log('KMs geladen:', kms.length);
+      renderAll();
+    },
+    err => {
+      console.log('KMs Fehler:', err);
+    }
+  );
+}
   async function loadUsers(){
     if(!isAdmin()) return;
     const wrap=$('adminUsersList'); wrap.innerHTML='<div class="muted">Lade Nutzer…</div>';
@@ -783,14 +834,24 @@ window.toggleAdmin = toggleAdmin;
   onAuthStateChanged(auth, async (user)=>{
     currentUser = user || null;
     if(currentUser){
-      updateBadges();
-      renderSyncState('Synchronisation aktiv.','ok');
-      $('loginCard').classList.add('hidden');
-      $('adminPanel').classList.toggle('hidden', !isAdmin());
-      await loadProfile();
-      updateBadges(); updateProfileUi();
-      subscribeAll();
-      if(isAdmin()) loadUsers();
+  updateBadges();
+  renderSyncState('Synchronisation aktiv.','ok');
+  $('loginCard').classList.add('hidden');
+  $('adminPanel').classList.toggle('hidden', !isAdmin());
+
+  await loadProfile();
+  updateBadges();
+  updateProfileUi();
+
+  subscribeAll();
+  renderAll();
+
+  setTimeout(() => {
+    renderAll();
+  }, 1200);
+
+  if(isAdmin()) loadUsers();
+}
     }else{
       $('loginCard').classList.remove('hidden');
       $('adminPanel').classList.add('hidden');
