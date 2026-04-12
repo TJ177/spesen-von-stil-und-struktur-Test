@@ -223,15 +223,7 @@
         <div id="profileStatus" class="status info">Noch kein Profil geladen.</div>
       </div>
 
-      <div class="section">
-        <h3>Zugang &amp; Laufzeit</h3>
-        <div id="accessInfo" class="status info">Melde dich an, um deine Laufzeit zu sehen.</div>
-        <div class="toolbar">
-          <button type="button" class="outline" onclick="contactAdmin()">Admin kontaktieren</button>
-        </div>
-        <div class="small">Alle starten mit einer 7-tägigen Gold-Testphase. Drei Tage vor Ablauf erscheint ein Hinweis in der App.</div>
-      </div>
-    </div>
+      
 
     
       
@@ -653,7 +645,7 @@ window.toggleAdmin = toggleAdmin;
       }
       updateProfileUi();
       localStatus('profileStatus','Profil geladen.','ok');
-      await setDoc(doc(db,'profiles',currentUser.uid), { email: currentUser.email, displayName: profile.displayName || '', packageName: profile.packageName || 'Standard', activeUntil: profile.activeUntil || '', updatedAt: Date.now() }, {merge:true});
+       
     }catch(e){
       profile = { displayName:'', packageName:'Standard', activeUntil:'', company:'', vehicle:'', plate:'', referralCode: computeRefCode('',currentUser?.email) };
       updateProfileUi();
@@ -669,7 +661,7 @@ window.toggleAdmin = toggleAdmin;
       profile.plate = $('plate').value.trim();
       profile.referralCode = computeRefCode(profile.displayName,currentUser.email);
       await setDoc(doc(db,'users',currentUser.uid,'meta','profile'), profile, {merge:true});
-      await setDoc(doc(db,'profiles',currentUser.uid), { email: currentUser.email, displayName: profile.displayName || '', packageName: profile.packageName || 'Standard', activeUntil: profile.activeUntil || '', updatedAt: Date.now() }, {merge:true});
+      
       updateProfileUi(); updateBadges();
       localStatus('profileStatus','Profil gespeichert.','ok');
     }catch(e){ localStatus('profileStatus','Profil konnte nicht gespeichert werden.','warn'); }
