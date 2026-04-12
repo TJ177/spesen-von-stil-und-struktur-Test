@@ -250,7 +250,7 @@
             <div class="stat month-tile month-fuel"><div class="label">Tanken</div><div class="value" id="monthlyFuel">0,00 €</div></div>
             <div class="month-export">
               <button type="button" class="outline" onclick="exportCSV()">Liste exportieren</button>
-              <button type="button" onclick="exportPDF()">PDF exportieren</button>
+              <button type="button" onclick="openPdfSelection()">PDF Auswahl</button>
             </div>
           </div>
         </div>
@@ -364,7 +364,7 @@
 
         <div id="pdf" class="tab-panel">
           <h2>PDF-Export</h2>
-          <div class="note-box">Wähle aus, welche Monatsdaten in die PDF sollen. Zeitspesen listen die einzelnen Fahrten mit Dauer und berechneter Spese. Belege sind Beta und nur für Gold-Mitglieder freigeschaltet.</div>
+          <div class="note-box">Wähle hier zuerst per Häkchen aus, was in die PDF soll. Erst danach auf „Auswahl als PDF erstellen“ drücken. Der Button in der Monatsübersicht öffnet nur diese Auswahl und erstellt nicht sofort die PDF.</div>
           <div class="pdf-options">
             <label class="pdf-check"><input id="pdfIncludeTrips" type="checkbox" checked> <span>Zeitspesen</span></label>
             <label class="pdf-check"><input id="pdfIncludeHotels" type="checkbox" checked> <span>Hotel</span></label>
@@ -372,7 +372,7 @@
             <label class="pdf-check"><input id="pdfIncludeReceipts" type="checkbox"> <span>Belege (Gold Beta)</span></label>
           </div>
           <div class="pdf-actions">
-            <button type="button" onclick="exportPDF()">PDF erstellen</button>
+            <button type="button" onclick="exportPDF()">Auswahl als PDF erstellen</button>
           </div>
           <div class="receipt-note">Hinweis: Belege bitte nach dem Einscannen prüfen. Beta-Version, Fehler nicht ausgeschlossen.</div>
         </div>
@@ -782,6 +782,17 @@
     if(btn) btn.classList.add('active');
   }
   window.showTab = showTab;
+
+  function openPdfSelection(){
+    const pdfBtn = document.querySelector('.tab-btn[data-tab="pdf"]');
+    if(pdfBtn){
+      showTab('pdf', pdfBtn);
+      pdfBtn.scrollIntoView({behavior:'smooth', block:'center'});
+    }else{
+      alert('PDF-Auswahl wurde nicht gefunden.');
+    }
+  }
+  window.openPdfSelection = openPdfSelection;
 
   function updateBadges(){
     if(!currentUser){
