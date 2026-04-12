@@ -250,7 +250,7 @@
             <div class="stat month-tile month-fuel"><div class="label">Tanken</div><div class="value" id="monthlyFuel">0,00 €</div></div>
             <div class="month-export">
               <button type="button" class="outline" onclick="exportCSV()">Liste exportieren</button>
-              <button type="button" onclick="openPdfSelection()">PDF Auswahl</button>
+              <button type="button" onclick="exportPDFQuick()">PDF exportieren</button>
             </div>
           </div>
         </div>
@@ -283,9 +283,10 @@
           <button class="tab-btn" data-tab="hotel" onclick="showTab('hotel', this)">Hotel</button>
           <button class="tab-btn" data-tab="tanken" onclick="showTab('tanken', this)">Tanken</button>
           <button class="tab-btn" data-tab="kilometer" onclick="showTab('kilometer', this)">Kilometer</button>
+          <button class="tab-btn" data-tab="pdf" onclick="showTab('pdf', this)">PDF-Auswahl</button>
+          <button class="tab-btn" data-tab="rechnung" onclick="showTab('rechnung', this)">Rechnung</button>
           <button class="tab-btn" data-tab="pakete" onclick="showTab('pakete', this)">Pakete</button>
           <button class="tab-btn" data-tab="empfehlen" onclick="showTab('empfehlen', this)">Empfehlen</button>
-          <button class="tab-btn" data-tab="rechnung" onclick="showTab('rechnung', this)">Rechnung</button>
         </div>
 
         <div id="fahrt" class="tab-panel active">
@@ -397,8 +398,38 @@
 
         <div id="rechnung" class="tab-panel">
           <h2>Rechnung</h2>
-          <div class="note-box">Rechnung ist sichtbar, aber noch nicht aktiviert / bald kommend.</div>
+          <div class="note-box">Hier ist die Rechnungs-Vorschau vorbereitet. Die eigentliche Logik kann später erweitert werden. Rechnungsnummer läuft fortlaufend weiter. Lieferschein-Scan ist als Feld schon mit vorbereitet.</div>
+          <div class="field-row-compact">
+            <div><label>Firmenname</label><input id="invoiceCompanyName" placeholder="Firma / Absender"></div>
+            <div><label>Rechnungsnummer</label><div class="mini-dt-row"><input id="invoiceNumber" readonly><button type="button" class="outline" onclick="nextInvoiceNumber()">Nächste Nr.</button></div></div>
+          </div>
+          <div class="field-row-compact">
+            <div><label>Firmenanschrift</label><input id="invoiceCompanyAddress" placeholder="Straße, Hausnummer"></div>
+            <div><label>Ort / PLZ</label><input id="invoiceCompanyCity" placeholder="PLZ Ort"></div>
+          </div>
+          <div class="field-row-compact">
+            <div><label>Rechnung an</label><input id="invoiceCustomer" placeholder="Kunde / Firma"></div>
+            <div><label>Kundenanschrift</label><input id="invoiceCustomerAddress" placeholder="Straße, Hausnummer, PLZ Ort"></div>
+          </div>
+          <div class="field-row-compact">
+            <div><label>Rechnungsdatum</label><input id="invoiceDate" type="date"></div>
+            <div><label>Leistungsmonat</label><select id="invoiceMonth"></select></div>
+          </div>
+          <div class="field-row-compact">
+            <div><label>Leistungsbeschreibung</label><input id="invoiceText" placeholder="z. B. Spesen / Hotel / Tanken"></div>
+            <div><label>Betrag €</label><input id="invoiceAmount" placeholder="0,00"></div>
+          </div>
+          <div class="receipt-box">
+            <label for="deliveryReceipt">Scan Lieferschein</label>
+            <input id="deliveryReceipt" type="file" accept="image/*,.pdf">
+            <div class="receipt-note">Lieferschein-Scan ist vorbereitet. Einbindung in Rechnung/PDF kann später erweitert werden.</div>
+          </div>
+          <div class="compact-toolbar">
+            <button type="button" onclick="prepareInvoicePreview()">Rechnungsvorschau</button>
+          </div>
+          <div id="invoiceStatus" class="status info">Rechnungsbereich vorbereitet.</div>
         </div>
+
       </div>
     </div>
   </div>
@@ -794,6 +825,125 @@
   }
   window.openPdfSelection = openPdfSelection;
 
+  function exportPDFWithOptions(opts = {}){
+    const includeTrips = opts.includeTrips ?? ($('pdfIncludeTrips')?.checked ?? true);
+    const includeHotels = opts.includeHotels ?? ($('pdfIncludeHotels')?.checked ?? true);
+    const includeFuels = opts.includeFuels ?? ($('pdfIncludeFuels')?.checked ?? true);
+    const includeReceipts = opts.includeReceipts ?? ((($('pdfIncludeReceipts')?.checked ?? false) && isGoldMember()));
+
+    const month = selectedMonth();
+    const monthlyTrips = sortByTime(localState.trips.filter(t => formatMonthKey(t.startTime) === month),'startTime',$('sortTrips').value).map((t,idx)=>({ ...t, displayNumber: idx+1 }));
+    const monthlyHotels = sortByTime(localState.hotels.filter(h => formatMonthKey(h.checkin) === month),'checkin',$('sortHotels')?.value || 'desc').map((h,idx)=>({ ...h, displayNumber: idx+1 }));
+    let monthlyFuels = [...localState.fuels.filter(f => String(f.date || '').slice(0,7) === month)].sort((a,b)=> `${a.date||''} ${a.time||''}`.localeCompare(`${b.date||''} ${b.time||''}`));
+    if(( $('sortFuels')?.value || 'desc') === 'desc') monthlyFuels = monthlyFuels.reverse();
+    monthlyFuels = monthlyFuels.map((f,idx)=>({ ...f, displayNumber: idx+1 }));
+
+    const tripSum = monthlyTrips.reduce((s,t)=>s + Number(t.allowance || 0),0);
+    const hotelSum = monthlyHotels.reduce((s,h)=>s + Number(h.price || 0),0);
+    const fuelSum = monthlyFuels.reduce((s,f)=>s + Number(f.amount || 0),0);
+    const total = (includeTrips ? tripSum : 0) + (includeHotels ? hotelSum : 0) + (includeFuels ? fuelSum : 0);
+
+    const sectionStyle = 'margin-top:20px;';
+    const tableStyle = 'width:100%;border-collapse:collapse;margin-top:10px;';
+    const cellStyle = 'border:1px solid #111;padding:8px;text-align:left;font-size:13px;vertical-align:top;';
+    const headStyle = 'background:#e5e7eb;';
+    const sumBox = (label, value) => `<div style="margin-top:10px;border:2px solid #111;padding:10px;font-weight:700;">${label}: ${value}</div>`;
+
+    const tripRows = monthlyTrips.map(t => `<tr><td style="${cellStyle}">Fahrt ${t.displayNumber}</td><td style="${cellStyle}">${formatGermanDate(t.startTime)}</td><td style="${cellStyle}">${formatGermanDate(t.endTime)}</td><td style="${cellStyle}">${formatDuration(Number(t.hours||0))}</td><td style="${cellStyle}">${formatEuro(t.allowance||0)}</td></tr>`).join('');
+    const hotelRows = monthlyHotels.map(h => `<tr><td style="${cellStyle}">Hotel ${h.displayNumber}</td><td style="${cellStyle}">${formatGermanDate(h.checkin)}${h.checkout ? `<br>bis ${formatGermanDate(h.checkout)}` : ''}</td><td style="${cellStyle}">${escapeHtml(h.name)}</td><td style="${cellStyle}">${formatEuro(h.price||0)}</td></tr>`).join('');
+    const fuelRows = monthlyFuels.map(f => `<tr><td style="${cellStyle}">Tanken ${f.displayNumber}</td><td style="${cellStyle}">${escapeHtml(f.date)} ${escapeHtml(f.time || '')}</td><td style="${cellStyle}">${escapeHtml(f.station || '')}${f.fuelType ? `<br>${escapeHtml(f.fuelType)}` : ''}${f.liters ? `<br>${String(f.liters).replace('.',',')} L` : ''}</td><td style="${cellStyle}">${formatEuro(f.amount||0)}</td></tr>`).join('');
+
+    let pdfHtml = `<!doctype html><html><head><meta charset="utf-8"><title>Monatsdokumentation ${month}</title></head><body style="font-family:Arial;padding:24px;color:#111"><h1 style="margin:0 0 6px 0">Monatsdokumentation</h1><div style="margin-bottom:4px">${formatMonthLabel(month)}</div><div style="margin-bottom:4px">Name: ${escapeHtml(localState.profile.displayName || currentUser?.email || '-')}</div><div style="margin-bottom:4px">E-Mail: ${escapeHtml(currentUser?.email || '-')}</div>`;
+
+    if(includeTrips){
+      pdfHtml += `<div style="${sectionStyle}"><h2>Zeitspesen</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Start</th><th style="${cellStyle}${headStyle}">Ende</th><th style="${cellStyle}${headStyle}">Dauer</th><th style="${cellStyle}${headStyle}">Spese</th></tr></thead><tbody>${tripRows || `<tr><td colspan="5" style="${cellStyle}">Keine Fahrten in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Zeitspesen', formatEuro(tripSum))}</div>`;
+    }
+
+    if(includeHotels){
+      pdfHtml += `<div style="${sectionStyle}"><h2>Hotel</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Hotel</th><th style="${cellStyle}${headStyle}">Preis</th></tr></thead><tbody>${hotelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Hotel-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Hotel', formatEuro(hotelSum))}</div>`;
+    }
+
+    if(includeFuels){
+      pdfHtml += `<div style="${sectionStyle}"><h2>Tanken</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Details</th><th style="${cellStyle}${headStyle}">Betrag</th></tr></thead><tbody>${fuelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Tank-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Tanken', formatEuro(fuelSum))}</div>`;
+    }
+
+    pdfHtml += sumBox('Gesamtsumme ausgewählt', formatEuro(total));
+
+    if(includeReceipts){
+      const receiptItems = [];
+      if(includeHotels){
+        monthlyHotels.filter(h => h.receiptDataUrl).forEach(h => receiptItems.push({type:'Hotel', number:`Hotel ${h.displayNumber}`, date: formatGermanDate(h.checkin), data:h.receiptDataUrl}));
+      }
+      if(includeFuels){
+        monthlyFuels.filter(f => f.receiptDataUrl).forEach(f => receiptItems.push({type:'Tanken', number:`Tanken ${f.displayNumber}`, date: `${f.date || ''} ${f.time || ''}`.trim(), data:f.receiptDataUrl}));
+      }
+      pdfHtml += `<div style="${sectionStyle};page-break-before:always"><h2>Beleganhang</h2><div style="margin-bottom:12px;padding:10px;border:1px solid #999;background:#fff8db">Hinweis: Belege wurden automatisch zugeordnet. Bitte nach dem Einscannen prüfen. Beta-Version, Fehler nicht ausgeschlossen.</div>`;
+      if(receiptItems.length){
+        receiptItems.forEach((r, idx) => {
+          pdfHtml += `<div style="margin-bottom:24px;page-break-inside:avoid"><div style="font-weight:700;margin-bottom:8px">Beleg ${idx+1} – ${escapeHtml(r.type)} – ${escapeHtml(r.number)} – ${escapeHtml(r.date)}</div>${String(r.data).startsWith('data:image') ? `<img src="${r.data}" style="max-width:100%;max-height:900px;border:1px solid #999;border-radius:8px">` : `<div style="padding:12px;border:1px solid #999">PDF-Beleg gespeichert – direkte Einbettung im Browser nicht verfügbar.</div>`}</div>`;
+        });
+      } else {
+        pdfHtml += `<div>Keine Belege für die aktuelle Auswahl im Monat gespeichert.</div>`;
+      }
+      pdfHtml += `</div>`;
+    }
+
+    pdfHtml += `</body></html>`;
+    const w = window.open('', '_blank');
+    if(!w) return alert('Pop-up blockiert.');
+    w.document.open(); w.document.write(pdfHtml); w.document.close(); w.focus(); setTimeout(() => w.print(), 300);
+  }
+
+  function exportPDFQuick(){
+    exportPDFWithOptions({
+      includeTrips: true,
+      includeHotels: true,
+      includeFuels: true,
+      includeReceipts: isGoldMember()
+    });
+  }
+  window.exportPDFQuick = exportPDFQuick;
+
+  function nextInvoiceNumber(){
+    const key = 'svss_invoice_counter';
+    let current = Number(localStorage.getItem(key) || '1');
+    current += 1;
+    localStorage.setItem(key, String(current));
+    const year = new Date().getFullYear();
+    $('invoiceNumber').value = `${year}-${String(current).padStart(4, '0')}`;
+  }
+  window.nextInvoiceNumber = nextInvoiceNumber;
+
+  function seedInvoiceNumber(){
+    const key = 'svss_invoice_counter';
+    let current = Number(localStorage.getItem(key) || '1');
+    const year = new Date().getFullYear();
+    $('invoiceNumber').value = `${year}-${String(current).padStart(4, '0')}`;
+    if($('invoiceDate') && !$('invoiceDate').value){
+      $('invoiceDate').value = formatLocalDate(new Date());
+    }
+  }
+
+  function syncInvoiceMonthOptions(){
+    const invoiceMonth = $('invoiceMonth');
+    const monthSelect = $('monthSelect');
+    if(!invoiceMonth || !monthSelect) return;
+    invoiceMonth.innerHTML = monthSelect.innerHTML;
+    invoiceMonth.value = monthSelect.value;
+  }
+
+  function prepareInvoicePreview(){
+    const amount = $('invoiceAmount')?.value || '0,00';
+    const text = $('invoiceText')?.value || 'Leistung';
+    const invoiceHtml = `<!doctype html><html><head><meta charset="utf-8"><title>Rechnungsvorschau</title></head><body style="font-family:Arial;padding:24px;color:#111"><h1>Rechnung</h1><div><strong>${$('invoiceCompanyName').value || '-'}</strong></div><div>${$('invoiceCompanyAddress').value || ''}</div><div>${$('invoiceCompanyCity').value || ''}</div><hr><div><strong>Rechnungsnummer:</strong> ${$('invoiceNumber').value || '-'}</div><div><strong>Rechnungsdatum:</strong> ${$('invoiceDate').value || '-'}</div><div><strong>Leistungsmonat:</strong> ${$('invoiceMonth').value || '-'}</div><br><div><strong>Rechnung an:</strong> ${$('invoiceCustomer').value || '-'}</div><div>${$('invoiceCustomerAddress').value || ''}</div><br><table style="width:100%;border-collapse:collapse"><tr><th style="border:1px solid #111;padding:8px;text-align:left">Beschreibung</th><th style="border:1px solid #111;padding:8px;text-align:left">Betrag</th></tr><tr><td style="border:1px solid #111;padding:8px">${text}</td><td style="border:1px solid #111;padding:8px">${amount} €</td></tr></table></body></html>`;
+    const w = window.open('', '_blank');
+    if(!w) return alert('Pop-up blockiert.');
+    w.document.open(); w.document.write(invoiceHtml); w.document.close();
+    $('invoiceStatus').className = 'status ok';
+    $('invoiceStatus').textContent = 'Rechnungsvorschau geöffnet.';
+  }
+  window.prepareInvoicePreview = prepareInvoicePreview;
+
   function updateBadges(){
     if(!currentUser){
       $('nameBadge').textContent = 'Nicht angemeldet';
@@ -963,6 +1113,8 @@
     updateBadges();
     updatePdfUi();
     updateLayoutMode();
+    syncInvoiceMonthOptions();
+    seedInvoiceNumber();
   }
 
   function queueOp(type, collectionName, data, id){
@@ -1431,72 +1583,7 @@
   window.exportCSV = exportCSV;
 
   function exportPDF(){
-    const month = selectedMonth();
-    const includeTrips = $('pdfIncludeTrips')?.checked ?? true;
-    const includeHotels = $('pdfIncludeHotels')?.checked ?? true;
-    const includeFuels = $('pdfIncludeFuels')?.checked ?? true;
-    const includeReceipts = ($('pdfIncludeReceipts')?.checked ?? false) && isGoldMember();
-
-    const monthlyTrips = sortByTime(localState.trips.filter(t => formatMonthKey(t.startTime) === month),'startTime',$('sortTrips').value).map((t,idx)=>({ ...t, displayNumber: idx+1 }));
-    const monthlyHotels = sortByTime(localState.hotels.filter(h => formatMonthKey(h.checkin) === month),'checkin',$('sortHotels')?.value || 'desc').map((h,idx)=>({ ...h, displayNumber: idx+1 }));
-    let monthlyFuels = [...localState.fuels.filter(f => String(f.date || '').slice(0,7) === month)].sort((a,b)=> `${a.date||''} ${a.time||''}`.localeCompare(`${b.date||''} ${b.time||''}`));
-    if(( $('sortFuels')?.value || 'desc') === 'desc') monthlyFuels = monthlyFuels.reverse();
-    monthlyFuels = monthlyFuels.map((f,idx)=>({ ...f, displayNumber: idx+1 }));
-
-    const tripSum = monthlyTrips.reduce((s,t)=>s + Number(t.allowance || 0),0);
-    const hotelSum = monthlyHotels.reduce((s,h)=>s + Number(h.price || 0),0);
-    const fuelSum = monthlyFuels.reduce((s,f)=>s + Number(f.amount || 0),0);
-    const total = (includeTrips ? tripSum : 0) + (includeHotels ? hotelSum : 0) + (includeFuels ? fuelSum : 0);
-
-    const sectionStyle = 'margin-top:20px;';
-    const tableStyle = 'width:100%;border-collapse:collapse;margin-top:10px;';
-    const cellStyle = 'border:1px solid #111;padding:8px;text-align:left;font-size:13px;vertical-align:top;';
-    const headStyle = 'background:#e5e7eb;';
-    const sumBox = (label, value) => `<div style="margin-top:10px;border:2px solid #111;padding:10px;font-weight:700;">${label}: ${value}</div>`;
-
-    const tripRows = monthlyTrips.map(t => `<tr><td style="${cellStyle}">Fahrt ${t.displayNumber}</td><td style="${cellStyle}">${formatGermanDate(t.startTime)}</td><td style="${cellStyle}">${formatGermanDate(t.endTime)}</td><td style="${cellStyle}">${formatDuration(Number(t.hours||0))}</td><td style="${cellStyle}">${formatEuro(t.allowance||0)}</td></tr>`).join('');
-    const hotelRows = monthlyHotels.map(h => `<tr><td style="${cellStyle}">Hotel ${h.displayNumber}</td><td style="${cellStyle}">${formatGermanDate(h.checkin)}${h.checkout ? `<br>bis ${formatGermanDate(h.checkout)}` : ''}</td><td style="${cellStyle}">${escapeHtml(h.name)}</td><td style="${cellStyle}">${formatEuro(h.price||0)}</td></tr>`).join('');
-    const fuelRows = monthlyFuels.map(f => `<tr><td style="${cellStyle}">Tanken ${f.displayNumber}</td><td style="${cellStyle}">${escapeHtml(f.date)} ${escapeHtml(f.time || '')}</td><td style="${cellStyle}">${escapeHtml(f.station || '')}${f.fuelType ? `<br>${escapeHtml(f.fuelType)}` : ''}${f.liters ? `<br>${String(f.liters).replace('.',',')} L` : ''}</td><td style="${cellStyle}">${formatEuro(f.amount||0)}</td></tr>`).join('');
-
-    let html = `<!doctype html><html><head><meta charset="utf-8"><title>Monatsdokumentation ${month}</title></head><body style="font-family:Arial;padding:24px;color:#111"><h1 style="margin:0 0 6px 0">Monatsdokumentation</h1><div style="margin-bottom:4px">${formatMonthLabel(month)}</div><div style="margin-bottom:4px">Name: ${escapeHtml(localState.profile.displayName || currentUser?.email || '-')}</div><div style="margin-bottom:14px">E-Mail: ${escapeHtml(currentUser?.email || '-')}</div>`;
-
-    if(includeTrips){
-      html += `<div style="${sectionStyle}"><h2>Zeitspesen</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Start</th><th style="${cellStyle}${headStyle}">Ende</th><th style="${cellStyle}${headStyle}">Dauer</th><th style="${cellStyle}${headStyle}">Spese</th></tr></thead><tbody>${tripRows || `<tr><td colspan="5" style="${cellStyle}">Keine Fahrten in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Zeitspesen', formatEuro(tripSum))}</div>`;
-    }
-
-    if(includeHotels){
-      html += `<div style="${sectionStyle}"><h2>Hotel</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Hotel</th><th style="${cellStyle}${headStyle}">Preis</th></tr></thead><tbody>${hotelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Hotel-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Hotel', formatEuro(hotelSum))}</div>`;
-    }
-
-    if(includeFuels){
-      html += `<div style="${sectionStyle}"><h2>Tanken</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Details</th><th style="${cellStyle}${headStyle}">Betrag</th></tr></thead><tbody>${fuelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Tank-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Tanken', formatEuro(fuelSum))}</div>`;
-    }
-
-    html += sumBox('Gesamtsumme ausgewählt', formatEuro(total));
-
-    if(includeReceipts){
-      const receiptItems = [];
-      if(includeHotels){
-        monthlyHotels.filter(h => h.receiptDataUrl).forEach(h => receiptItems.push({type:'Hotel', number:`Hotel ${h.displayNumber}`, date: formatGermanDate(h.checkin), data:h.receiptDataUrl}));
-      }
-      if(includeFuels){
-        monthlyFuels.filter(f => f.receiptDataUrl).forEach(f => receiptItems.push({type:'Tanken', number:`Tanken ${f.displayNumber}`, date: `${f.date || ''} ${f.time || ''}`.trim(), data:f.receiptDataUrl}));
-      }
-      html += `<div style="${sectionStyle};page-break-before:always"><h2>Beleganhang</h2><div style="margin-bottom:12px;padding:10px;border:1px solid #999;background:#fff8db">Hinweis: Belege wurden automatisch zugeordnet. Bitte nach dem Einscannen prüfen. Beta-Version, Fehler nicht ausgeschlossen.</div>`;
-      if(receiptItems.length){
-        receiptItems.forEach((r, idx) => {
-          html += `<div style="margin-bottom:24px;page-break-inside:avoid"><div style="font-weight:700;margin-bottom:8px">Beleg ${idx+1} – ${escapeHtml(r.type)} – ${escapeHtml(r.number)} – ${escapeHtml(r.date)}</div>${String(r.data).startsWith('data:image') ? `<img src="${r.data}" style="max-width:100%;max-height:900px;border:1px solid #999;border-radius:8px">` : `<div style="padding:12px;border:1px solid #999">PDF-Beleg gespeichert – direkte Einbettung im Browser nicht verfügbar.</div>`}</div>`;
-        });
-      } else {
-        html += `<div>Keine Belege für die aktuelle Auswahl im Monat gespeichert.</div>`;
-      }
-      html += `</div>`;
-    }
-
-    html += `</body></html>`;
-    const w = window.open('', '_blank');
-    if(!w) return alert('Pop-up blockiert.');
-    w.document.open(); w.document.write(html); w.document.close(); w.focus(); setTimeout(() => w.print(), 300);
+    exportPDFWithOptions();
   }
   window.exportPDF = exportPDF;
 
