@@ -787,13 +787,27 @@
     el.textContent = text;
   }
 
-  function closeAdminPanels(){ ['adminPanel','usersPanel','requestsPanel'].forEach(id => $(id)?.classList.remove('show')); }
+  function closeAdminPanels(){
+    ['adminPanel','usersPanel','requestsPanel'].forEach(id => {
+      const el = $(id);
+      if(!el) return;
+      el.classList.remove('show');
+      el.classList.add('hidden');
+    });
+  }
   function togglePanel(id){
+    const el = $(id);
+    if(!el) return;
     if(id === 'helpBox' || id === 'accessBox'){
-      $(id).classList.toggle('show');
+      el.classList.toggle('show');
       return;
     }
-    $(id).classList.toggle('show');
+    const willOpen = !el.classList.contains('show');
+    closeAdminPanels();
+    if(willOpen){
+      el.classList.remove('hidden');
+      el.classList.add('show');
+    }
   }
   window.togglePanel = togglePanel;
 
@@ -801,15 +815,18 @@
     if(!isAdmin()) return;
     closeAdminPanels();
     if(which === 'users'){
+      $('usersPanel')?.classList.remove('hidden');
       $('usersPanel')?.classList.add('show');
       await loadUsers();
       return;
     }
     if(which === 'requests'){
+      $('requestsPanel')?.classList.remove('hidden');
       $('requestsPanel')?.classList.add('show');
       await loadPackageRequests();
       return;
     }
+    $('adminPanel')?.classList.remove('hidden');
     $('adminPanel')?.classList.add('show');
   }
   window.openAdminPanel = openAdminPanel;
