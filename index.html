@@ -1258,6 +1258,11 @@
 
   function updateQueueBadge(){
     const pending = Array.isArray(localState.queue) ? localState.queue.length : 0;
+    if(isAdmin()){
+      const openMailbox = (localState.mailbox || []).filter(m => String(m.status || '').toLowerCase() !== 'erledigt').length;
+      $('queueBadge').textContent = openMailbox > 0 ? `${openMailbox} offen` : (pending > 0 ? `${pending} offen` : 'bereit');
+      return;
+    }
     $('queueBadge').textContent = pending > 0 ? `${pending} offen` : 'bereit';
   }
 
@@ -1470,13 +1475,19 @@
     const packageSection = $('packageRequestSection');
     if(composeSection) composeSection.classList.toggle('hidden', isAdmin());
     if(packageSection) packageSection.classList.toggle('hidden', isAdmin());
+    const noteBox = document.querySelector('#postfach .note-box');
+    if(noteBox){
+      noteBox.textContent = isAdmin()
+        ? 'Admin-Ansicht: Hier siehst du alle Paket-Anfragen und Nachrichten der Nutzer. Antworten und Status ändern gehen direkt im Verlauf.'
+        : 'Hier laufen deine Paket-Anfragen und Nachrichten. Admin kann antworten, normale Nutzer können hier direkt schreiben.';
+    }
 
     const items = [...(localState.mailbox || [])]
       .filter(m => {
         const from = String(m.fromEmail || '').toLowerCase();
         const to = String(m.toEmail || '').toLowerCase();
         if(isAdmin()){
-          return to === adminEmail || from === adminEmail;
+          return true;
         }
         return from === myEmail || to === myEmail;
       })
@@ -1507,8 +1518,14 @@
 
     const adminWrap = $('adminMailboxList');
     if(adminWrap && isAdmin()){
-      const inbox = items.filter(m => String(m.toEmail || '').toLowerCase() === ADMIN_EMAIL.toLowerCase());
-      adminWrap.innerHTML = inbox.length ? `<div class="small">Offene/gesendete Postfach-Einträge: ${inbox.length}</div>` : '<div class="small">Noch keine Postfach-Anfragen.</div>';
+      const openItems = items.filter(m => String(m.status || '').toLowerCase() !== 'erledigt');
+      adminWrap.innerHTML = `
+        <div class="entry-card">
+          <div class="trip-title">Admin-Postfach Übersicht</div>
+          <div class="small">Gesamt geladen: ${items.length}</div>
+          <div class="small">Offen / nicht erledigt: ${openItems.length}</div>
+          <div class="small">Hinweis: Als Admin werden hier jetzt alle Postfach-Einträge angezeigt, nicht nur Antworten.</div>
+        </div>`;
     }
   }
 
@@ -1673,8 +1690,12 @@
   }
   window.markMailboxDone = markMailboxDone;
 
-  function loadMailbox(){
+  async function loadMailbox(){
+    if(currentUser && online()){
+      await pullRemoteOnce();
+    }
     renderMailbox();
+    if(isAdmin()) await loadUsers();
   }
   window.loadMailbox = loadMailbox;
 
@@ -2127,7 +2148,10 @@
       await loadProfile();
       await pullRemoteOnce();
       processQueue();
-      if(isAdmin()) loadUsers();
+      if(isAdmin()){
+        loadUsers();
+        loadMailbox();
+      }
     }else{
       localState = createEmptyState();
       $('loginCard').classList.remove('hidden');
