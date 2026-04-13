@@ -1503,6 +1503,7 @@
         </div>
         ${m.packageSummary ? `<div class="mail-meta" style="margin-top:8px">Paket: ${escapeHtml(m.packageSummary)}</div>` : ''}
         <div class="mail-body">${escapeHtml(m.body || '')}</div>
+        ${m.adminReply ? `<div class="note-box" style="margin-top:10px"><strong>Admin-Antwort:</strong><br>${escapeHtml(m.adminReply || '')}${m.adminReplyAt ? `<div class="small" style="margin-top:6px">${new Date(Number(m.adminReplyAt)).toLocaleString('de-DE')}</div>` : ''}</div>` : ''}
         ${isAdmin() ? `
           <div class="mail-controls">
             <div class="mail-reply">
@@ -1524,14 +1525,15 @@
           <div class="trip-title">Admin-Postfach Übersicht</div>
           <div class="small">Gesamt geladen: ${items.length}</div>
           <div class="small">Offen / nicht erledigt: ${openItems.length}</div>
-          <div class="small">Hinweis: Als Admin werden hier jetzt alle Postfach-Einträge angezeigt, nicht nur Antworten.</div>
+          <div class="small">Alle Einträge werden direkt aus den Nutzer-Postfächern geladen.</div>
         </div>`;
     }
   }
 
   async function syncMailboxDoc(item){
     if(!currentUser || !online()) return;
-    await setDoc(doc(db,'mailbox', item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
+    const targetUid = item.ownerUid || item.fromUid || currentUser.uid;
+    await setDoc(doc(db,'users',targetUid,'mailbox', item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
   }
 
   async function sendMailboxMessage(){
@@ -1548,6 +1550,7 @@
       fromEmail: currentUser.email || '',
       fromName: localState.profile.displayName || '',
       fromUid: currentUser.uid || '',
+      ownerUid: currentUser.uid || '',
       toEmail: ADMIN_EMAIL,
       adminEmail: ADMIN_EMAIL,
       status: 'offen',
@@ -1600,6 +1603,7 @@
       fromEmail: currentUser.email || '',
       fromName: localState.profile.displayName || '',
       fromUid: currentUser.uid || '',
+      ownerUid: currentUser.uid || '',
       toEmail: ADMIN_EMAIL,
       adminEmail: ADMIN_EMAIL,
       status: 'offen',
@@ -1633,34 +1637,21 @@
   async function replyToMailbox(messageId){
     if(!isAdmin()) return;
     const field = $(`reply_${messageId}`);
-    const text = (field?.value || '').trim();
-    if(!text) return alert('Bitte eine Antwort eingeben.');
+    const replyText = (field?.value || '').trim();
+    if(!replyText) return alert('Bitte eine Antwort eingeben.');
     const original = (localState.mailbox || []).find(m => m.id === messageId);
     if(!original) return alert('Originalnachricht nicht gefunden.');
-    const reply = {
-      id: crypto.randomUUID(),
-      type: 'admin_reply',
-      subject: `Antwort: ${original.subject || 'Nachricht'}`,
-      body: text,
-      fromEmail: ADMIN_EMAIL,
-      fromName: localState.profile.displayName || 'Admin',
-      toEmail: original.fromEmail || '',
-      status: 'gesendet',
-      createdAtMs: Date.now(),
-      updatedAt: Date.now(),
-      syncStatus: 'pending'
-    };
-    localState.mailbox.push(reply);
+    original.adminReply = replyText;
+    original.adminReplyAt = Date.now();
+    original.answeredBy = ADMIN_EMAIL;
     original.status = 'beantwortet';
     original.updatedAt = Date.now();
+    original.syncStatus = 'pending';
     saveLocalState();
     renderMailbox();
-    queueOp('upsert','mailbox',reply,reply.id);
     queueOp('upsert','mailbox',original,original.id);
     try{
-      await syncMailboxDoc(reply);
       await syncMailboxDoc(original);
-      reply.syncStatus = 'synced';
       original.syncStatus = 'synced';
       saveLocalState();
       renderMailbox();
@@ -1676,6 +1667,7 @@
     if(!original) return;
     original.status = 'erledigt';
     original.updatedAt = Date.now();
+    original.syncStatus = 'pending';
     saveLocalState();
     renderMailbox();
     queueOp('upsert','mailbox',original,original.id);
@@ -1726,7 +1718,8 @@
   async function upsertRemote(collectionName, item){
     if(!currentUser) return;
     if(collectionName === 'mailbox'){
-      await setDoc(doc(db,'mailbox',item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
+      const targetUid = item.ownerUid || item.fromUid || currentUser.uid;
+      await setDoc(doc(db,'users',targetUid,'mailbox',item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
       return;
     }
     await setDoc(doc(db,'users',currentUser.uid,collectionName,item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
@@ -1735,7 +1728,6 @@
   async function deleteRemote(collectionName, id){
     if(!currentUser) return;
     if(collectionName === 'mailbox'){
-      await setDoc(doc(db,'mailbox',id), { deleted:true, serverUpdatedAt: serverTimestamp() }, { merge:true });
       return;
     }
     await setDoc(doc(db,'users',currentUser.uid,collectionName,id), { deleted:true, serverUpdatedAt: serverTimestamp() }, { merge:true });
@@ -1793,7 +1785,21 @@
   async function loadRemoteCollection(collectionName){
     if(!currentUser || !online()) return [];
     if(collectionName === 'mailbox'){
-      const snap = await getDocs(collection(db,'mailbox'));
+      if(isAdmin()){
+        const profileSnap = await getDocs(collection(db,'profiles'));
+        const userIds = [...new Set(profileSnap.docs.map(d => d.id).filter(Boolean))];
+        let allItems = [];
+        for(const uid of userIds){
+          try{
+            const snap = await getDocs(collection(db,'users',uid,'mailbox'));
+            allItems.push(...snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted));
+          }catch(e){
+            console.log('Mailbox-Load Fehler für UID:', uid, e);
+          }
+        }
+        return allItems;
+      }
+      const snap = await getDocs(collection(db,'users',currentUser.uid,'mailbox'));
       return snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted);
     }
     const snap = await getDocs(collection(db,'users',currentUser.uid,collectionName));
@@ -1830,6 +1836,7 @@
         localState.profile.activeUntil = '';
       }
       saveLocalState();
+      try{ await syncPublicProfile(); }catch(e){ console.log('syncPublicProfile Fehler:', e); }
       updateProfileUi();
       $('profileStatus').className = 'status ok';
       $('profileStatus').textContent = 'Profil geladen.';
@@ -1844,10 +1851,12 @@
   async function syncPublicProfile(){
     if(!currentUser) return;
     await setDoc(doc(db,'profiles',currentUser.uid), {
+      uid: currentUser.uid,
       email: currentUser.email,
       displayName: localState.profile.displayName || '',
       packageName: localState.profile.packageName || 'Basic',
-      activeUntil: localState.profile.activeUntil || ''
+      activeUntil: localState.profile.activeUntil || '',
+      updatedAt: Date.now()
     }, { merge:true });
   }
 
@@ -2072,13 +2081,23 @@
     wrap.innerHTML = '<div class="muted">Lade Nutzer…</div>';
     try{
       const snap = await getDocs(collection(db,'profiles'));
-      const users = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      const users = [];
+      for(const d of snap.docs){
+        const u = { id:d.id, ...d.data() };
+        let mailboxCount = 0;
+        try{
+          const boxSnap = await getDocs(collection(db,'users',d.id,'mailbox'));
+          mailboxCount = boxSnap.docs.filter(x => !x.data()?.deleted).length;
+        }catch(e){}
+        users.push({ ...u, mailboxCount });
+      }
       wrap.innerHTML = users.length ? users.map(u => `
         <div class="entry-card">
           <div class="trip-title">${escapeHtml(u.displayName || u.email || 'Unbekannt')}</div>
           <div class="small">${escapeHtml(u.email || '')}</div>
           <div class="small">Paket: ${escapeHtml(u.packageName || 'Basic')}</div>
           <div class="small">Aktiv bis: ${escapeHtml(u.activeUntil ? formatGermanDateOnly(u.activeUntil) : '-')}</div>
+          <div class="small">Postfach-Einträge: ${Number(u.mailboxCount || 0)}</div>
         </div>`).join('') : '<div class="muted">Keine Nutzer vorhanden.</div>';
     }catch(e){
       console.log('loadUsers Fehler:', e);
@@ -2136,6 +2155,7 @@
       updateBadges();
       updateProfileUi();
       renderAll();
+      if(online()){ try{ await syncPublicProfile(); }catch(e){ console.log('syncPublicProfile beim Login Fehler:', e); } }
       restoreDrafts();
       const accessState = getAccessState();
       const syncText = accessState.warningDays !== null && !accessState.isExpired
