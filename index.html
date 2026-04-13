@@ -131,25 +131,17 @@
     .tab-btn.locked{opacity:.55}
     .tab-panel{display:none}
     .tab-panel.active{display:block}
-
-    .mailbox-stack{display:grid;gap:12px;margin-top:14px}
-    .mailbox-card{border:1px solid var(--line);background:var(--soft);border-radius:16px;padding:14px}
-    .mailbox-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
-    .mailbox-title{font-size:18px;font-weight:700}
-    .mailbox-meta{font-size:12px;color:var(--muted);line-height:1.4}
-    .mailbox-reply{margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}
-    .mailbox-reply-box{margin-top:10px;padding:10px 12px;border-radius:12px;background:#22345c;border:1px solid var(--line)}
-    .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-    .choice-card{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
-    .choice-card input{width:auto;transform:scale(1.15);margin-top:3px}
-    .choice-card .line1{font-weight:700}
-    .choice-card .line2{font-size:13px;color:var(--muted);margin-top:4px}
-    .mailbox-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .mailbox-admin-actions > *{width:auto}
     .hidden{display:none!important}
     .note-box{border:1px dashed var(--line);border-radius:16px;padding:14px;background:#33476d;color:#dbeafe}
     .mono{font-family:Consolas,monospace}
     .center{display:flex;align-items:center;justify-content:center}
+    .request-builder{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:16px;background:#1a2c52}
+    .request-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .addon-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .addon-item{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:12px;background:#2a3d66;border:1px solid var(--line)}
+    .addon-item input{width:auto;transform:scale(1.15);margin-top:2px}
+    .request-total{margin-top:12px;padding:12px 14px;border-radius:14px;background:#0f1b35;border:1px solid var(--line);font-weight:700}
+    .request-note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.4}
     @media (max-width: 980px){
       .grid,.profile-grid,.login-grid,.topbar{grid-template-columns:1fr}
       .topbar-info{grid-template-columns:1fr 1fr}
@@ -198,7 +190,9 @@
         <div class="hero-actions">
           <button type="button" class="outline" onclick="togglePanel('helpBox')">App / Hilfe</button>
           <button type="button" class="outline" onclick="togglePanel('accessBox')">Zugang</button>
-          <button type="button" class="outline hidden" id="topAdminBtn" onclick="togglePanel('adminPanel')">Admin</button>
+          <button type="button" class="outline hidden" id="topUsersBtn" onclick="openAdminPanel('users')">Nutzer</button>
+          <button type="button" class="outline hidden" id="topRequestsBtn" onclick="openAdminPanel('requests')">Anfragen</button>
+          <button type="button" class="outline hidden" id="topAdminBtn" onclick="openAdminPanel('overview')">Admin</button>
           <button type="button" class="red hidden" id="topLogoutBtn" onclick="signOutUser()">Abmelden</button>
         </div>
       </div>
@@ -232,11 +226,29 @@
       <div id="adminPanel" class="hero-panel hidden">
         <h3>Adminbereich</h3>
         <div class="toolbar">
-          <button type="button" onclick="loadUsers()">Nutzer laden</button>
-          <button type="button" onclick="loadAdminInbox()">Postfach laden</button>
+          <button type="button" onclick="openAdminPanel('users')">Nutzer öffnen</button>
+          <button type="button" onclick="openAdminPanel('requests')">Anfragen öffnen</button>
           <button type="button" class="outline" onclick="forceSyncNow()">Sync jetzt</button>
         </div>
+        <div class="small">Hier sind die direkten Admin-Wege. Kein Suchen mehr im Paket-Reiter.</div>
+      </div>
+
+      <div id="usersPanel" class="hero-panel hidden">
+        <h3>Nutzer</h3>
+        <div class="toolbar">
+          <button type="button" onclick="loadUsers()">Nutzer laden</button>
+          <button type="button" class="outline" onclick="openAdminPanel('requests')">Zu den Anfragen</button>
+        </div>
         <div id="adminUsersList" class="entry-list"></div>
+      </div>
+
+      <div id="requestsPanel" class="hero-panel hidden">
+        <h3>Anfragen</h3>
+        <div class="toolbar">
+          <button type="button" onclick="loadPackageRequests()">Anfragen laden</button>
+          <button type="button" class="outline" onclick="openAdminPanel('users')">Zu den Nutzern</button>
+        </div>
+        <div id="adminPackageRequestList" class="entry-list"></div>
       </div>
     </div>
 
@@ -319,7 +331,6 @@
           <button class="tab-btn" data-tab="tanken" onclick="showTab('tanken', this)">Tanken</button>
           <button class="tab-btn" data-tab="kilometer" onclick="showTab('kilometer', this)">Kilometer</button>
           <button class="tab-btn" data-tab="pdf" onclick="showTab('pdf', this)">PDF-Auswahl</button>
-          <button class="tab-btn" data-tab="postfach" onclick="showTab('postfach', this)">Postfach</button>
           <button class="tab-btn" data-tab="rechnung" onclick="showTab('rechnung', this)">Rechnung</button>
           <button class="tab-btn" data-tab="pakete" onclick="showTab('pakete', this)">Pakete</button>
           <button class="tab-btn" data-tab="empfehlen" onclick="showTab('empfehlen', this)">Empfehlen</button>
@@ -414,184 +425,89 @@
           <div class="receipt-note">Hinweis: Belege bitte nach dem Einscannen prüfen. Beta-Version, Fehler nicht ausgeschlossen.</div>
         </div>
 
-
-        <div id="postfach" class="tab-panel">
-          <h2>Postfach</h2>
-          <div id="mailboxInfo" class="note-box">Hier laufen Paket-Anfragen und Nachrichten. Nutzer sehen nur ihre eigenen Einträge. Admin sieht alle Anfragen zentral.</div>
-
-          <div id="mailboxUserPanel">
-            <div class="section" style="padding:14px;margin-top:14px;background:transparent;border-color:rgba(255,255,255,.08)">
-              <h3>Nachricht an Admin</h3>
-              <div class="field-row-compact">
-                <div><label>Betreff</label><input id="mailSubject" placeholder="z. B. Frage zur Freischaltung"></div>
-                <div>
-                  <label>Typ</label>
-                  <select id="mailType">
-                    <option value="message">Allgemeine Nachricht</option>
-                    <option value="support">Technische Hilfe</option>
-                    <option value="billing">Frage zu Preis / Laufzeit</option>
-                  </select>
-                </div>
-              </div>
-              <label>Nachricht</label>
-              <textarea id="mailMessage" class="small-textarea" placeholder="Deine Nachricht an den Admin"></textarea>
-              <div class="toolbar">
-                <button type="button" onclick="sendMailboxMessage()">Nachricht senden</button>
-              </div>
-              <div id="mailSendStatus" class="status info">Noch keine Nachricht gesendet.</div>
-            </div>
-
-            <div class="section" style="padding:14px;margin-top:14px;background:transparent;border-color:rgba(255,255,255,.08)">
-              <h3>Paket-Anfrage</h3>
-              <div class="small">Wähle genau ein Paket. Zusatzmodule werden passend dazu berechnet.</div>
-
-              <div class="choice-grid">
-                <label class="choice-card">
-                  <input type="radio" name="packageChoice" value="Basic" checked>
-                  <span><div class="line1">Basic</div><div class="line2">4,99 € / Monat</div></span>
-                </label>
-                <label class="choice-card">
-                  <input type="radio" name="packageChoice" value="Basic Plus">
-                  <span><div class="line1">Basic Plus</div><div class="line2">Basic + passende Add-ons</div></span>
-                </label>
-                <label class="choice-card">
-                  <input type="radio" name="packageChoice" value="Premium">
-                  <span><div class="line1">Premium</div><div class="line2">14,99 € / Monat</div></span>
-                </label>
-                <label class="choice-card">
-                  <input type="radio" name="packageChoice" value="Premium Plus">
-                  <span><div class="line1">Premium Plus</div><div class="line2">Premium + passende Add-ons</div></span>
-                </label>
-                <label class="choice-card">
-                  <input type="radio" name="packageChoice" value="Goldmitglied">
-                  <span><div class="line1">Goldmitglied</div><div class="line2">29,99 € / Monat</div></span>
-                </label>
-              </div>
-
-              <div class="choice-grid" id="packageAddonGrid">
-                <label class="choice-card"><input type="checkbox" id="addonHotel"><span><div class="line1">Hotel-Modul</div><div class="line2">+ 4,99 € / Monat</div></span></label>
-                <label class="choice-card"><input type="checkbox" id="addonFuel"><span><div class="line1">Tanken-Modul</div><div class="line2">+ 4,99 € / Monat</div></span></label>
-                <label class="choice-card"><input type="checkbox" id="addonKm"><span><div class="line1">Kilometer-Modul</div><div class="line2">+ 3,99 € / Monat</div></span></label>
-                <label class="choice-card"><input type="checkbox" id="addonDriver"><span><div class="line1">1 zusätzlicher Fahrer</div><div class="line2">Basic Plus: + 3,99 € / Premium Plus: + 2,99 € / Gold: + 2,49 €</div></span></label>
-                <label class="choice-card"><input type="checkbox" id="addonTeam"><span><div class="line1">Team-Funktion</div><div class="line2">+ 9,99 € / Monat (nur Premium Plus oder Gold)</div></span></label>
-                <label class="choice-card"><input type="checkbox" id="addonPdfSelect"><span><div class="line1">PDF-Auswahl</div><div class="line2">+ 6,99 € / Monat (nur Premium Plus oder Gold)</div></span></label>
-                <label class="choice-card"><input type="checkbox" id="addonDriverPack"><span><div class="line1">5er-Fahrerpaket</div><div class="line2">+ 9,99 € / Monat (nur Gold)</div></span></label>
-              </div>
-
-              <div class="field-row-compact" style="margin-top:10px">
-                <div>
-                  <label>Zusatzhinweis</label>
-                  <input id="packageRequestNote" placeholder="z. B. bitte schnell freischalten">
-                </div>
-                <div class="note-box">
-                  <div class="trip-title">Berechneter Preis</div>
-                  <div id="packagePricePreview" style="font-size:22px;font-weight:700;margin-top:6px">4,99 € / Monat</div>
-                </div>
-              </div>
-
-              <div class="toolbar">
-                <button type="button" onclick="sendPackageRequest()">Paket-Anfrage an Admin senden</button>
-              </div>
-              <div id="packageRequestStatus" class="status info">Noch keine Paket-Anfrage gesendet.</div>
-            </div>
-          </div>
-
-          <div id="mailboxAdminPanel" class="hidden">
-            <div class="toolbar">
-              <button type="button" onclick="loadAdminInbox()">Postfach laden</button>
-            </div>
-            <div id="adminMailboxStatus" class="status info">Noch keine Admin-Daten geladen.</div>
-          </div>
-
-          <div style="margin-top:14px">
-            <h3>Verlauf</h3>
-            <div id="mailboxList" class="mailbox-stack"></div>
-          </div>
-        </div>
-
         
 <div id="pakete" class="tab-panel">
           <h2>Pakete</h2>
           <div class="package-stack">
             <div class="package-card">
-              <div class="package-head">
-                <div class="package-name">Basic</div>
-                <div class="package-price white">4,99 € / Monat</div>
-              </div>
-              <div class="package-sub">Für Fahrer, die nur Fahrten und Zeitspesen brauchen.</div>
+              <div class="package-head"><div class="package-name">Basic</div><div class="package-price white">4,99 € / Monat</div></div>
+              <div class="package-sub">Nur Fahrten, Fahrten-Monatsübersicht, Fahrten-PDF und Name oben.</div>
               <div class="package-lines">
                 <div class="package-row"><div class="package-left">Fahrten erfassen, Start / Ende / Dauer, automatische Spesenberechnung</div><div class="package-right">inklusive</div></div>
-                <div class="package-row"><div class="package-left">Monatsübersicht nur für Fahrten + Fahrten-PDF</div><div class="package-right">inklusive</div></div>
+                <div class="package-row"><div class="package-left">Monatsübersicht nur für Fahrten</div><div class="package-right">inklusive</div></div>
+                <div class="package-row"><div class="package-left">PDF für Fahrten</div><div class="package-right">inklusive</div></div>
                 <div class="package-row"><div class="package-left">Name oben im Profil</div><div class="package-right">inklusive</div></div>
-                <div class="package-row"><div class="package-left">1 zusätzlicher Fahrer maximal</div><div class="package-right">möglich</div></div>
-                <div class="package-row"><div class="package-left">Team, PDF-Auswahl, Belege in PDF</div><div class="package-right">nicht enthalten</div></div>
               </div>
             </div>
-
             <div class="package-card">
-              <div class="package-head">
-                <div class="package-name">Basic Plus</div>
-                <div class="package-price white">Basic + Zusatzmodule</div>
-              </div>
-              <div class="package-sub">Basic mit einzeln zubuchbaren Modulen.</div>
+              <div class="package-head"><div class="package-name">Basic Plus</div><div class="package-price white">Basic + Add-ons</div></div>
+              <div class="package-sub">Basic mit zubuchbaren Zusatzmodulen.</div>
               <div class="package-lines">
                 <div class="package-row"><div class="package-left">Hotel-Modul</div><div class="package-right">+ 4,99 €</div></div>
                 <div class="package-row"><div class="package-left">Tanken-Modul</div><div class="package-right">+ 4,99 €</div></div>
                 <div class="package-row"><div class="package-left">Kilometer-Modul</div><div class="package-right">+ 3,99 €</div></div>
-                <div class="package-row"><div class="package-left">1 zusätzlicher Fahrer</div><div class="package-right">+ 3,99 €</div></div>
-                <div class="package-row"><div class="package-left">Team-Funktion, PDF-Auswahl, Belege in PDF</div><div class="package-right">nicht möglich</div></div>
+                <div class="package-row"><div class="package-left">Zusätzlicher Fahrer</div><div class="package-right">+ 2,99 €</div></div>
+                <div class="package-row"><div class="package-left">Team-Funktion</div><div class="package-right">+ 9,99 €</div></div>
               </div>
             </div>
-
             <div class="package-card">
-              <div class="package-head">
-                <div class="package-name">Premium</div>
-                <div class="package-price blue">14,99 € / Monat</div>
-              </div>
-              <div class="package-sub">Das komplette Alltagspaket für Fahrer und Selbstständige.</div>
+              <div class="package-head"><div class="package-name">Premium</div><div class="package-price blue">14,99 € / Monat</div></div>
+              <div class="package-sub">Erweiterte Funktionen für Fahrten, Hotel, Tanken und Kilometer.</div>
               <div class="package-lines">
                 <div class="package-row"><div class="package-left">Fahrten, Hotel, Tanken, Kilometer</div><div class="package-right">inklusive</div></div>
                 <div class="package-row"><div class="package-left">Komplette Monatsübersicht</div><div class="package-right">inklusive</div></div>
                 <div class="package-row"><div class="package-left">Standard-PDF</div><div class="package-right">inklusive</div></div>
                 <div class="package-row"><div class="package-left">Firma, Fahrzeug, Kennzeichen im Profil</div><div class="package-right">inklusive</div></div>
-                <div class="package-row"><div class="package-left">Team, PDF-Auswahl, Belege in PDF</div><div class="package-right">nicht enthalten</div></div>
               </div>
             </div>
-
             <div class="package-card">
-              <div class="package-head">
-                <div class="package-name">Premium Plus</div>
-                <div class="package-price blue">Premium + Zusatzmodule</div>
-              </div>
-              <div class="package-sub">Premium mit erweiterten Zusatzfunktionen.</div>
+              <div class="package-head"><div class="package-name">Premium Plus</div><div class="package-price blue">Premium + Add-ons</div></div>
+              <div class="package-sub">Premium mit Zusatzmodulen nach Bedarf.</div>
               <div class="package-lines">
                 <div class="package-row"><div class="package-left">Team-Funktion</div><div class="package-right">+ 9,99 €</div></div>
-                <div class="package-row"><div class="package-left">Zusätzlicher Fahrer</div><div class="package-right">+ 2,99 € / Fahrer</div></div>
-                <div class="package-row"><div class="package-left">PDF-Auswahl: Fahrten, Hotel, Tanken, Kilometer frei kombinierbar</div><div class="package-right">+ 6,99 €</div></div>
-                <div class="package-row"><div class="package-left">Belege als Bilder direkt in der PDF</div><div class="package-right">nur Gold</div></div>
+                <div class="package-row"><div class="package-left">Zusätzlicher Fahrer</div><div class="package-right">+ 2,99 €</div></div>
+                <div class="package-row"><div class="package-left">PDF-Auswahl frei kombinierbar</div><div class="package-right">+ 6,99 €</div></div>
+                <div class="package-row"><div class="package-left">Weitere Add-ons</div><div class="package-right">zuschaltbar</div></div>
               </div>
             </div>
-
             <div class="package-card">
-              <div class="package-head">
-                <div class="package-name">Goldmitglied</div>
-                <div class="package-price gold">29,99 € / Monat</div>
-              </div>
-              <div class="package-sub">Alles freigeschaltet, inklusive Beta- und Gold-Funktionen.</div>
+              <div class="package-head"><div class="package-name">Goldmitglied</div><div class="package-price gold">29,99 € / Monat</div></div>
+              <div class="package-sub">Alles enthalten. Admin bleibt dauerhaft Gold ohne Ablauf.</div>
               <div class="package-lines">
                 <div class="package-row"><div class="package-left">Fahrten, Hotel, Tanken, Kilometer, Rechnung, PDF-Auswahl</div><div class="package-right">inklusive</div></div>
-                <div class="package-row"><div class="package-left">Belege als Bilder direkt in der PDF</div><div class="package-right">inklusive</div></div>
+                <div class="package-row"><div class="package-left">Belege in PDF</div><div class="package-right">inklusive</div></div>
                 <div class="package-row"><div class="package-left">Team-Funktion</div><div class="package-right">inklusive</div></div>
-                <div class="package-row"><div class="package-left">5 Fahrer inklusive</div><div class="package-right">inklusive</div></div>
-                <div class="package-row"><div class="package-left">1 zusätzlicher Fahrer</div><div class="package-right">+ 2,49 €</div></div>
-                <div class="package-row"><div class="package-left">5er-Fahrerpaket</div><div class="package-right">+ 9,99 €</div></div>
+                <div class="package-row"><div class="package-left">Beta-Features</div><div class="package-right">inklusive</div></div>
               </div>
-                          </div>
+            </div>
+          </div>
+          <div class="request-builder" id="packageRequestBuilder">
+            <h3>Paket anfragen</h3>
+            <div class="request-note">Kein Chat-System mehr. Du wählst Paket und Add-ons, die Anfrage wird gespeichert und der Admin schaltet danach manuell frei.</div>
+            <div class="request-grid">
+              <div><label for="requestPackage">Paket</label><select id="requestPackage"><option value="Basic">Basic</option><option value="Basic Plus">Basic Plus</option><option value="Premium">Premium</option><option value="Premium Plus">Premium Plus</option><option value="Goldmitglied">Goldmitglied</option></select></div>
+              <div><label for="requestName">Name</label><input id="requestName" placeholder="Name für die Anfrage"></div>
+            </div>
+            <label>Add-ons</label>
+            <div class="addon-grid">
+              <label class="addon-item"><input type="checkbox" class="request-addon" value="hotel"><span><strong>Hotel-Modul</strong><br>+ 4,99 €</span></label>
+              <label class="addon-item"><input type="checkbox" class="request-addon" value="tanken"><span><strong>Tanken-Modul</strong><br>+ 4,99 €</span></label>
+              <label class="addon-item"><input type="checkbox" class="request-addon" value="kilometer"><span><strong>Kilometer-Modul</strong><br>+ 3,99 €</span></label>
+              <label class="addon-item"><input type="checkbox" class="request-addon" value="team"><span><strong>Team-Funktion</strong><br>+ 9,99 €</span></label>
+              <label class="addon-item"><input type="checkbox" class="request-addon" value="pdf"><span><strong>PDF-Auswahl</strong><br>+ 6,99 €</span></label>
+              <label class="addon-item"><input type="checkbox" class="request-addon" value="fahrer"><span><strong>Zusätzlicher Fahrer</strong><br>+ 2,99 €</span></label>
+            </div>
+            <div class="request-total" id="requestPriceBox">Gesamtpreis: 4,99 €</div>
+            <div class="request-note">Zahlung aktuell manuell über PayPal.Me: <span class="mono">paypal.me/StiluStruktur</span>. Nach Zahlung prüft der Admin und setzt den Status.</div>
+            <div class="toolbar"><button type="button" class="yellow" onclick="createPackageRequest()">Paket anfragen</button></div>
+            <div id="packageRequestStatus" class="status info">Noch keine Anfrage erstellt.</div>
+          </div>
+          <div style="margin-top:18px;">
+            <h3 id="packageRequestListTitle">Meine Paket-Anfragen</h3>
+            <div id="packageRequestList" class="entry-list"></div>
           </div>
         </div>
-
-
-        <div id="empfehlen" class="tab-panel">
+<div id="empfehlen" class="tab-panel">
           <h2>Empfehlen</h2>
           <div class="note-box">Empfehlungscode ist sichtbar. Auswertung/Belohnungslogik kann später erweitert werden.</div>
           <label>Dein Empfehlungscode</label>
@@ -656,6 +572,9 @@
     getDoc,
     getDocs,
     collection,
+    collectionGroup,
+    query,
+    where,
     serverTimestamp
   } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
 
@@ -684,6 +603,24 @@
   let syncRunning = false;
   let syncingSoon = null;
   let localState = createEmptyState();
+  let packageRequests = [];
+
+  const PACKAGE_PRICES = {
+    'Basic': 4.99,
+    'Basic Plus': 4.99,
+    'Premium': 14.99,
+    'Premium Plus': 14.99,
+    'Goldmitglied': 29.99
+  };
+
+  const ADDON_PRICES = {
+    hotel: { label:'Hotel-Modul', price:4.99 },
+    tanken: { label:'Tanken-Modul', price:4.99 },
+    kilometer: { label:'Kilometer-Modul', price:3.99 },
+    team: { label:'Team-Funktion', price:9.99 },
+    pdf: { label:'PDF-Auswahl', price:6.99 },
+    fahrer: { label:'Zusätzlicher Fahrer', price:2.99 }
+  };
 
   function createEmptyState(){
     return {
@@ -692,7 +629,6 @@
       hotels: [],
       fuels: [],
       kms: [],
-      mailbox: [],
       queue: []
     };
   }
@@ -725,11 +661,11 @@
       localState.hotels = Array.isArray(localState.hotels) ? localState.hotels : [];
       localState.fuels = Array.isArray(localState.fuels) ? localState.fuels : [];
       localState.kms = Array.isArray(localState.kms) ? localState.kms : [];
-      localState.mailbox = Array.isArray(localState.mailbox) ? localState.mailbox : [];
       localState.queue = Array.isArray(localState.queue) ? localState.queue : [];
     }catch(e){
       console.log('LocalState Fehler:', e);
       localState = createEmptyState();
+      packageRequests = [];
     }
   }
 
@@ -851,8 +787,32 @@
     el.textContent = text;
   }
 
-  function togglePanel(id){ $(id).classList.toggle('show'); }
+  function closeAdminPanels(){ ['adminPanel','usersPanel','requestsPanel'].forEach(id => $(id)?.classList.remove('show')); }
+  function togglePanel(id){
+    if(id === 'helpBox' || id === 'accessBox'){
+      $(id).classList.toggle('show');
+      return;
+    }
+    $(id).classList.toggle('show');
+  }
   window.togglePanel = togglePanel;
+
+  async function openAdminPanel(which){
+    if(!isAdmin()) return;
+    closeAdminPanels();
+    if(which === 'users'){
+      $('usersPanel')?.classList.add('show');
+      await loadUsers();
+      return;
+    }
+    if(which === 'requests'){
+      $('requestsPanel')?.classList.add('show');
+      await loadPackageRequests();
+      return;
+    }
+    $('adminPanel')?.classList.add('show');
+  }
+  window.openAdminPanel = openAdminPanel;
 
   function togglePw(){
     const input = $('password');
@@ -941,6 +901,34 @@
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+  }
+
+  function getSelectedRequestAddons(){
+    return [...document.querySelectorAll('.request-addon:checked')].map(el => el.value);
+  }
+
+  function getRequestBasePrice(packageName){
+    return Number(PACKAGE_PRICES[packageName] || 0);
+  }
+
+  function getRequestTotal(packageName, addOns){
+    const base = getRequestBasePrice(packageName);
+    const extras = (addOns || []).reduce((sum, key) => sum + Number(ADDON_PRICES[key]?.price || 0), 0);
+    if(packageName === 'Goldmitglied') return base;
+    return base + extras;
+  }
+
+  function updatePackageRequestPrice(){
+    const packageName = $('requestPackage')?.value || 'Basic';
+    const addOns = getSelectedRequestAddons();
+    const total = getRequestTotal(packageName, addOns);
+    const priceBox = $('requestPriceBox');
+    if(priceBox) priceBox.textContent = `Gesamtpreis: ${formatEuro(total)}`;
+  }
+
+  function formatAddOnLabels(addOns){
+    if(!Array.isArray(addOns) || !addOns.length) return 'keine';
+    return addOns.map(key => ADDON_PRICES[key]?.label || key).join(', ');
   }
 
   function applyRememberedFuelType(){
@@ -1072,16 +1060,16 @@
     const state = getAccessState();
     const pkg = state.packageName || localState.profile.packageName || 'Basic';
     const base = hasUnlimitedAccess()
-? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
+      ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
       : pkg === 'Goldmitglied'
-        ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
+        ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
         : (pkg === 'Premium' || pkg === 'Premium Plus')
-          ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
+          ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
           : pkg === 'Basic Plus'
-            ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:false }
-            : { fahrt:true, hotel:false, tanken:false, kilometer:false, pdf:true, postfach:true, pakete:true, empfehlen:false, rechnung:true, premiumFields:false };
+            ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:false }
+            : { fahrt:true, hotel:false, tanken:false, kilometer:false, pdf:true, pakete:true, empfehlen:false, rechnung:true, premiumFields:false };
     if(state.isExpired){
-      return { ...base, fahrt:false, hotel:false, tanken:false, kilometer:false, pdf:false, empfehlen:false, rechnung:false, premiumFields:base.premiumFields, postfach:true };
+      return { ...base, fahrt:false, hotel:false, tanken:false, kilometer:false, pdf:false, empfehlen:false, rechnung:false, premiumFields:base.premiumFields };
     }
     return base;
   }
@@ -1261,6 +1249,8 @@
       $('packageBadge').textContent = 'Basic';
       $('adminBadge').textContent = '—';
       $('topAdminBtn').classList.add('hidden');
+      $('topUsersBtn').classList.add('hidden');
+      $('topRequestsBtn').classList.add('hidden');
       $('topLogoutBtn').classList.add('hidden');
       $('authStatus').className = 'status warn';
       $('authStatus').textContent = 'Noch nicht angemeldet.';
@@ -1273,6 +1263,8 @@
     $('packageBadge').textContent = state.isUnlimited ? (isAdmin() ? 'Admin' : 'Goldmitglied') : (localState.profile.packageName || 'Basic');
     $('adminBadge').textContent = isAdmin() ? 'aktiv' : '—';
     $('topAdminBtn').classList.toggle('hidden', !isAdmin());
+    $('topUsersBtn').classList.toggle('hidden', !isAdmin());
+    $('topRequestsBtn').classList.toggle('hidden', !isAdmin());
     $('topLogoutBtn').classList.remove('hidden');
     $('authStatus').className = 'status ok';
     $('authStatus').textContent = `Angemeldet als ${currentUser.email}`;
@@ -1420,255 +1412,6 @@
     $('kmSaveStatus').textContent = monthly.length ? `${monthly.length} Kilometer-Einträge im Monat.` : 'Noch keine Kilometer gespeichert.';
   }
 
-
-  function packagePricingModel(){
-    return {
-      basic: 4.99,
-      premium: 14.99,
-      gold: 29.99,
-      basicHotel: 4.99,
-      basicFuel: 4.99,
-      basicKm: 3.99,
-      basicDriver: 3.99,
-      premiumTeam: 9.99,
-      premiumDriver: 2.99,
-      premiumPdf: 6.99,
-      goldDriver: 2.49,
-      goldDriverPack: 9.99
-    };
-  }
-
-  function selectedPackageChoice(){
-    return document.querySelector('input[name="packageChoice"]:checked')?.value || 'Basic';
-  }
-
-  function updatePackageRequestUi(){
-    const pkg = selectedPackageChoice();
-    const aHotel = $('addonHotel'), aFuel = $('addonFuel'), aKm = $('addonKm'), aDriver = $('addonDriver'), aTeam = $('addonTeam'), aPdf = $('addonPdfSelect'), aPack = $('addonDriverPack');
-    [aHotel,aFuel,aKm,aDriver,aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.disabled = false; });
-    if(pkg === 'Basic'){
-      [aHotel,aFuel,aKm,aDriver,aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
-    } else if(pkg === 'Basic Plus'){
-      [aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
-    } else if(pkg === 'Premium'){
-      [aHotel,aFuel,aKm,aDriver,aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
-    } else if(pkg === 'Premium Plus'){
-      [aHotel,aFuel,aKm].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
-      if(aPack){ aPack.checked = false; aPack.disabled = true; }
-    } else if(pkg === 'Goldmitglied'){
-      [aHotel,aFuel,aKm,aTeam,aPdf].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
-    }
-    $('packagePricePreview').textContent = `${formatEuro(calculatePackageRequestPrice())} / Monat`;
-  }
-
-  function calculatePackageRequestPrice(){
-    const pkg = selectedPackageChoice();
-    const p = packagePricingModel();
-    let total = 0;
-    if(pkg === 'Basic') total = p.basic;
-    if(pkg === 'Basic Plus'){
-      total = p.basic;
-      if($('addonHotel')?.checked) total += p.basicHotel;
-      if($('addonFuel')?.checked) total += p.basicFuel;
-      if($('addonKm')?.checked) total += p.basicKm;
-      if($('addonDriver')?.checked) total += p.basicDriver;
-    }
-    if(pkg === 'Premium') total = p.premium;
-    if(pkg === 'Premium Plus'){
-      total = p.premium;
-      if($('addonTeam')?.checked) total += p.premiumTeam;
-      if($('addonDriver')?.checked) total += p.premiumDriver;
-      if($('addonPdfSelect')?.checked) total += p.premiumPdf;
-    }
-    if(pkg === 'Goldmitglied'){
-      total = p.gold;
-      if($('addonDriver')?.checked) total += p.goldDriver;
-      if($('addonDriverPack')?.checked) total += p.goldDriverPack;
-    }
-    return total;
-  }
-
-  function selectedPackageAddons(){
-    const labels = [];
-    const map = [
-      ['addonHotel','Hotel-Modul'],
-      ['addonFuel','Tanken-Modul'],
-      ['addonKm','Kilometer-Modul'],
-      ['addonDriver','1 zusätzlicher Fahrer'],
-      ['addonTeam','Team-Funktion'],
-      ['addonPdfSelect','PDF-Auswahl'],
-      ['addonDriverPack','5er-Fahrerpaket']
-    ];
-    map.forEach(([id,label]) => { if($(id)?.checked && !$(id).disabled) labels.push(label); });
-    return labels;
-  }
-
-  function mailboxItemCard(item, adminView=false){
-    const created = item.createdAtMillis ? new Date(item.createdAtMillis).toLocaleString('de-DE') : '-';
-    const status = item.status || 'offen';
-    const packageBlock = item.type === 'package_request' ? `<div class="small"><strong>Gewünschtes Paket:</strong> ${escapeHtml(item.packageChoice || '-')}</div><div class="small"><strong>Monatspreis:</strong> ${formatEuro(item.monthlyPrice || 0)}</div><div class="small"><strong>Zusatzmodule:</strong> ${escapeHtml((item.addOns || []).join(', ') || 'keine')}</div>` : '';
-    const adminReply = item.adminReply ? `<div class="mailbox-reply-box"><strong>Admin-Antwort:</strong><br>${escapeHtml(item.adminReply)}</div>` : '';
-    const adminControls = adminView ? `
-      <div class="mailbox-reply">
-        <label>Antwort an ${escapeHtml(item.senderEmail || '')}</label>
-        <textarea id="reply_${item.id}" class="small-textarea" placeholder="Antwort an Nutzer"></textarea>
-        <div class="mailbox-admin-actions">
-          <select id="status_${item.id}" class="compact-sort">
-            <option value="offen" ${status === 'offen' ? 'selected' : ''}>offen</option>
-            <option value="beantwortet" ${status === 'beantwortet' ? 'selected' : ''}>beantwortet</option>
-            <option value="freigegeben" ${status === 'freigegeben' ? 'selected' : ''}>freigegeben</option>
-          </select>
-          <button type="button" onclick="adminReplyToMailbox('${item.id}')">Antwort speichern</button>
-        </div>
-      </div>` : '';
-    return `
-      <div class="mailbox-card">
-        <div class="mailbox-head">
-          <div>
-            <div class="mailbox-title">${escapeHtml(item.subject || (item.type === 'package_request' ? 'Paket-Anfrage' : 'Nachricht'))}</div>
-            <div class="mailbox-meta">
-              Von: ${escapeHtml(item.senderName || item.senderEmail || '-')} · ${escapeHtml(item.senderEmail || '-')}<br>
-              Typ: ${escapeHtml(item.type || 'message')} · Status: ${escapeHtml(status)}
-            </div>
-          </div>
-          <div class="pill">${created}</div>
-        </div>
-        ${item.message ? `<div class="small" style="margin-top:10px;white-space:pre-wrap">${escapeHtml(item.message)}</div>` : ''}
-        ${packageBlock}
-        ${item.note ? `<div class="small"><strong>Hinweis:</strong> ${escapeHtml(item.note)}</div>` : ''}
-        ${adminReply}
-        ${adminControls}
-      </div>`;
-  }
-
-  function renderMailbox(){
-    const list = $('mailboxList');
-    if(!list) return;
-    const adminView = isAdmin();
-    $('mailboxUserPanel')?.classList.toggle('hidden', adminView);
-    $('mailboxAdminPanel')?.classList.toggle('hidden', !adminView);
-    $('mailboxInfo').textContent = adminView
-      ? 'Admin-Ansicht: Hier siehst du alle Paket-Anfragen und Nachrichten der Nutzer. Antworten und Status ändern gehen direkt im Verlauf.'
-      : 'Hier laufen deine Paket-Anfragen und Nachrichten an den Admin. Du siehst nur deine eigenen Einträge und passende Antworten.';
-    const items = [...(localState.mailbox || [])].sort((a,b) => Number(b.createdAtMillis || 0) - Number(a.createdAtMillis || 0));
-    list.innerHTML = items.length ? items.map(item => mailboxItemCard(item, adminView)).join('') : '<div class="muted">Noch keine Nachrichten im Postfach.</div>';
-  }
-
-  async function loadUserMailbox(){
-    if(!currentUser) return;
-    try{
-      const snap = await getDocs(collection(db,'users',currentUser.uid,'mailbox'));
-      localState.mailbox = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted);
-      saveLocalState();
-      renderMailbox();
-    }catch(e){
-      console.log('loadUserMailbox Fehler:', e);
-      renderMailbox();
-    }
-  }
-
-  async function loadAdminInbox(){
-    if(!isAdmin()) return;
-    try{
-      const snap = await getDocs(collection(db,'adminInbox'));
-      localState.mailbox = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted);
-      saveLocalState();
-      $('adminMailboxStatus').className = 'status ok';
-      $('adminMailboxStatus').textContent = `${localState.mailbox.length} Anfrage(n) geladen.`;
-      renderMailbox();
-    }catch(e){
-      console.log('loadAdminInbox Fehler:', e);
-      $('adminMailboxStatus').className = 'status warn';
-      $('adminMailboxStatus').textContent = 'Admin-Postfach konnte nicht geladen werden.';
-      renderMailbox();
-    }
-  }
-  window.loadAdminInbox = loadAdminInbox;
-
-  async function sendMailboxMessage(){
-    if(!currentUser) return alert('Bitte zuerst anmelden.');
-    const subject = $('mailSubject').value.trim();
-    const message = $('mailMessage').value.trim();
-    if(!subject || !message) return alert('Bitte Betreff und Nachricht eintragen.');
-    const item = {
-      id: crypto.randomUUID(),
-      senderUid: currentUser.uid,
-      senderEmail: currentUser.email,
-      senderName: localState.profile.displayName || currentUser.email,
-      subject,
-      message,
-      type: $('mailType').value,
-      status: 'offen',
-      createdAtMillis: Date.now(),
-      updatedAtMillis: Date.now(),
-      syncStatus:'pending'
-    };
-    localState.mailbox.unshift(item);
-    saveLocalState();
-    renderMailbox();
-    queueOp('upsert','mailbox',item,item.id);
-    queueOp('upsert','adminInbox',{...item},item.id,{path:['adminInbox']});
-    $('mailSubject').value = '';
-    $('mailMessage').value = '';
-    $('mailSendStatus').className = 'status ok';
-    $('mailSendStatus').textContent = 'Nachricht lokal gespeichert und zum Admin geschickt.';
-  }
-  window.sendMailboxMessage = sendMailboxMessage;
-
-  async function sendPackageRequest(){
-    if(!currentUser) return alert('Bitte zuerst anmelden.');
-    const pkg = selectedPackageChoice();
-    const addOns = selectedPackageAddons();
-    const monthlyPrice = calculatePackageRequestPrice();
-    const note = $('packageRequestNote').value.trim();
-    const item = {
-      id: crypto.randomUUID(),
-      senderUid: currentUser.uid,
-      senderEmail: currentUser.email,
-      senderName: localState.profile.displayName || currentUser.email,
-      subject: `Paket-Anfrage: ${pkg}`,
-      message: `Gewünschtes Paket: ${pkg}`,
-      type: 'package_request',
-      packageChoice: pkg,
-      addOns,
-      monthlyPrice,
-      note,
-      status: 'offen',
-      createdAtMillis: Date.now(),
-      updatedAtMillis: Date.now(),
-      syncStatus:'pending'
-    };
-    localState.mailbox.unshift(item);
-    saveLocalState();
-    renderMailbox();
-    queueOp('upsert','mailbox',item,item.id);
-    queueOp('upsert','adminInbox',{...item},item.id,{path:['adminInbox']});
-    $('packageRequestNote').value = '';
-    $('packageRequestStatus').className = 'status ok';
-    $('packageRequestStatus').textContent = 'Paket-Anfrage lokal gespeichert und an den Admin gesendet.';
-  }
-  window.sendPackageRequest = sendPackageRequest;
-
-  async function adminReplyToMailbox(id){
-    if(!isAdmin()) return;
-    const item = (localState.mailbox || []).find(x => x.id === id);
-    if(!item) return;
-    const reply = $(`reply_${id}`)?.value?.trim() || '';
-    const status = $(`status_${id}`)?.value || 'offen';
-    item.status = status;
-    item.adminReply = reply;
-    item.adminReplyAtMillis = Date.now();
-    item.updatedAtMillis = Date.now();
-    saveLocalState();
-    renderMailbox();
-    queueOp('upsert','adminInbox',{...item},item.id,{path:['adminInbox']});
-    queueOp('upsert','mailbox',{...item},item.id,{path:['users', item.senderUid, 'mailbox']});
-    $('adminMailboxStatus').className = 'status ok';
-    $('adminMailboxStatus').textContent = 'Antwort gespeichert.';
-  }
-  window.adminReplyToMailbox = adminReplyToMailbox;
-
-
   function renderAll(){
     renderMonthSelect();
     renderTrips();
@@ -1683,25 +1426,24 @@
     updateLayoutMode();
     syncInvoiceMonthOptions();
     seedInvoiceNumber();
-    renderMailbox();
-    updatePackageRequestUi();
+    updatePackageRequestPrice();
+    renderPackageRequests();
   }
 
-  function queueOp(type, collectionName, data, id, options={}){
-    const path = options.path || ['users', currentUser.uid, collectionName];
-    localState.queue.push({ id: crypto.randomUUID(), type, collectionName, data, docId: id, queuedAt: Date.now(), path });
+  function queueOp(type, collectionName, data, id){
+    localState.queue.push({ id: crypto.randomUUID(), type, collectionName, data, docId: id, queuedAt: Date.now() });
     saveLocalState();
     scheduleSync();
   }
 
-  async function upsertRemote(op){
+  async function upsertRemote(collectionName, item){
     if(!currentUser) return;
-    await setDoc(doc(db, ...op.path, op.docId), { ...op.data, serverUpdatedAt: serverTimestamp() }, { merge:true });
+    await setDoc(doc(db,'users',currentUser.uid,collectionName,item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
   }
 
-  async function deleteRemote(op){
+  async function deleteRemote(collectionName, id){
     if(!currentUser) return;
-    await setDoc(doc(db, ...op.path, op.docId), { deleted:true, serverUpdatedAt: serverTimestamp() }, { merge:true });
+    await setDoc(doc(db,'users',currentUser.uid,collectionName,id), { deleted:true, serverUpdatedAt: serverTimestamp() }, { merge:true });
   }
 
   function scheduleSync(){
@@ -1727,8 +1469,8 @@
     try{
       while(localState.queue.length){
         const op = localState.queue[0];
-        if(op.type === 'upsert') await upsertRemote(op);
-        if(op.type === 'delete') await deleteRemote(op);
+        if(op.type === 'upsert') await upsertRemote(op.collectionName, op.data);
+        if(op.type === 'delete') await deleteRemote(op.collectionName, op.docId);
         localState.queue.shift();
         markSynced(op.collectionName, op.docId);
         saveLocalState();
@@ -1790,6 +1532,7 @@
       }
       saveLocalState();
       updateProfileUi();
+      if($('requestName')) $('requestName').value = localState.profile.displayName || String(currentUser?.email || '').split('@')[0] || '';
       $('profileStatus').className = 'status ok';
       $('profileStatus').textContent = 'Profil geladen.';
     }catch(e){
@@ -2025,6 +1768,141 @@
   }
   window.sendReset = sendReset;
 
+  async function loadPackageRequests(){
+    if(!currentUser || !online()){
+      renderPackageRequests();
+      return;
+    }
+    try{
+      let all = [];
+      if(isAdmin()){
+        const snap = await getDocs(collectionGroup(db,'packageRequests'));
+        all = snap.docs.map(d => ({ requestId:d.id, ...d.data() }));
+      }else{
+        const snap = await getDocs(collection(db,'users',currentUser.uid,'packageRequests'));
+        all = snap.docs.map(d => ({ requestId:d.id, ...d.data() }));
+      }
+      packageRequests = all;
+      packageRequests.sort((a,b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0));
+      renderPackageRequests();
+    }catch(e){
+      console.log('loadPackageRequests Fehler:', e);
+      renderPackageRequests();
+    }
+  }
+
+  function renderPackageRequests(){
+    const builder = $('packageRequestBuilder');
+    const list = $('packageRequestList');
+    const title = $('packageRequestListTitle');
+    const adminList = $('adminPackageRequestList');
+    if(!builder || !list || !title) return;
+    if(!currentUser){
+      builder.classList.remove('hidden');
+      title.textContent = 'Meine Paket-Anfragen';
+      list.innerHTML = '<div class="muted">Bitte anmelden, um Paket-Anfragen zu sehen.</div>';
+      if(adminList) adminList.innerHTML = '<div class="muted">Bitte als Admin anmelden.</div>';
+      return;
+    }
+    builder.classList.toggle('hidden', isAdmin());
+    title.textContent = isAdmin() ? 'Alle Paket-Anfragen' : 'Meine Paket-Anfragen';
+    if(!packageRequests.length){
+      const emptyText = isAdmin() ? 'Noch keine Paket-Anfragen vorhanden.' : 'Du hast noch keine Paket-Anfrage erstellt.';
+      list.innerHTML = `<div class="muted">${emptyText}</div>`;
+      if(adminList) adminList.innerHTML = `<div class="muted">${isAdmin() ? 'Noch keine Paket-Anfragen vorhanden.' : 'Nur für Admin sichtbar.'}</div>`;
+      return;
+    }
+    const html = packageRequests.map((req, idx) => {
+      const statusClass = req.status === 'freigeschaltet' ? 'ok' : req.status === 'abgelehnt' ? 'warn' : req.status === 'bezahlt' ? 'info' : 'offline';
+      const activeField = isAdmin() ? `<div style="margin-top:10px"><label>Aktiv bis</label><input type="date" id="requestUntil_${req.requestId}" value="${escapeHtml(req.activeUntil || '')}"></div>` : '';
+      const actions = isAdmin() ? `<div class="toolbar"><button type="button" class="outline" onclick="setPackageRequestStatus('${req.requestId}','offen')">offen</button><button type="button" onclick="setPackageRequestStatus('${req.requestId}','bezahlt')">bezahlt</button><button type="button" class="green" onclick="setPackageRequestStatus('${req.requestId}','freigeschaltet')">freigeschaltet</button><button type="button" class="red" onclick="setPackageRequestStatus('${req.requestId}','abgelehnt')">abgelehnt</button></div>` : '';
+      return `<div class="entry-card"><div class="trip-title">${isAdmin() ? `Anfrage ${idx+1} – ` : ''}${escapeHtml(req.requestedPackage || '-')}</div><div class="small">${escapeHtml(req.requesterName || '-')} · ${escapeHtml(req.requesterEmail || '-')}</div><div class="small">Add-ons: ${escapeHtml(formatAddOnLabels(req.addOns || []))}</div><div class="small">Preis: ${formatEuro(req.totalPrice || 0)}</div><div class="small">Datum: ${escapeHtml(req.createdAtText || '-')}</div><div class="small">PayPal: ${escapeHtml(req.paypalLink || 'paypal.me/StiluStruktur')}</div><div class="status ${statusClass}" style="margin-top:10px">Status: ${escapeHtml(req.status || 'offen')}${req.activeUntil ? ` · Aktiv bis ${escapeHtml(formatGermanDateOnly(req.activeUntil))}` : ''}</div>${activeField}${actions}</div>`;
+    }).join('');
+    list.innerHTML = html;
+    if(adminList){
+      adminList.innerHTML = isAdmin() ? html : '<div class="muted">Nur für Admin sichtbar.</div>';
+    }
+  }
+
+  async function createPackageRequest(){
+    if(!currentUser) return alert('Bitte zuerst anmelden.');
+    if(isAdmin()) return alert('Admin kann keine eigene Anfrage erstellen.');
+    const requestedPackage = $('requestPackage').value;
+    const requesterName = ($('requestName').value || localState.profile.displayName || String(currentUser.email || '').split('@')[0]).trim();
+    const addOns = getSelectedRequestAddons();
+    const totalPrice = getRequestTotal(requestedPackage, addOns);
+    const requestId = crypto.randomUUID();
+    const payload = {
+      requestId,
+      requesterUid: currentUser.uid,
+      requesterEmail: currentUser.email || '',
+      requesterName,
+      requestedPackage,
+      addOns,
+      totalPrice,
+      status: 'offen',
+      paypalLink: 'paypal.me/StiluStruktur',
+      createdAtMs: Date.now(),
+      createdAtText: new Date().toLocaleString('de-DE'),
+      activeUntil: ''
+    };
+    try{
+      await setDoc(doc(db,'users',currentUser.uid,'packageRequests',requestId), payload, { merge:true });
+      await setDoc(doc(db,'profiles',currentUser.uid), {
+        latestPackageRequestId: requestId,
+        latestPackageRequestStatus: 'offen',
+        latestPackageRequestPackage: requestedPackage,
+        latestPackageRequestPrice: totalPrice,
+        latestPackageRequestAt: Date.now()
+      }, { merge:true });
+      $('packageRequestStatus').className = 'status ok';
+      $('packageRequestStatus').textContent = 'Paket-Anfrage gespeichert.';
+      await loadPackageRequests();
+    }catch(e){
+      console.log('createPackageRequest Fehler:', e);
+      $('packageRequestStatus').className = 'status warn';
+      $('packageRequestStatus').textContent = 'Paket-Anfrage konnte nicht gespeichert werden.';
+      alert('Speichern der Anfrage fehlgeschlagen: ' + e.message);
+    }
+  }
+  window.createPackageRequest = createPackageRequest;
+
+  async function setPackageRequestStatus(requestId, status){
+    if(!isAdmin()) return;
+    const request = packageRequests.find(r => r.requestId === requestId);
+    if(!request) return;
+    const activeUntilInput = $('requestUntil_' + requestId);
+    let activeUntil = activeUntilInput?.value || request.activeUntil || '';
+    if(status === 'freigeschaltet' && !activeUntil){
+      const d = new Date();
+      d.setDate(d.getDate() + 30);
+      activeUntil = formatLocalDate(d);
+    }
+    try{
+      await setDoc(doc(db,'users',request.requesterUid,'packageRequests',requestId), { status, activeUntil, updatedAtMs: Date.now() }, { merge:true });
+      const profileUpdate = {
+        latestPackageRequestId: requestId,
+        latestPackageRequestStatus: status,
+        latestPackageRequestPackage: request.requestedPackage,
+        latestPackageRequestPrice: request.totalPrice || 0,
+        latestPackageRequestAt: Date.now()
+      };
+      if(status === 'freigeschaltet'){
+        profileUpdate.packageName = request.requestedPackage;
+        profileUpdate.activeUntil = activeUntil;
+        profileUpdate.updatedAt = Date.now();
+        await setDoc(doc(db,'users',request.requesterUid,'meta','profile'), { packageName: request.requestedPackage, activeUntil, updatedAt: Date.now() }, { merge:true });
+      }
+      await setDoc(doc(db,'profiles',request.requesterUid), profileUpdate, { merge:true });
+      await loadPackageRequests();
+      if(isAdmin()) await loadUsers();
+    }catch(e){
+      console.log('setPackageRequestStatus Fehler:', e);
+      alert('Status konnte nicht geändert werden: ' + e.message);
+    }
+  }
+  window.setPackageRequestStatus = setPackageRequestStatus;
+
   async function loadUsers(){
     if(!isAdmin()) return;
     const wrap = $('adminUsersList');
@@ -2032,13 +1910,20 @@
     try{
       const snap = await getDocs(collection(db,'profiles'));
       const users = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-      wrap.innerHTML = users.length ? users.map(u => `
-        <div class="entry-card">
+      users.sort((a,b) => String(a.displayName || a.email || '').localeCompare(String(b.displayName || b.email || ''),'de'));
+      wrap.innerHTML = users.length ? users.map(u => {
+        const hasRequest = !!u.latestPackageRequestId;
+        const requestStatus = u.latestPackageRequestStatus || 'keine';
+        const requestLabel = hasRequest ? `Anfrage: ${escapeHtml(requestStatus)}` : 'Anfrage: nein';
+        return `<div class="entry-card">
           <div class="trip-title">${escapeHtml(u.displayName || u.email || 'Unbekannt')}</div>
           <div class="small">${escapeHtml(u.email || '')}</div>
           <div class="small">Paket: ${escapeHtml(u.packageName || 'Basic')}</div>
           <div class="small">Aktiv bis: ${escapeHtml(u.activeUntil ? formatGermanDateOnly(u.activeUntil) : '-')}</div>
-        </div>`).join('') : '<div class="muted">Keine Nutzer vorhanden.</div>';
+          <div class="small">${requestLabel}</div>
+          ${hasRequest ? `<div class="toolbar"><button type="button" onclick="openAdminPanel('requests')">Anfrage ansehen</button></div>` : ''}
+        </div>`;
+      }).join('') : '<div class="muted">Keine Nutzer vorhanden.</div>';
     }catch(e){
       console.log('loadUsers Fehler:', e);
       wrap.innerHTML = '<div class="muted">Nutzer konnten nicht geladen werden.</div>';
@@ -2102,20 +1987,22 @@
       $('loginCard').classList.add('hidden');
       $('topLogoutBtn').classList.remove('hidden');
       $('topAdminBtn').classList.toggle('hidden', !isAdmin());
+      $('topUsersBtn').classList.toggle('hidden', !isAdmin());
+      $('topRequestsBtn').classList.toggle('hidden', !isAdmin());
       await loadProfile();
       await pullRemoteOnce();
-      if(isAdmin()){
-        await loadUsers();
-        await loadAdminInbox();
-      }else{
-        await loadUserMailbox();
-      }
+      await loadPackageRequests();
       processQueue();
+      if(isAdmin()) loadUsers();
     }else{
       localState = createEmptyState();
+      packageRequests = [];
       $('loginCard').classList.remove('hidden');
       $('topLogoutBtn').classList.add('hidden');
       $('topAdminBtn').classList.add('hidden');
+      $('topUsersBtn').classList.add('hidden');
+      $('topRequestsBtn').classList.add('hidden');
+      closeAdminPanels();
       updateBadges();
       updateProfileUi();
       renderAll();
@@ -2156,10 +2043,10 @@
       localStorage.removeItem('svss_remember_fuel_type_value');
     }
   });
+  $('requestPackage')?.addEventListener('change', updatePackageRequestPrice);
+  document.querySelectorAll('.request-addon').forEach(el => el.addEventListener('change', updatePackageRequestPrice));
   window.addEventListener('online', onConnectivityChange);
   window.addEventListener('offline', onConnectivityChange);
-  document.querySelectorAll('input[name="packageChoice"]').forEach(el => el.addEventListener('change', updatePackageRequestUi));
-  ['addonHotel','addonFuel','addonKm','addonDriver','addonTeam','addonPdfSelect','addonDriverPack'].forEach(id => $(id)?.addEventListener('change', updatePackageRequestUi));
   setInterval(() => { if(currentUser){ updateProfileUi(); } }, 60000);
 
   function downloadFile(content, filename, type){
