@@ -131,28 +131,25 @@
     .tab-btn.locked{opacity:.55}
     .tab-panel{display:none}
     .tab-panel.active{display:block}
+
+    .mailbox-stack{display:grid;gap:12px;margin-top:14px}
+    .mailbox-card{border:1px solid var(--line);background:var(--soft);border-radius:16px;padding:14px}
+    .mailbox-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+    .mailbox-title{font-size:18px;font-weight:700}
+    .mailbox-meta{font-size:12px;color:var(--muted);line-height:1.4}
+    .mailbox-reply{margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}
+    .mailbox-reply-box{margin-top:10px;padding:10px 12px;border-radius:12px;background:#22345c;border:1px solid var(--line)}
+    .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .choice-card{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
+    .choice-card input{width:auto;transform:scale(1.15);margin-top:3px}
+    .choice-card .line1{font-weight:700}
+    .choice-card .line2{font-size:13px;color:var(--muted);margin-top:4px}
+    .mailbox-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .mailbox-admin-actions > *{width:auto}
     .hidden{display:none!important}
     .note-box{border:1px dashed var(--line);border-radius:16px;padding:14px;background:#33476d;color:#dbeafe}
     .mono{font-family:Consolas,monospace}
     .center{display:flex;align-items:center;justify-content:center}
-
-    .mailbox-stack{display:grid;gap:12px}
-    .mail-card{border:1px solid var(--line);background:var(--soft);border-radius:16px;padding:14px}
-    .mail-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
-    .mail-meta{font-size:12px;color:var(--muted);margin-top:4px}
-    .mail-body{margin-top:10px;white-space:pre-wrap;line-height:1.4}
-    .mail-badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#0f1b35;border:1px solid var(--line);font-size:12px;color:#dbeafe}
-    .mail-controls{display:grid;gap:10px;margin-top:12px}
-    .mail-reply{display:grid;gap:8px}
-    .request-grid{display:grid;gap:12px}
-    .request-price{font-size:22px;font-weight:700;color:#fde68a}
-    .addon-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .addon-item{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:12px;background:var(--soft);border:1px solid var(--line)}
-    .addon-item input{width:auto;transform:scale(1.15);margin-top:2px}
-    .radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .radio-card{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;background:var(--soft);border:1px solid var(--line)}
-    .radio-card input{width:auto;transform:scale(1.15);margin-top:2px}
-
     @media (max-width: 980px){
       .grid,.profile-grid,.login-grid,.topbar{grid-template-columns:1fr}
       .topbar-info{grid-template-columns:1fr 1fr}
@@ -236,11 +233,10 @@
         <h3>Adminbereich</h3>
         <div class="toolbar">
           <button type="button" onclick="loadUsers()">Nutzer laden</button>
-          <button type="button" onclick="loadMailbox()">Postfach laden</button>
+          <button type="button" onclick="loadAdminInbox()">Postfach laden</button>
           <button type="button" class="outline" onclick="forceSyncNow()">Sync jetzt</button>
         </div>
         <div id="adminUsersList" class="entry-list"></div>
-        <div id="adminMailboxList" class="entry-list"></div>
       </div>
     </div>
 
@@ -418,6 +414,101 @@
           <div class="receipt-note">Hinweis: Belege bitte nach dem Einscannen prüfen. Beta-Version, Fehler nicht ausgeschlossen.</div>
         </div>
 
+
+        <div id="postfach" class="tab-panel">
+          <h2>Postfach</h2>
+          <div id="mailboxInfo" class="note-box">Hier laufen Paket-Anfragen und Nachrichten. Nutzer sehen nur ihre eigenen Einträge. Admin sieht alle Anfragen zentral.</div>
+
+          <div id="mailboxUserPanel">
+            <div class="section" style="padding:14px;margin-top:14px;background:transparent;border-color:rgba(255,255,255,.08)">
+              <h3>Nachricht an Admin</h3>
+              <div class="field-row-compact">
+                <div><label>Betreff</label><input id="mailSubject" placeholder="z. B. Frage zur Freischaltung"></div>
+                <div>
+                  <label>Typ</label>
+                  <select id="mailType">
+                    <option value="message">Allgemeine Nachricht</option>
+                    <option value="support">Technische Hilfe</option>
+                    <option value="billing">Frage zu Preis / Laufzeit</option>
+                  </select>
+                </div>
+              </div>
+              <label>Nachricht</label>
+              <textarea id="mailMessage" class="small-textarea" placeholder="Deine Nachricht an den Admin"></textarea>
+              <div class="toolbar">
+                <button type="button" onclick="sendMailboxMessage()">Nachricht senden</button>
+              </div>
+              <div id="mailSendStatus" class="status info">Noch keine Nachricht gesendet.</div>
+            </div>
+
+            <div class="section" style="padding:14px;margin-top:14px;background:transparent;border-color:rgba(255,255,255,.08)">
+              <h3>Paket-Anfrage</h3>
+              <div class="small">Wähle genau ein Paket. Zusatzmodule werden passend dazu berechnet.</div>
+
+              <div class="choice-grid">
+                <label class="choice-card">
+                  <input type="radio" name="packageChoice" value="Basic" checked>
+                  <span><div class="line1">Basic</div><div class="line2">4,99 € / Monat</div></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="packageChoice" value="Basic Plus">
+                  <span><div class="line1">Basic Plus</div><div class="line2">Basic + passende Add-ons</div></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="packageChoice" value="Premium">
+                  <span><div class="line1">Premium</div><div class="line2">14,99 € / Monat</div></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="packageChoice" value="Premium Plus">
+                  <span><div class="line1">Premium Plus</div><div class="line2">Premium + passende Add-ons</div></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="packageChoice" value="Goldmitglied">
+                  <span><div class="line1">Goldmitglied</div><div class="line2">29,99 € / Monat</div></span>
+                </label>
+              </div>
+
+              <div class="choice-grid" id="packageAddonGrid">
+                <label class="choice-card"><input type="checkbox" id="addonHotel"><span><div class="line1">Hotel-Modul</div><div class="line2">+ 4,99 € / Monat</div></span></label>
+                <label class="choice-card"><input type="checkbox" id="addonFuel"><span><div class="line1">Tanken-Modul</div><div class="line2">+ 4,99 € / Monat</div></span></label>
+                <label class="choice-card"><input type="checkbox" id="addonKm"><span><div class="line1">Kilometer-Modul</div><div class="line2">+ 3,99 € / Monat</div></span></label>
+                <label class="choice-card"><input type="checkbox" id="addonDriver"><span><div class="line1">1 zusätzlicher Fahrer</div><div class="line2">Basic Plus: + 3,99 € / Premium Plus: + 2,99 € / Gold: + 2,49 €</div></span></label>
+                <label class="choice-card"><input type="checkbox" id="addonTeam"><span><div class="line1">Team-Funktion</div><div class="line2">+ 9,99 € / Monat (nur Premium Plus oder Gold)</div></span></label>
+                <label class="choice-card"><input type="checkbox" id="addonPdfSelect"><span><div class="line1">PDF-Auswahl</div><div class="line2">+ 6,99 € / Monat (nur Premium Plus oder Gold)</div></span></label>
+                <label class="choice-card"><input type="checkbox" id="addonDriverPack"><span><div class="line1">5er-Fahrerpaket</div><div class="line2">+ 9,99 € / Monat (nur Gold)</div></span></label>
+              </div>
+
+              <div class="field-row-compact" style="margin-top:10px">
+                <div>
+                  <label>Zusatzhinweis</label>
+                  <input id="packageRequestNote" placeholder="z. B. bitte schnell freischalten">
+                </div>
+                <div class="note-box">
+                  <div class="trip-title">Berechneter Preis</div>
+                  <div id="packagePricePreview" style="font-size:22px;font-weight:700;margin-top:6px">4,99 € / Monat</div>
+                </div>
+              </div>
+
+              <div class="toolbar">
+                <button type="button" onclick="sendPackageRequest()">Paket-Anfrage an Admin senden</button>
+              </div>
+              <div id="packageRequestStatus" class="status info">Noch keine Paket-Anfrage gesendet.</div>
+            </div>
+          </div>
+
+          <div id="mailboxAdminPanel" class="hidden">
+            <div class="toolbar">
+              <button type="button" onclick="loadAdminInbox()">Postfach laden</button>
+            </div>
+            <div id="adminMailboxStatus" class="status info">Noch keine Admin-Daten geladen.</div>
+          </div>
+
+          <div style="margin-top:14px">
+            <h3>Verlauf</h3>
+            <div id="mailboxList" class="mailbox-stack"></div>
+          </div>
+        </div>
+
         
 <div id="pakete" class="tab-panel">
           <h2>Pakete</h2>
@@ -506,74 +597,6 @@
           <label>Dein Empfehlungscode</label>
           <input id="refCode" readonly>
         </div>
-
-
-        <div id="postfach" class="tab-panel">
-          <h2>Postfach</h2>
-          <div class="note-box">Hier laufen deine Paket-Anfragen und Nachrichten. Admin kann antworten, normale Nutzer können hier direkt schreiben.</div>
-
-          <div class="section" id="mailComposeSection" style="margin-top:14px;padding:14px">
-            <h3>Nachricht an Admin</h3>
-            <div class="field-row-compact">
-              <div>
-                <label>Betreff</label>
-                <input id="mailSubject" placeholder="z. B. Frage zur Freischaltung">
-              </div>
-              <div>
-                <label>Typ</label>
-                <select id="mailType">
-                  <option value="message">Allgemeine Nachricht</option>
-                  <option value="package_request">Paket-Anfrage</option>
-                </select>
-              </div>
-            </div>
-            <label>Nachricht</label>
-            <textarea id="mailBody" placeholder="Deine Nachricht an den Admin"></textarea>
-            <div class="toolbar">
-              <button type="button" onclick="sendMailboxMessage()">Nachricht senden</button>
-            </div>
-            <div id="mailStatus" class="status info">Noch keine Nachricht gesendet.</div>
-          </div>
-
-          <div class="section" id="packageRequestSection" style="margin-top:14px;padding:14px">
-            <h3>Paket-Anfrage direkt aus der Preisliste</h3>
-            <div class="small">Wähle genau ein Paket. Zusatzmodule werden passend dazu ein- oder ausgeblendet. Falsche Kombinationen werden automatisch abgefangen.</div>
-
-            <div class="request-grid" style="margin-top:10px">
-              <div class="radio-grid">
-                <label class="radio-card"><input type="radio" name="requestPackage" value="basic" checked> <span><strong>Basic</strong><br><span class="small">4,99 € / Monat</span></span></label>
-                <label class="radio-card"><input type="radio" name="requestPackage" value="basic_plus"> <span><strong>Basic Plus</strong><br><span class="small">Basic + passende Add-ons</span></span></label>
-                <label class="radio-card"><input type="radio" name="requestPackage" value="premium"> <span><strong>Premium</strong><br><span class="small">14,99 € / Monat</span></span></label>
-                <label class="radio-card"><input type="radio" name="requestPackage" value="premium_plus"> <span><strong>Premium Plus</strong><br><span class="small">Premium + passende Add-ons</span></span></label>
-                <label class="radio-card"><input type="radio" name="requestPackage" value="gold"> <span><strong>Goldmitglied</strong><br><span class="small">29,99 € / Monat</span></span></label>
-              </div>
-
-              <div id="requestAddonsBox" class="addon-grid"></div>
-
-              <div class="field-row-compact">
-                <div>
-                  <label>Zusatzhinweis</label>
-                  <input id="packageRequestNote" placeholder="z. B. bitte schnell freischalten">
-                </div>
-                <div>
-                  <label>Berechneter Preis</label>
-                  <div id="requestPrice" class="request-price">4,99 € / Monat</div>
-                </div>
-              </div>
-
-              <div class="toolbar">
-                <button type="button" onclick="sendPackageRequest()">Paket-Anfrage an Admin senden</button>
-              </div>
-              <div id="packageRequestStatus" class="status info">Noch keine Paket-Anfrage gesendet.</div>
-            </div>
-          </div>
-
-          <div class="section" style="margin-top:14px;padding:14px">
-            <h3>Verlauf</h3>
-            <div id="mailboxList" class="mailbox-stack"></div>
-          </div>
-        </div>
-
 
         <div id="rechnung" class="tab-panel">
           <h2>Rechnung</h2>
@@ -1049,7 +1072,7 @@
     const state = getAccessState();
     const pkg = state.packageName || localState.profile.packageName || 'Basic';
     const base = hasUnlimitedAccess()
-      ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
+? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
       : pkg === 'Goldmitglied'
         ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
         : (pkg === 'Premium' || pkg === 'Premium Plus')
@@ -1058,7 +1081,7 @@
             ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, postfach:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:false }
             : { fahrt:true, hotel:false, tanken:false, kilometer:false, pdf:true, postfach:true, pakete:true, empfehlen:false, rechnung:true, premiumFields:false };
     if(state.isExpired){
-      return { ...base, fahrt:false, hotel:false, tanken:false, kilometer:false, pdf:false, postfach:true, empfehlen:false, rechnung:false, premiumFields:base.premiumFields };
+      return { ...base, fahrt:false, hotel:false, tanken:false, kilometer:false, pdf:false, empfehlen:false, rechnung:false, premiumFields:base.premiumFields, postfach:true };
     }
     return base;
   }
@@ -1258,11 +1281,6 @@
 
   function updateQueueBadge(){
     const pending = Array.isArray(localState.queue) ? localState.queue.length : 0;
-    if(isAdmin()){
-      const openMailbox = (localState.mailbox || []).filter(m => String(m.status || '').toLowerCase() !== 'erledigt').length;
-      $('queueBadge').textContent = openMailbox > 0 ? `${openMailbox} offen` : (pending > 0 ? `${pending} offen` : 'bereit');
-      return;
-    }
     $('queueBadge').textContent = pending > 0 ? `${pending} offen` : 'bereit';
   }
 
@@ -1403,293 +1421,252 @@
   }
 
 
-  const REQUEST_PACKAGE_CONFIG = {
-    basic: { label:'Basic', basePrice:4.99, addons:[] },
-    basic_plus: { label:'Basic Plus', basePrice:4.99, addons:[
-      { key:'hotel', label:'Hotel-Modul', price:4.99 },
-      { key:'fuel', label:'Tanken-Modul', price:4.99 },
-      { key:'km', label:'Kilometer-Modul', price:3.99 },
-      { key:'extra_driver_basic', label:'1 zusätzlicher Fahrer', price:3.99 }
-    ]},
-    premium: { label:'Premium', basePrice:14.99, addons:[] },
-    premium_plus: { label:'Premium Plus', basePrice:14.99, addons:[
-      { key:'team', label:'Team-Funktion', price:9.99 },
-      { key:'extra_driver_premium', label:'Zusätzlicher Fahrer', price:2.99 },
-      { key:'pdf_choice', label:'PDF-Auswahl frei kombinierbar', price:6.99 }
-    ]},
-    gold: { label:'Goldmitglied', basePrice:29.99, addons:[
-      { key:'extra_driver_gold', label:'1 zusätzlicher Fahrer', price:2.49 },
-      { key:'five_driver_gold', label:'5er-Fahrerpaket', price:9.99 }
-    ]}
-  };
-
-  function getSelectedRequestPackage(){
-    return document.querySelector('input[name="requestPackage"]:checked')?.value || 'basic';
+  function packagePricingModel(){
+    return {
+      basic: 4.99,
+      premium: 14.99,
+      gold: 29.99,
+      basicHotel: 4.99,
+      basicFuel: 4.99,
+      basicKm: 3.99,
+      basicDriver: 3.99,
+      premiumTeam: 9.99,
+      premiumDriver: 2.99,
+      premiumPdf: 6.99,
+      goldDriver: 2.49,
+      goldDriverPack: 9.99
+    };
   }
 
-  function renderRequestAddons(){
-    const box = $('requestAddonsBox');
-    if(!box) return;
-    const cfg = REQUEST_PACKAGE_CONFIG[getSelectedRequestPackage()];
-    if(!cfg || !cfg.addons.length){
-      box.innerHTML = '<div class="note-box">Für dieses Paket sind hier keine Zusatzmodule auswählbar.</div>';
-      updateRequestPrice();
-      return;
+  function selectedPackageChoice(){
+    return document.querySelector('input[name="packageChoice"]:checked')?.value || 'Basic';
+  }
+
+  function updatePackageRequestUi(){
+    const pkg = selectedPackageChoice();
+    const aHotel = $('addonHotel'), aFuel = $('addonFuel'), aKm = $('addonKm'), aDriver = $('addonDriver'), aTeam = $('addonTeam'), aPdf = $('addonPdfSelect'), aPack = $('addonDriverPack');
+    [aHotel,aFuel,aKm,aDriver,aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.disabled = false; });
+    if(pkg === 'Basic'){
+      [aHotel,aFuel,aKm,aDriver,aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
+    } else if(pkg === 'Basic Plus'){
+      [aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
+    } else if(pkg === 'Premium'){
+      [aHotel,aFuel,aKm,aDriver,aTeam,aPdf,aPack].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
+    } else if(pkg === 'Premium Plus'){
+      [aHotel,aFuel,aKm].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
+      if(aPack){ aPack.checked = false; aPack.disabled = true; }
+    } else if(pkg === 'Goldmitglied'){
+      [aHotel,aFuel,aKm,aTeam,aPdf].forEach(el => { if(!el) return; el.checked = false; el.disabled = true; });
     }
-    box.innerHTML = cfg.addons.map(addon => `
-      <label class="addon-item">
-        <input type="checkbox" class="request-addon" value="${addon.key}" data-price="${addon.price}">
-        <span><strong>${escapeHtml(addon.label)}</strong><br><span class="small">${formatEuro(addon.price)} / Monat</span></span>
-      </label>
-    `).join('');
-    box.querySelectorAll('.request-addon').forEach(el => el.addEventListener('change', updateRequestPrice));
-    updateRequestPrice();
+    $('packagePricePreview').textContent = `${formatEuro(calculatePackageRequestPrice())} / Monat`;
   }
 
-  function getRequestSelection(){
-    const pkgKey = getSelectedRequestPackage();
-    const cfg = REQUEST_PACKAGE_CONFIG[pkgKey];
-    const addonEls = [...document.querySelectorAll('.request-addon:checked')];
-    const addons = addonEls.map(el => ({
-      key: el.value,
-      label: el.parentElement.querySelector('strong')?.textContent || el.value,
-      price: Number(el.dataset.price || 0)
-    }));
-    const total = Number(cfg.basePrice || 0) + addons.reduce((s,a)=>s + Number(a.price || 0), 0);
-    return { pkgKey, packageLabel: cfg.label, basePrice: cfg.basePrice, addons, total };
+  function calculatePackageRequestPrice(){
+    const pkg = selectedPackageChoice();
+    const p = packagePricingModel();
+    let total = 0;
+    if(pkg === 'Basic') total = p.basic;
+    if(pkg === 'Basic Plus'){
+      total = p.basic;
+      if($('addonHotel')?.checked) total += p.basicHotel;
+      if($('addonFuel')?.checked) total += p.basicFuel;
+      if($('addonKm')?.checked) total += p.basicKm;
+      if($('addonDriver')?.checked) total += p.basicDriver;
+    }
+    if(pkg === 'Premium') total = p.premium;
+    if(pkg === 'Premium Plus'){
+      total = p.premium;
+      if($('addonTeam')?.checked) total += p.premiumTeam;
+      if($('addonDriver')?.checked) total += p.premiumDriver;
+      if($('addonPdfSelect')?.checked) total += p.premiumPdf;
+    }
+    if(pkg === 'Goldmitglied'){
+      total = p.gold;
+      if($('addonDriver')?.checked) total += p.goldDriver;
+      if($('addonDriverPack')?.checked) total += p.goldDriverPack;
+    }
+    return total;
   }
 
-  function updateRequestPrice(){
-    const priceEl = $('requestPrice');
-    if(!priceEl) return;
-    const selection = getRequestSelection();
-    priceEl.textContent = `${formatEuro(selection.total)} / Monat`;
+  function selectedPackageAddons(){
+    const labels = [];
+    const map = [
+      ['addonHotel','Hotel-Modul'],
+      ['addonFuel','Tanken-Modul'],
+      ['addonKm','Kilometer-Modul'],
+      ['addonDriver','1 zusätzlicher Fahrer'],
+      ['addonTeam','Team-Funktion'],
+      ['addonPdfSelect','PDF-Auswahl'],
+      ['addonDriverPack','5er-Fahrerpaket']
+    ];
+    map.forEach(([id,label]) => { if($(id)?.checked && !$(id).disabled) labels.push(label); });
+    return labels;
+  }
+
+  function mailboxItemCard(item, adminView=false){
+    const created = item.createdAtMillis ? new Date(item.createdAtMillis).toLocaleString('de-DE') : '-';
+    const status = item.status || 'offen';
+    const packageBlock = item.type === 'package_request' ? `<div class="small"><strong>Gewünschtes Paket:</strong> ${escapeHtml(item.packageChoice || '-')}</div><div class="small"><strong>Monatspreis:</strong> ${formatEuro(item.monthlyPrice || 0)}</div><div class="small"><strong>Zusatzmodule:</strong> ${escapeHtml((item.addOns || []).join(', ') || 'keine')}</div>` : '';
+    const adminReply = item.adminReply ? `<div class="mailbox-reply-box"><strong>Admin-Antwort:</strong><br>${escapeHtml(item.adminReply)}</div>` : '';
+    const adminControls = adminView ? `
+      <div class="mailbox-reply">
+        <label>Antwort an ${escapeHtml(item.senderEmail || '')}</label>
+        <textarea id="reply_${item.id}" class="small-textarea" placeholder="Antwort an Nutzer"></textarea>
+        <div class="mailbox-admin-actions">
+          <select id="status_${item.id}" class="compact-sort">
+            <option value="offen" ${status === 'offen' ? 'selected' : ''}>offen</option>
+            <option value="beantwortet" ${status === 'beantwortet' ? 'selected' : ''}>beantwortet</option>
+            <option value="freigegeben" ${status === 'freigegeben' ? 'selected' : ''}>freigegeben</option>
+          </select>
+          <button type="button" onclick="adminReplyToMailbox('${item.id}')">Antwort speichern</button>
+        </div>
+      </div>` : '';
+    return `
+      <div class="mailbox-card">
+        <div class="mailbox-head">
+          <div>
+            <div class="mailbox-title">${escapeHtml(item.subject || (item.type === 'package_request' ? 'Paket-Anfrage' : 'Nachricht'))}</div>
+            <div class="mailbox-meta">
+              Von: ${escapeHtml(item.senderName || item.senderEmail || '-')} · ${escapeHtml(item.senderEmail || '-')}<br>
+              Typ: ${escapeHtml(item.type || 'message')} · Status: ${escapeHtml(status)}
+            </div>
+          </div>
+          <div class="pill">${created}</div>
+        </div>
+        ${item.message ? `<div class="small" style="margin-top:10px;white-space:pre-wrap">${escapeHtml(item.message)}</div>` : ''}
+        ${packageBlock}
+        ${item.note ? `<div class="small"><strong>Hinweis:</strong> ${escapeHtml(item.note)}</div>` : ''}
+        ${adminReply}
+        ${adminControls}
+      </div>`;
   }
 
   function renderMailbox(){
-    const wrap = $('mailboxList');
-    if(!wrap) return;
-    const myEmail = String(currentUser?.email || '').toLowerCase();
-    const adminEmail = ADMIN_EMAIL.toLowerCase();
-    const composeSection = $('mailComposeSection');
-    const packageSection = $('packageRequestSection');
-    if(composeSection) composeSection.classList.toggle('hidden', isAdmin());
-    if(packageSection) packageSection.classList.toggle('hidden', isAdmin());
-    const noteBox = document.querySelector('#postfach .note-box');
-    if(noteBox){
-      noteBox.textContent = isAdmin()
-        ? 'Admin-Ansicht: Hier siehst du alle Paket-Anfragen und Nachrichten der Nutzer. Antworten und Status ändern gehen direkt im Verlauf.'
-        : 'Hier laufen deine Paket-Anfragen und Nachrichten. Admin kann antworten, normale Nutzer können hier direkt schreiben.';
-    }
+    const list = $('mailboxList');
+    if(!list) return;
+    const adminView = isAdmin();
+    $('mailboxUserPanel')?.classList.toggle('hidden', adminView);
+    $('mailboxAdminPanel')?.classList.toggle('hidden', !adminView);
+    $('mailboxInfo').textContent = adminView
+      ? 'Admin-Ansicht: Hier siehst du alle Paket-Anfragen und Nachrichten der Nutzer. Antworten und Status ändern gehen direkt im Verlauf.'
+      : 'Hier laufen deine Paket-Anfragen und Nachrichten an den Admin. Du siehst nur deine eigenen Einträge und passende Antworten.';
+    const items = [...(localState.mailbox || [])].sort((a,b) => Number(b.createdAtMillis || 0) - Number(a.createdAtMillis || 0));
+    list.innerHTML = items.length ? items.map(item => mailboxItemCard(item, adminView)).join('') : '<div class="muted">Noch keine Nachrichten im Postfach.</div>';
+  }
 
-    const items = [...(localState.mailbox || [])]
-      .filter(m => {
-        const from = String(m.fromEmail || '').toLowerCase();
-        const to = String(m.toEmail || '').toLowerCase();
-        if(isAdmin()){
-          return true;
-        }
-        return from === myEmail || to === myEmail;
-      })
-      .sort((a,b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0));
-    wrap.innerHTML = items.length ? items.map(m => `
-      <div class="mail-card">
-        <div class="mail-head">
-          <div>
-            <div class="trip-title">${escapeHtml(m.subject || 'Nachricht')}</div>
-            <div class="mail-meta">Von: ${escapeHtml(m.fromEmail || '-')} · An: ${escapeHtml(m.toEmail || '-')} · ${escapeHtml(m.type || 'message')} · ${escapeHtml(m.status || 'offen')}</div>
-          </div>
-          <div class="mail-badge">${new Date(Number(m.createdAtMs || Date.now())).toLocaleString('de-DE')}</div>
-        </div>
-        ${m.packageSummary ? `<div class="mail-meta" style="margin-top:8px">Paket: ${escapeHtml(m.packageSummary)}</div>` : ''}
-        <div class="mail-body">${escapeHtml(m.body || '')}</div>
-        ${m.adminReply ? `<div class="note-box" style="margin-top:10px"><strong>Admin-Antwort:</strong><br>${escapeHtml(m.adminReply || '')}${m.adminReplyAt ? `<div class="small" style="margin-top:6px">${new Date(Number(m.adminReplyAt)).toLocaleString('de-DE')}</div>` : ''}</div>` : ''}
-        ${isAdmin() ? `
-          <div class="mail-controls">
-            <div class="mail-reply">
-              <textarea id="reply_${m.id}" placeholder="Antwort an ${escapeHtml(m.fromEmail || '')}"></textarea>
-              <div class="toolbar">
-                <button type="button" onclick="replyToMailbox('${m.id}')">Antwort senden</button>
-                <button type="button" class="outline" onclick="markMailboxDone('${m.id}')">Als erledigt markieren</button>
-              </div>
-            </div>
-          </div>` : ''}
-      </div>
-    `).join('') : '<div class="muted">Noch keine Nachrichten im Postfach.</div>';
-
-    const adminWrap = $('adminMailboxList');
-    if(adminWrap && isAdmin()){
-      const openItems = items.filter(m => String(m.status || '').toLowerCase() !== 'erledigt');
-      adminWrap.innerHTML = `
-        <div class="entry-card">
-          <div class="trip-title">Admin-Postfach Übersicht</div>
-          <div class="small">Gesamt geladen: ${items.length}</div>
-          <div class="small">Offen / nicht erledigt: ${openItems.length}</div>
-          <div class="small">Alle Einträge werden direkt aus den Nutzer-Postfächern geladen.</div>
-        </div>`;
+  async function loadUserMailbox(){
+    if(!currentUser) return;
+    try{
+      const snap = await getDocs(collection(db,'users',currentUser.uid,'mailbox'));
+      localState.mailbox = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted);
+      saveLocalState();
+      renderMailbox();
+    }catch(e){
+      console.log('loadUserMailbox Fehler:', e);
+      renderMailbox();
     }
   }
 
-  async function syncMailboxDoc(item){
-    if(!currentUser || !online()) return;
-    const targetUid = item.ownerUid || item.fromUid || currentUser.uid;
-    await setDoc(doc(db,'users',targetUid,'mailbox', item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
+  async function loadAdminInbox(){
+    if(!isAdmin()) return;
+    try{
+      const snap = await getDocs(collection(db,'adminInbox'));
+      localState.mailbox = snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted);
+      saveLocalState();
+      $('adminMailboxStatus').className = 'status ok';
+      $('adminMailboxStatus').textContent = `${localState.mailbox.length} Anfrage(n) geladen.`;
+      renderMailbox();
+    }catch(e){
+      console.log('loadAdminInbox Fehler:', e);
+      $('adminMailboxStatus').className = 'status warn';
+      $('adminMailboxStatus').textContent = 'Admin-Postfach konnte nicht geladen werden.';
+      renderMailbox();
+    }
   }
+  window.loadAdminInbox = loadAdminInbox;
 
   async function sendMailboxMessage(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
-    if(isAdmin()) return alert('Als Admin brauchst du dir selbst keine Nachricht zu schicken.');
-    const subject = ($('mailSubject').value || '').trim() || 'Nachricht an Admin';
-    const body = ($('mailBody').value || '').trim();
-    if(!body) return alert('Bitte eine Nachricht eingeben.');
+    const subject = $('mailSubject').value.trim();
+    const message = $('mailMessage').value.trim();
+    if(!subject || !message) return alert('Bitte Betreff und Nachricht eintragen.');
     const item = {
       id: crypto.randomUUID(),
-      type: $('mailType').value || 'message',
+      senderUid: currentUser.uid,
+      senderEmail: currentUser.email,
+      senderName: localState.profile.displayName || currentUser.email,
       subject,
-      body,
-      fromEmail: currentUser.email || '',
-      fromName: localState.profile.displayName || '',
-      fromUid: currentUser.uid || '',
-      ownerUid: currentUser.uid || '',
-      toEmail: ADMIN_EMAIL,
-      adminEmail: ADMIN_EMAIL,
+      message,
+      type: $('mailType').value,
       status: 'offen',
-      createdAtMs: Date.now(),
-      updatedAt: Date.now(),
-      syncStatus: 'pending'
+      createdAtMillis: Date.now(),
+      updatedAtMillis: Date.now(),
+      syncStatus:'pending'
     };
-    localState.mailbox.push(item);
+    localState.mailbox.unshift(item);
     saveLocalState();
     renderMailbox();
-    $('mailBody').value = '';
-    $('mailSubject').value = '';
-    $('mailStatus').className = 'status ok';
-    $('mailStatus').textContent = 'Nachricht vorbereitet.';
     queueOp('upsert','mailbox',item,item.id);
-    try{
-      await syncMailboxDoc(item);
-      item.syncStatus = 'synced';
-      saveLocalState();
-      renderMailbox();
-      $('mailStatus').textContent = 'Nachricht an Admin gesendet.';
-    }catch(e){
-      console.log('sendMailboxMessage Fehler:', e);
-      $('mailStatus').className = 'status offline';
-      $('mailStatus').textContent = 'Nachricht vorbereitet. Synchronisierung wartet.';
-    }
+    queueOp('upsert','adminInbox',{...item},item.id,{path:['adminInbox']});
+    $('mailSubject').value = '';
+    $('mailMessage').value = '';
+    $('mailSendStatus').className = 'status ok';
+    $('mailSendStatus').textContent = 'Nachricht lokal gespeichert und zum Admin geschickt.';
   }
   window.sendMailboxMessage = sendMailboxMessage;
 
   async function sendPackageRequest(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
-    if(isAdmin()) return alert('Als Admin brauchst du dir selbst keine Paket-Anfrage zu schicken.');
-    const selection = getRequestSelection();
-    const note = ($('packageRequestNote').value || '').trim();
-    const bodyLines = [
-      `Gewünschtes Paket: ${selection.packageLabel}`,
-      `Monatspreis: ${formatEuro(selection.total)}`,
-      selection.addons.length ? `Zusatzmodule: ${selection.addons.map(a => `${a.label} (${formatEuro(a.price)})`).join(', ')}` : 'Zusatzmodule: keine',
-      note ? `Hinweis: ${note}` : ''
-    ].filter(Boolean);
+    const pkg = selectedPackageChoice();
+    const addOns = selectedPackageAddons();
+    const monthlyPrice = calculatePackageRequestPrice();
+    const note = $('packageRequestNote').value.trim();
     const item = {
       id: crypto.randomUUID(),
+      senderUid: currentUser.uid,
+      senderEmail: currentUser.email,
+      senderName: localState.profile.displayName || currentUser.email,
+      subject: `Paket-Anfrage: ${pkg}`,
+      message: `Gewünschtes Paket: ${pkg}`,
       type: 'package_request',
-      subject: `Paket-Anfrage: ${selection.packageLabel}`,
-      body: bodyLines.join('\n'),
-      packageSummary: `${selection.packageLabel} – ${formatEuro(selection.total)} / Monat`,
-      requestPackage: selection.pkgKey,
-      requestAddons: selection.addons,
-      requestTotal: selection.total,
-      fromEmail: currentUser.email || '',
-      fromName: localState.profile.displayName || '',
-      fromUid: currentUser.uid || '',
-      ownerUid: currentUser.uid || '',
-      toEmail: ADMIN_EMAIL,
-      adminEmail: ADMIN_EMAIL,
+      packageChoice: pkg,
+      addOns,
+      monthlyPrice,
+      note,
       status: 'offen',
-      createdAtMs: Date.now(),
-      updatedAt: Date.now(),
-      syncStatus: 'pending'
+      createdAtMillis: Date.now(),
+      updatedAtMillis: Date.now(),
+      syncStatus:'pending'
     };
-    localState.mailbox.push(item);
+    localState.mailbox.unshift(item);
     saveLocalState();
     renderMailbox();
-    $('packageRequestStatus').className = 'status ok';
-    $('packageRequestStatus').textContent = `Paket-Anfrage vorbereitet: ${selection.packageLabel} (${formatEuro(selection.total)} / Monat).`;
-    $('packageRequestNote').value = '';
-    document.querySelectorAll('.request-addon:checked').forEach(el => el.checked = false);
-    updateRequestPrice();
     queueOp('upsert','mailbox',item,item.id);
-    try{
-      await syncMailboxDoc(item);
-      item.syncStatus = 'synced';
-      saveLocalState();
-      renderMailbox();
-      $('packageRequestStatus').textContent = `Paket-Anfrage an Admin gesendet: ${selection.packageLabel} (${formatEuro(selection.total)} / Monat).`;
-    }catch(e){
-      console.log('sendPackageRequest Fehler:', e);
-      $('packageRequestStatus').className = 'status offline';
-      $('packageRequestStatus').textContent = 'Paket-Anfrage gespeichert. Synchronisierung wartet.';
-    }
+    queueOp('upsert','adminInbox',{...item},item.id,{path:['adminInbox']});
+    $('packageRequestNote').value = '';
+    $('packageRequestStatus').className = 'status ok';
+    $('packageRequestStatus').textContent = 'Paket-Anfrage lokal gespeichert und an den Admin gesendet.';
   }
   window.sendPackageRequest = sendPackageRequest;
 
-  async function replyToMailbox(messageId){
+  async function adminReplyToMailbox(id){
     if(!isAdmin()) return;
-    const field = $(`reply_${messageId}`);
-    const replyText = (field?.value || '').trim();
-    if(!replyText) return alert('Bitte eine Antwort eingeben.');
-    const original = (localState.mailbox || []).find(m => m.id === messageId);
-    if(!original) return alert('Originalnachricht nicht gefunden.');
-    original.adminReply = replyText;
-    original.adminReplyAt = Date.now();
-    original.answeredBy = ADMIN_EMAIL;
-    original.status = 'beantwortet';
-    original.updatedAt = Date.now();
-    original.syncStatus = 'pending';
+    const item = (localState.mailbox || []).find(x => x.id === id);
+    if(!item) return;
+    const reply = $(`reply_${id}`)?.value?.trim() || '';
+    const status = $(`status_${id}`)?.value || 'offen';
+    item.status = status;
+    item.adminReply = reply;
+    item.adminReplyAtMillis = Date.now();
+    item.updatedAtMillis = Date.now();
     saveLocalState();
     renderMailbox();
-    queueOp('upsert','mailbox',original,original.id);
-    try{
-      await syncMailboxDoc(original);
-      original.syncStatus = 'synced';
-      saveLocalState();
-      renderMailbox();
-    }catch(e){
-      console.log('replyToMailbox Fehler:', e);
-    }
+    queueOp('upsert','adminInbox',{...item},item.id,{path:['adminInbox']});
+    queueOp('upsert','mailbox',{...item},item.id,{path:['users', item.senderUid, 'mailbox']});
+    $('adminMailboxStatus').className = 'status ok';
+    $('adminMailboxStatus').textContent = 'Antwort gespeichert.';
   }
-  window.replyToMailbox = replyToMailbox;
-
-  async function markMailboxDone(messageId){
-    if(!isAdmin()) return;
-    const original = (localState.mailbox || []).find(m => m.id === messageId);
-    if(!original) return;
-    original.status = 'erledigt';
-    original.updatedAt = Date.now();
-    original.syncStatus = 'pending';
-    saveLocalState();
-    renderMailbox();
-    queueOp('upsert','mailbox',original,original.id);
-    try{
-      await syncMailboxDoc(original);
-      original.syncStatus = 'synced';
-      saveLocalState();
-      renderMailbox();
-    }catch(e){
-      console.log('markMailboxDone Fehler:', e);
-    }
-  }
-  window.markMailboxDone = markMailboxDone;
-
-  async function loadMailbox(){
-    if(currentUser && online()){
-      await pullRemoteOnce();
-    }
-    renderMailbox();
-    if(isAdmin()) await loadUsers();
-  }
-  window.loadMailbox = loadMailbox;
+  window.adminReplyToMailbox = adminReplyToMailbox;
 
 
   function renderAll(){
@@ -1698,7 +1675,6 @@
     renderHotels();
     renderFuels();
     renderKms();
-    renderMailbox();
     updatePreview();
     calcHotelNights();
     updateProfileUi();
@@ -1707,30 +1683,25 @@
     updateLayoutMode();
     syncInvoiceMonthOptions();
     seedInvoiceNumber();
+    renderMailbox();
+    updatePackageRequestUi();
   }
 
-  function queueOp(type, collectionName, data, id){
-    localState.queue.push({ id: crypto.randomUUID(), type, collectionName, data, docId: id, queuedAt: Date.now() });
+  function queueOp(type, collectionName, data, id, options={}){
+    const path = options.path || ['users', currentUser.uid, collectionName];
+    localState.queue.push({ id: crypto.randomUUID(), type, collectionName, data, docId: id, queuedAt: Date.now(), path });
     saveLocalState();
     scheduleSync();
   }
 
-  async function upsertRemote(collectionName, item){
+  async function upsertRemote(op){
     if(!currentUser) return;
-    if(collectionName === 'mailbox'){
-      const targetUid = item.ownerUid || item.fromUid || currentUser.uid;
-      await setDoc(doc(db,'users',targetUid,'mailbox',item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
-      return;
-    }
-    await setDoc(doc(db,'users',currentUser.uid,collectionName,item.id), { ...item, serverUpdatedAt: serverTimestamp() }, { merge:true });
+    await setDoc(doc(db, ...op.path, op.docId), { ...op.data, serverUpdatedAt: serverTimestamp() }, { merge:true });
   }
 
-  async function deleteRemote(collectionName, id){
+  async function deleteRemote(op){
     if(!currentUser) return;
-    if(collectionName === 'mailbox'){
-      return;
-    }
-    await setDoc(doc(db,'users',currentUser.uid,collectionName,id), { deleted:true, serverUpdatedAt: serverTimestamp() }, { merge:true });
+    await setDoc(doc(db, ...op.path, op.docId), { deleted:true, serverUpdatedAt: serverTimestamp() }, { merge:true });
   }
 
   function scheduleSync(){
@@ -1756,8 +1727,8 @@
     try{
       while(localState.queue.length){
         const op = localState.queue[0];
-        if(op.type === 'upsert') await upsertRemote(op.collectionName, op.data);
-        if(op.type === 'delete') await deleteRemote(op.collectionName, op.docId);
+        if(op.type === 'upsert') await upsertRemote(op);
+        if(op.type === 'delete') await deleteRemote(op);
         localState.queue.shift();
         markSynced(op.collectionName, op.docId);
         saveLocalState();
@@ -1775,7 +1746,7 @@
   }
 
   function markSynced(collectionName, id){
-    const map = { trips:'trips', hotels:'hotels', fuels:'fuels', kms:'kms', mailbox:'mailbox' };
+    const map = { trips:'trips', hotels:'hotels', fuels:'fuels', kms:'kms' };
     const key = map[collectionName];
     if(!key) return;
     const item = localState[key].find(x => x.id === id);
@@ -1784,24 +1755,6 @@
 
   async function loadRemoteCollection(collectionName){
     if(!currentUser || !online()) return [];
-    if(collectionName === 'mailbox'){
-      if(isAdmin()){
-        const profileSnap = await getDocs(collection(db,'profiles'));
-        const userIds = [...new Set(profileSnap.docs.map(d => d.id).filter(Boolean))];
-        let allItems = [];
-        for(const uid of userIds){
-          try{
-            const snap = await getDocs(collection(db,'users',uid,'mailbox'));
-            allItems.push(...snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted));
-          }catch(e){
-            console.log('Mailbox-Load Fehler für UID:', uid, e);
-          }
-        }
-        return allItems;
-      }
-      const snap = await getDocs(collection(db,'users',currentUser.uid,'mailbox'));
-      return snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted);
-    }
     const snap = await getDocs(collection(db,'users',currentUser.uid,collectionName));
     return snap.docs.map(d => ({ id:d.id, ...d.data() })).filter(x => !x.deleted);
   }
@@ -1836,7 +1789,6 @@
         localState.profile.activeUntil = '';
       }
       saveLocalState();
-      try{ await syncPublicProfile(); }catch(e){ console.log('syncPublicProfile Fehler:', e); }
       updateProfileUi();
       $('profileStatus').className = 'status ok';
       $('profileStatus').textContent = 'Profil geladen.';
@@ -1851,12 +1803,10 @@
   async function syncPublicProfile(){
     if(!currentUser) return;
     await setDoc(doc(db,'profiles',currentUser.uid), {
-      uid: currentUser.uid,
       email: currentUser.email,
       displayName: localState.profile.displayName || '',
       packageName: localState.profile.packageName || 'Basic',
-      activeUntil: localState.profile.activeUntil || '',
-      updatedAt: Date.now()
+      activeUntil: localState.profile.activeUntil || ''
     }, { merge:true });
   }
 
@@ -2081,23 +2031,13 @@
     wrap.innerHTML = '<div class="muted">Lade Nutzer…</div>';
     try{
       const snap = await getDocs(collection(db,'profiles'));
-      const users = [];
-      for(const d of snap.docs){
-        const u = { id:d.id, ...d.data() };
-        let mailboxCount = 0;
-        try{
-          const boxSnap = await getDocs(collection(db,'users',d.id,'mailbox'));
-          mailboxCount = boxSnap.docs.filter(x => !x.data()?.deleted).length;
-        }catch(e){}
-        users.push({ ...u, mailboxCount });
-      }
+      const users = snap.docs.map(d => ({ id:d.id, ...d.data() }));
       wrap.innerHTML = users.length ? users.map(u => `
         <div class="entry-card">
           <div class="trip-title">${escapeHtml(u.displayName || u.email || 'Unbekannt')}</div>
           <div class="small">${escapeHtml(u.email || '')}</div>
           <div class="small">Paket: ${escapeHtml(u.packageName || 'Basic')}</div>
           <div class="small">Aktiv bis: ${escapeHtml(u.activeUntil ? formatGermanDateOnly(u.activeUntil) : '-')}</div>
-          <div class="small">Postfach-Einträge: ${Number(u.mailboxCount || 0)}</div>
         </div>`).join('') : '<div class="muted">Keine Nutzer vorhanden.</div>';
     }catch(e){
       console.log('loadUsers Fehler:', e);
@@ -2109,18 +2049,16 @@
   async function pullRemoteOnce(){
     if(!currentUser || !online()) return;
     try{
-      const [remoteTrips, remoteHotels, remoteFuels, remoteKms, remoteMailbox] = await Promise.all([
+      const [remoteTrips, remoteHotels, remoteFuels, remoteKms] = await Promise.all([
         loadRemoteCollection('trips'),
         loadRemoteCollection('hotels'),
         loadRemoteCollection('fuels'),
-        loadRemoteCollection('kms'),
-        loadRemoteCollection('mailbox')
+        loadRemoteCollection('kms')
       ]);
       localState.trips = mergeById(localState.trips, remoteTrips);
       localState.hotels = mergeById(localState.hotels, remoteHotels);
       localState.fuels = mergeById(localState.fuels, remoteFuels);
       localState.kms = mergeById(localState.kms, remoteKms);
-      localState.mailbox = mergeById(localState.mailbox, remoteMailbox);
       saveLocalState();
       renderAll();
     }catch(e){
@@ -2155,7 +2093,6 @@
       updateBadges();
       updateProfileUi();
       renderAll();
-      if(online()){ try{ await syncPublicProfile(); }catch(e){ console.log('syncPublicProfile beim Login Fehler:', e); } }
       restoreDrafts();
       const accessState = getAccessState();
       const syncText = accessState.warningDays !== null && !accessState.isExpired
@@ -2167,11 +2104,13 @@
       $('topAdminBtn').classList.toggle('hidden', !isAdmin());
       await loadProfile();
       await pullRemoteOnce();
-      processQueue();
       if(isAdmin()){
-        loadUsers();
-        loadMailbox();
+        await loadUsers();
+        await loadAdminInbox();
+      }else{
+        await loadUserMailbox();
       }
+      processQueue();
     }else{
       localState = createEmptyState();
       $('loginCard').classList.remove('hidden');
@@ -2219,7 +2158,8 @@
   });
   window.addEventListener('online', onConnectivityChange);
   window.addEventListener('offline', onConnectivityChange);
-  document.querySelectorAll('input[name="requestPackage"]').forEach(el => el.addEventListener('change', renderRequestAddons));
+  document.querySelectorAll('input[name="packageChoice"]').forEach(el => el.addEventListener('change', updatePackageRequestUi));
+  ['addonHotel','addonFuel','addonKm','addonDriver','addonTeam','addonPdfSelect','addonDriverPack'].forEach(id => $(id)?.addEventListener('change', updatePackageRequestUi));
   setInterval(() => { if(currentUser){ updateProfileUi(); } }, 60000);
 
   function downloadFile(content, filename, type){
@@ -2246,7 +2186,6 @@
   }
   window.exportPDF = exportPDF;
 
-  renderRequestAddons();
   renderAll();
 </script>
 </body>
