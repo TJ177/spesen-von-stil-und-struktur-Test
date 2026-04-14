@@ -2887,15 +2887,31 @@
     }
   });
 
- // SERVICE WORKER DEAKTIVIERT (für Entwicklung)
+  // Service Worker vorübergehend deaktiviert, damit GitHub-/PWA-Cache
+  // bei der Entwicklung keine alten Stände weiter ausliefert.
+  // Wenn die App-Struktur final ist, kann das sauber wieder aktiviert werden.
+  //
+  // if ('serviceWorker' in navigator) {
+  //   window.addEventListener('load', () => {
+  //     navigator.serviceWorker.register('./service-worker.js')
+  //       .then(() => console.log('Service Worker aktiv'))
+  //       .catch(err => console.log('Service Worker Fehler:', err));
+  //   });
+  // }
 
-// wenn ('ServiceWorker' in Navigator) {
-//   Fenster.addEventListener('Laden', () => {
-//     navigator.serviceWorker.register('./service-worker.js')
-//       .dann(() => Konsole.Logbuch('Service Worker aktiv'))
-//       .Fang(Ähm => Konsole.Logbuch('Service Worker Fehler:', Ähm));
-//   });
-// } 
+  // Alte Service Worker-Registrierungen aktiv entfernen,
+  // damit sofort der aktuelle Stand geladen wird.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(reg => reg.unregister()));
+        console.log('Alte Service Worker entfernt');
+      } catch (err) {
+        console.log('Service Worker Entfernen Fehler:', err);
+      }
+    });
+  }
 
 </script>
 </body>
