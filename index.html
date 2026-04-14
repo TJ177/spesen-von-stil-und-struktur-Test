@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Spesen von Stil & Struktur</title>
   <meta name="theme-color" content="#111827" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
@@ -2884,7 +2884,9 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('Service Worker Fehler:', err));
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('Service Worker aktiv'))
+        .catch(err => console.log('Service Worker Fehler:', err));
     });
   }
 
