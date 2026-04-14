@@ -71,8 +71,8 @@
     .mini-dt-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
     .mini-dt-row button{width:auto;min-width:88px;height:44px;padding:10px 12px;border-radius:12px}
     .month-tile .subline{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.2}
-    .month-tile .label{font-size:13px;color:var(--muted)}
-    .month-tile .value{font-size:18px;font-weight:700;margin-top:6px}
+    .month-tile .label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;font-weight:700}
+    .month-tile .value{font-size:18px;font-weight:800;margin-top:6px}
     .compact-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
     .compact-toolbar > *{width:auto;min-width:0}
     .compact-sort{width:auto;min-width:150px;padding:10px 12px;height:44px;border-radius:12px}
@@ -137,7 +137,7 @@
     .hero-panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:none;margin-top:10px}
     .hero-panel.show{display:block}
     .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-    .tab-btn{width:auto;padding:12px 18px;border-radius:16px;background:#e5e7eb;color:#111;font-weight:700;min-height:52px;font-size:15px;white-space:nowrap}
+    .tab-btn{width:auto;padding:13px 20px;border-radius:16px;background:#e5e7eb;color:#111;font-weight:800;min-height:58px;font-size:16px;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
     .tab-btn.active{background:var(--accent);color:#fff}
     .tab-btn.locked{opacity:.55}
     .tab-panel{display:none}
@@ -154,14 +154,23 @@
     .request-total{margin-top:12px;padding:12px 14px;border-radius:14px;background:#0f1b35;border:1px solid var(--line);font-weight:700}
     .request-note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.4}
 
+    .tab-ico,.tile-ico{display:inline-flex;align-items:center;justify-content:center;line-height:1;font-size:18px}
+    .tile-ico{font-size:17px;min-width:20px}
+    .trip-title{font-weight:800;font-size:14px;line-height:1.25}
+    .small{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.28}
+    .entry-card{border:1px solid var(--line);background:var(--soft);border-radius:14px;padding:10px 12px}
+    .entry-card .toolbar{margin-top:8px}
+    .entry-card .toolbar button{padding:9px 12px;border-radius:12px;font-size:13px}
+    .quick-btn{font-weight:800;min-height:46px}
+
     .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .time-grid-4{display:grid;grid-template-columns:minmax(0,1fr) 102px minmax(0,1fr) 102px;gap:10px;align-items:end}
     .hotel-grid-6{display:grid;grid-template-columns:1.2fr .7fr 1fr 92px 1fr 82px;gap:10px;align-items:end}
     .fuel-grid-top{display:grid;grid-template-columns:1.25fr .75fr;gap:10px}
     .fuel-grid-main{display:grid;grid-template-columns:.9fr .72fr .72fr .72fr .82fr;gap:10px;align-items:end}
     .km-grid-3{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:10px}
-    .compact-field label{margin:0 0 6px}
-    .compact-field input,.compact-field select{height:46px}
+    .compact-field label{margin:0 0 6px;font-weight:800}
+    .compact-field input,.compact-field select{height:46px;font-weight:600}
     .small-remark{margin-top:10px}
     #monthCard{margin-top:18px}
     #monthCard .stat{padding:12px 14px}
@@ -191,7 +200,7 @@
       .info-chip{min-height:auto}
       .hero-actions button{flex:0 0 auto}
       .hero-actions{gap:6px}
-      .tab-btn{padding:12px 14px;min-height:54px;font-size:15px}
+      .tab-btn{padding:13px 16px;min-height:58px;font-size:16px}
       .month-stats-small{grid-template-columns:1fr}
       .field-row-compact,.form-grid-2,.fuel-grid-top{grid-template-columns:1fr 1fr}
       .time-grid-4{grid-template-columns:minmax(0,1fr) 88px;grid-auto-rows:auto}
@@ -379,28 +388,28 @@
     <div class="profile-grid">
       <div class="card main-tabs-card">
         <div class="tabs" id="tabsBar">
-          <button class="tab-btn active" data-tab="fahrt" onclick="showTab('fahrt', this)">Fahrt</button>
-          <button class="tab-btn" data-tab="hotel" onclick="showTab('hotel', this)">Hotel</button>
-          <button class="tab-btn" data-tab="tanken" onclick="showTab('tanken', this)">Tanken</button>
-          <button class="tab-btn" data-tab="kilometer" onclick="showTab('kilometer', this)">Kilometer</button>
-          <button class="tab-btn" data-tab="pdf" onclick="showTab('pdf', this)">PDF-Auswahl</button>
-          <button class="tab-btn" data-tab="rechnung" onclick="showTab('rechnung', this)">Rechnung</button>
+          <button class="tab-btn active" data-tab="fahrt" onclick="showTab('fahrt', this)"><span class="tab-ico">🚗</span><span>Fahrt</span></button>
+          <button class="tab-btn" data-tab="hotel" onclick="showTab('hotel', this)"><span class="tab-ico">🏠</span><span>Hotel</span></button>
+          <button class="tab-btn" data-tab="tanken" onclick="showTab('tanken', this)"><span class="tab-ico">⛽</span><span>Tanken</span></button>
+          <button class="tab-btn" data-tab="kilometer" onclick="showTab('kilometer', this)"><span class="tab-ico">🧭</span><span>Kilometer</span></button>
+          <button class="tab-btn" data-tab="pdf" onclick="showTab('pdf', this)"><span class="tab-ico">📘</span><span>PDF-Auswahl</span></button>
+          <button class="tab-btn" data-tab="rechnung" onclick="showTab('rechnung', this)"><span class="tab-ico">📄</span><span>Rechnung</span></button>
           <button class="tab-btn" data-tab="pakete" onclick="showTab('pakete', this)">Pakete</button>
-          <button class="tab-btn" data-tab="team" onclick="showTab('team', this)">Team</button>
-          <button class="tab-btn" data-tab="empfehlen" onclick="showTab('empfehlen', this)">Empfehlen</button>
+          <button class="tab-btn" data-tab="team" onclick="showTab('team', this)"><span class="tab-ico">👥</span><span>Team</span></button>
+          <button class="tab-btn" data-tab="empfehlen" onclick="showTab('empfehlen', this)"><span class="tab-ico">📣</span><span>Empfehlen</span></button>
         </div>
 
         <div id="fahrt" class="tab-panel active">
-          <h2>Fahrt erfassen</h2>
+          <h2>🚗 Fahrt erfassen</h2>
           <div class="form-grid-2">
             <div class="compact-field"><label>Tour / Titel</label><input id="tourName" placeholder="Tour / Titel"></div>
             <div class="compact-field"><label>Bemerkung</label><input id="tripNote" placeholder="Bemerkung"></div>
           </div>
           <div class="time-grid-4" style="margin-top:10px">
             <div class="compact-field"><label>Start Datum / Zeit</label><input id="startTime" type="datetime-local"></div>
-            <div class="compact-field"><label>&nbsp;</label><button type="button" class="green" onclick="setNow('startTime')">Start</button></div>
+            <div class="compact-field"><label>&nbsp;</label><button type="button" class="green quick-btn" onclick="setNow('startTime')">Start jetzt</button></div>
             <div class="compact-field"><label>Ende Datum / Zeit</label><input id="endTime" type="datetime-local"></div>
-            <div class="compact-field"><label>&nbsp;</label><button type="button" class="red" onclick="setNow('endTime')">Ende</button></div>
+            <div class="compact-field"><label>&nbsp;</label><button type="button" class="red quick-btn" onclick="setNow('endTime')">Ende jetzt</button></div>
           </div>
           <div class="form-grid-2" style="margin-top:10px">
             <div class="stat"><div class="label">Dauer</div><div class="value" id="durationPreview">0 Std 0 Min</div></div>
@@ -416,12 +425,12 @@
         </div>
 
         <div id="hotel" class="tab-panel">
-          <h2>Hotel</h2>
+          <h2>🏠 Hotel</h2>
           <div class="hotel-grid-6">
             <div class="compact-field"><label>Hotelname / Ort</label><input id="hotelName"></div>
             <div class="compact-field"><label>Preis €</label><input id="hotelPrice"></div>
             <div class="compact-field"><label>Anreise Datum / Zeit</label><input id="hotelCheckin" type="datetime-local"></div>
-            <div class="compact-field"><label>&nbsp;</label><button type="button" class="green" onclick="setNow('hotelCheckin')">Jetzt</button></div>
+            <div class="compact-field"><label>&nbsp;</label><button type="button" class="green quick-btn" onclick="setNow('hotelCheckin')">Jetzt</button></div>
             <div class="compact-field"><label>Abreise Datum / Zeit</label><input id="hotelCheckout" type="datetime-local"></div>
             <div class="compact-field"><label>Nächte</label><input id="hotelNights"></div>
           </div>
@@ -437,7 +446,7 @@
         </div>
 
         <div id="tanken" class="tab-panel">
-          <h2>Tanken</h2>
+          <h2>⛽ Tanken</h2>
           <div class="fuel-grid-top">
             <div class="compact-field"><label>Tankstelle / Ort</label><input id="fuelStation"></div>
             <div class="compact-field"><label>Betrag €</label><input id="fuelAmount"></div>
@@ -466,7 +475,7 @@
         </div>
 
         <div id="kilometer" class="tab-panel">
-          <h2>Kilometer</h2>
+          <h2>🧭 Kilometer</h2>
           <div class="km-grid-3">
             <div class="compact-field"><label>Strecke / Zweck</label><input id="kmPurpose"></div>
             <div class="compact-field"><label>Datum</label><input id="kmDate" type="date"></div>
@@ -479,7 +488,7 @@
         </div>
 
         <div id="pdf" class="tab-panel">
-          <h2>PDF-Export</h2>
+          <h2>📘 PDF-Export</h2>
           <div class="note-box">Wähle hier zuerst per Häkchen aus, was in die PDF soll. Erst danach auf „Auswahl als PDF erstellen“ drücken. Der Button in der Monatsübersicht öffnet nur diese Auswahl und erstellt nicht sofort die PDF.</div>
           <div class="pdf-options">
             <label class="pdf-check"><input id="pdfIncludeTrips" type="checkbox" checked> <span>Zeitspesen</span></label>
@@ -577,7 +586,7 @@
         </div>
 
         <div id="team" class="tab-panel">
-          <h2>Team</h2>
+          <h2>👥 Team</h2>
           <div class="note-box">
             <strong>So funktioniert das Team</strong><br><br>
             <strong>Für Teamleiter:</strong><br>
@@ -682,7 +691,7 @@
         </div>
 
 <div id="empfehlen" class="tab-panel">
-          <h2>Empfehlen</h2>
+          <h2>📣 Empfehlen</h2>
           <div class="note-box">
             <strong>So funktioniert das Empfehlen</strong><br><br>
             Teile deinen App-Link zusammen mit deinem Empfehlungscode.<br><br>
@@ -719,7 +728,7 @@
         </div>
 
         <div id="rechnung" class="tab-panel">
-          <h2>Rechnung</h2>
+          <h2>📄 Rechnung</h2>
           <div class="note-box">Hier ist die Rechnungs-Vorschau vorbereitet. Die eigentliche Logik kann später erweitert werden. Rechnungsnummer läuft fortlaufend weiter. Lieferschein-Scan ist als Feld schon mit vorbereitet.</div>
           <div class="field-row-compact">
             <div><label>Firmenname</label><input id="invoiceCompanyName" placeholder="Firma / Absender"></div>
@@ -765,13 +774,13 @@
             <button type="button" onclick="exportPDFQuick()">PDF exportieren</button>
           </div>
           <div class="month-card-grid">
-            <div class="stat month-tile month-overall"><div class="label">Gesamtspesen</div><div class="subline">Spesen + Hotel + Tank</div><div class="value" id="overallTotal">0,00 €</div></div>
+            <div class="stat month-tile month-overall"><div class="label"><span class="tile-ico">💰</span>Gesamtspesen</div><div class="subline">Spesen + Hotel + Tank</div><div class="value" id="overallTotal">0,00 €</div></div>
           </div>
           <div class="month-stats-small">
-            <div class="stat month-tile month-time-money"><div class="label">Zeitspesen</div><div class="subline">Nur 14 € / 28 € Zeit</div><div class="value" id="monthlyTotal">0,00 €</div></div>
-            <div class="stat month-tile month-time-away"><div class="label">Zeit nicht zu Hause</div><div class="value" id="monthlyHours">0 Std 0 Min</div></div>
-            <div class="stat month-tile month-hotel"><div class="label">Hotel</div><div class="value" id="monthlyHotel">0,00 €</div></div>
-            <div class="stat month-tile month-fuel"><div class="label">Tanken</div><div class="value" id="monthlyFuel">0,00 €</div></div>
+            <div class="stat month-tile month-time-money"><div class="label"><span class="tile-ico">💰</span>Zeitspesen</div><div class="subline">Nur 14 € / 28 € Zeit</div><div class="value" id="monthlyTotal">0,00 €</div></div>
+            <div class="stat month-tile month-time-away"><div class="label"><span class="tile-ico">🏠🚫</span>Zeit nicht zu Hause</div><div class="value" id="monthlyHours">0 Std 0 Min</div></div>
+            <div class="stat month-tile month-hotel"><div class="label"><span class="tile-ico">🏠</span>Hotel</div><div class="value" id="monthlyHotel">0,00 €</div></div>
+            <div class="stat month-tile month-fuel"><div class="label"><span class="tile-ico">⛽</span>Tanken</div><div class="value" id="monthlyFuel">0,00 €</div></div>
           </div>
         </div>
       </div>
@@ -1534,11 +1543,11 @@
     }
 
     if(includeHotels){
-      pdfHtml += `<div style="${sectionStyle}"><h2>Hotel</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Hotel</th><th style="${cellStyle}${headStyle}">Preis</th></tr></thead><tbody>${hotelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Hotel-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Hotel', formatEuro(hotelSum))}</div>`;
+      pdfHtml += `<div style="${sectionStyle}"><h2>🏠 Hotel</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Hotel</th><th style="${cellStyle}${headStyle}">Preis</th></tr></thead><tbody>${hotelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Hotel-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Hotel', formatEuro(hotelSum))}</div>`;
     }
 
     if(includeFuels){
-      pdfHtml += `<div style="${sectionStyle}"><h2>Tanken</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Details</th><th style="${cellStyle}${headStyle}">Betrag</th></tr></thead><tbody>${fuelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Tank-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Tanken', formatEuro(fuelSum))}</div>`;
+      pdfHtml += `<div style="${sectionStyle}"><h2>⛽ Tanken</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Datum</th><th style="${cellStyle}${headStyle}">Details</th><th style="${cellStyle}${headStyle}">Betrag</th></tr></thead><tbody>${fuelRows || `<tr><td colspan="4" style="${cellStyle}">Keine Tank-Einträge in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Tanken', formatEuro(fuelSum))}</div>`;
     }
 
     pdfHtml += sumBox('Gesamtsumme ausgewählt', formatEuro(total));
