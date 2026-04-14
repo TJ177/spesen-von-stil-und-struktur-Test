@@ -128,6 +128,8 @@
     .info-chip .chip-value{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .hero-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
     .hero-actions button{width:auto;padding:8px 12px;border-radius:12px;font-size:13px}
+    .install-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .install-cta button{width:auto}
     #syncStatus{display:inline-flex;align-items:center;width:auto;min-width:0;padding:8px 12px;border-radius:999px;margin-top:10px;font-size:13px}
     .hero-panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:none;margin-top:10px}
     .hero-panel.show{display:block}
@@ -201,6 +203,7 @@
         <div class="hero-actions">
           <button type="button" class="outline" onclick="togglePanel('helpBox')">App / Hilfe</button>
           <button type="button" class="outline" onclick="togglePanel('accessBox')">Zugang</button>
+          <button type="button" class="green hidden" id="topInstallBtn" onclick="installApp()">Installieren</button>
           <button type="button" class="outline hidden" id="topUsersBtn" onclick="openAdminPanel('users')">Nutzer</button>
           <button type="button" class="outline hidden" id="topRequestsBtn" onclick="openAdminPanel('requests')">Anfragen</button>
           <button type="button" class="outline hidden" id="topAdminBtn" onclick="openAdminPanel('overview')">Admin</button>
@@ -213,12 +216,9 @@
       <div id="helpBox" class="hero-panel">
         <strong>App aufs Handy speichern</strong><br><br>
         <strong>Android:</strong><br>
-        1. Link aus der Nachricht kopieren<br>
-        2. Chrome öffnen<br>
-        3. Link oben einfügen und öffnen<br>
-        4. Oben rechts auf die 3 Punkte tippen<br>
-        5. „Zum Startbildschirm hinzufügen“ auswählen<br>
-        6. „Installieren“ auswählen<br><br>
+        1. Link öffnen<br>
+        2. oben rechts auf die 3 Punkte tippen<br>
+        3. Installieren<br><br>
         <strong>iPhone:</strong><br>
         1. Link in Safari öffnen<br>
         2. Unten auf Teilen tippen<br>
@@ -226,6 +226,11 @@
         4. Hinzufügen drücken<br><br>
         <strong>PC:</strong><br>
         Link einfach im Browser öffnen und mit demselben Konto anmelden.
+        <div class="install-cta">
+          <button type="button" class="green hidden" id="helpInstallBtn" onclick="installApp()">Jetzt installieren</button>
+          <button type="button" class="outline" onclick="copyAppInstallLink()">App-Link kopieren</button>
+        </div>
+        <div id="installStatus" class="status info">Wenn der Installieren-Button noch nicht sichtbar ist, öffne die Seite kurz neu und warte ein paar Sekunden.</div>
       </div>
 
       <div id="accessBox" class="hero-panel">
@@ -2813,6 +2818,76 @@
 
   renderAll();
   fillShareBoxes();
+  let deferredInstallPrompt = null;
+
+  function setInstallButtonsVisible(visible){
+    ['topInstallBtn','helpInstallBtn'].forEach(id => {
+      const el = $(id);
+      if(!el) return;
+      el.classList.toggle('hidden', !visible);
+    });
+  }
+
+  async function installApp(){
+    const status = $('installStatus');
+    if(deferredInstallPrompt){
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if(status){
+        status.className = `status ${choice?.outcome === 'accepted' ? 'ok' : 'info'}`;
+        status.textContent = choice?.outcome === 'accepted'
+          ? 'Installationsfenster wurde geöffnet.'
+          : 'Installation wurde noch nicht bestätigt. Du kannst auch über die 3 Punkte im Browser installieren.';
+      }
+      deferredInstallPrompt = null;
+      setInstallButtonsVisible(false);
+      return;
+    }
+    if(status){
+      status.className = 'status info';
+      status.textContent = 'Automatischer Installieren-Button ist gerade noch nicht verfügbar. Nutze oben rechts die 3 Punkte im Browser und dann „Installieren“.';
+    }
+    alert('Wenn kein Installieren-Button erscheint: oben rechts auf die 3 Punkte tippen und dann „Installieren“ wählen.');
+  }
+  window.installApp = installApp;
+
+  async function copyAppInstallLink(){
+    const ok = await copyTextToClipboard(APP_LINK);
+    const status = $('installStatus');
+    if(status){
+      status.className = `status ${ok ? 'ok' : 'warn'}`;
+      status.textContent = ok ? 'App-Link wurde kopiert.' : 'Kopieren hat nicht funktioniert.';
+    }
+  }
+  window.copyAppInstallLink = copyAppInstallLink;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    setInstallButtonsVisible(true);
+    const status = $('installStatus');
+    if(status){
+      status.className = 'status ok';
+      status.textContent = 'Die App kann jetzt direkt installiert werden.';
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    setInstallButtonsVisible(false);
+    const status = $('installStatus');
+    if(status){
+      status.className = 'status ok';
+      status.textContent = 'App wurde installiert.';
+    }
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js').catch(err => console.log('Service Worker Fehler:', err));
+    });
+  }
+
 </script>
 </body>
 </html>
