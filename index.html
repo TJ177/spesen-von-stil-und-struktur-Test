@@ -499,12 +499,7 @@
             </div>
             <div class="request-total" id="requestPriceBox">Gesamtpreis: 4,99 €</div>
             <div class="request-note">Zahlung aktuell manuell über PayPal.Me: <span class="mono">paypal.me/StiluStruktur</span>. Nach Zahlung prüft der Admin und setzt den Status.</div>
-            <div class="toolbar">
-              <button type="button" class="yellow" onclick="createPackageRequest()">Paket anfragen</button>
-              <a id="requestPaypalLink" href="https://paypal.me/StiluStruktur/4.99" target="_blank" rel="noopener" style="text-decoration:none;">
-                <button type="button" class="outline" id="requestPaypalBtn">Jetzt 4,99 € per PayPal zahlen</button>
-              </a>
-            </div>
+            <div class="toolbar"><button type="button" class="yellow" onclick="createPackageRequest()">Paket anfragen</button></div>
             <div id="packageRequestStatus" class="status info">Noch keine Anfrage erstellt.</div>
           </div>
           <div style="margin-top:18px;">
@@ -939,10 +934,6 @@
     if(packageName === 'Goldmitglied') return base;
     return base + extras;
   }
-function buildPayPalUrl(amount){
-    const cleanAmount = Number(amount || 0).toFixed(2);
-    return `https://paypal.me/StiluStruktur/${cleanAmount}`;
-  }
 
   function packageRank(packageName){
     const order = {
@@ -1028,16 +1019,10 @@ function buildPayPalUrl(amount){
     const priceBox = $('requestPriceBox');
     if(priceBox) priceBox.textContent = `Gesamtpreis: ${formatEuro(total)}`;
     const rule = getPackageRequestRule(packageName);
-    const btn = document.querySelector('#packageRequestBuilder .toolbar button.yellow');
+    const btn = document.querySelector('#packageRequestBuilder .toolbar button');
     if(btn){
       btn.disabled = !rule.allowed;
       btn.textContent = rule.buttonText;
-    }
-    const paypalLink = $('requestPaypalLink');
-    const paypalBtn = $('requestPaypalBtn');
-    if(paypalLink && paypalBtn){
-      paypalLink.href = buildPayPalUrl(total);
-      paypalBtn.textContent = `Jetzt ${formatEuro(total)} per PayPal zahlen`;
     }
     const hint = ensurePackageLogicHint();
     if(hint){
@@ -1270,7 +1255,13 @@ function buildPayPalUrl(amount){
     const hotelRows = monthlyHotels.map(h => `<tr><td style="${cellStyle}">Hotel ${h.displayNumber}</td><td style="${cellStyle}">${formatGermanDate(h.checkin)}${h.checkout ? `<br>bis ${formatGermanDate(h.checkout)}` : ''}</td><td style="${cellStyle}">${escapeHtml(h.name)}</td><td style="${cellStyle}">${formatEuro(h.price||0)}</td></tr>`).join('');
     const fuelRows = monthlyFuels.map(f => `<tr><td style="${cellStyle}">Tanken ${f.displayNumber}</td><td style="${cellStyle}">${escapeHtml(f.date)} ${escapeHtml(f.time || '')}</td><td style="${cellStyle}">${escapeHtml(f.station || '')}${f.fuelType ? `<br>${escapeHtml(f.fuelType)}` : ''}${f.liters ? `<br>${String(f.liters).replace('.',',')} L` : ''}</td><td style="${cellStyle}">${formatEuro(f.amount||0)}</td></tr>`).join('');
 
-    let pdfHtml = `<!doctype html><html><head><meta charset="utf-8"><title>Monatsdokumentation ${month}</title></head><body style="font-family:Arial;padding:24px;color:#111"><h1 style="margin:0 0 6px 0">Monatsdokumentation</h1><div style="margin-bottom:4px">${formatMonthLabel(month)}</div><div style="margin-bottom:4px">Name: ${escapeHtml(localState.profile.displayName || currentUser?.email || '-')}</div><div style="margin-bottom:4px">E-Mail: ${escapeHtml(currentUser?.email || '-')}</div>`;
+    const pdfName = escapeHtml(localState.profile.displayName || '-');
+    const pdfCompany = escapeHtml(localState.profile.company || '-');
+    const pdfPlate = escapeHtml(localState.profile.plate || '');
+    const pdfDriverNumber = escapeHtml(localState.profile.driverNumber || localState.profile.fahrerNr || '');
+    const teamActive = !!(localState.profile.teamEnabled || pdfDriverNumber);
+
+    let pdfHtml = `<!doctype html><html><head><meta charset="utf-8"><title>Monatsdokumentation ${month}</title></head><body style="font-family:Arial;padding:24px;color:#111"><h1 style="margin:0 0 6px 0">Monatsdokumentation</h1><div style="margin-bottom:4px">${formatMonthLabel(month)}</div><div style="margin-bottom:4px"><strong>Name:</strong> ${pdfName}</div><div style="margin-bottom:4px"><strong>Firma:</strong> ${pdfCompany}</div>${teamActive ? `<div style="margin-bottom:4px"><strong>Fahrer-Nr.:</strong> ${pdfDriverNumber || '-'}</div>` : ''}${pdfPlate ? `<div style="margin-bottom:4px"><strong>Kennzeichen:</strong> ${pdfPlate}</div>` : ''}`;
 
     if(includeTrips){
       pdfHtml += `<div style="${sectionStyle}"><h2>Zeitspesen</h2><table style="${tableStyle}"><thead><tr><th style="${cellStyle}${headStyle}">Nr.</th><th style="${cellStyle}${headStyle}">Start</th><th style="${cellStyle}${headStyle}">Ende</th><th style="${cellStyle}${headStyle}">Dauer</th><th style="${cellStyle}${headStyle}">Spese</th></tr></thead><tbody>${tripRows || `<tr><td colspan="5" style="${cellStyle}">Keine Fahrten in diesem Monat.</td></tr>`}</tbody></table>${sumBox('Gesamtsumme Zeitspesen', formatEuro(tripSum))}</div>`;
@@ -1936,10 +1927,9 @@ function buildPayPalUrl(amount){
       const statusClass = req.status === 'freigeschaltet' ? 'ok' : req.status === 'abgelehnt' ? 'warn' : req.status === 'bezahlt' ? 'info' : 'offline';
       const activeField = isAdmin() ? `<div style="margin-top:10px"><label>Aktiv bis</label><input type="date" id="requestUntil_${req.requestId}" value="${escapeHtml(req.activeUntil || '')}"></div>` : '';
       const actions = isAdmin() ? `<div class="toolbar"><button type="button" class="outline" onclick="setPackageRequestStatus('${req.requestId}','offen')">offen</button><button type="button" onclick="setPackageRequestStatus('${req.requestId}','bezahlt')">bezahlt</button><button type="button" class="green" onclick="setPackageRequestStatus('${req.requestId}','freigeschaltet')">freigeschaltet</button><button type="button" class="red" onclick="setPackageRequestStatus('${req.requestId}','abgelehnt')">abgelehnt</button></div>` : '';
-      const payUrl = req.paypalUrl || buildPayPalUrl(req.totalPrice || 0);
-      const paymentBox = !isAdmin() ? `<div class="info-box" style="margin-top:10px"><strong>Zahlung & Freischaltung</strong><br><br>Bitte jetzt per PayPal.Me bezahlen. Die Freischaltung erfolgt in der Regel innerhalb von 24 Stunden nach Zahlungseingang.<br><br><a href="${escapeHtml(payUrl)}" target="_blank" rel="noopener" style="text-decoration:none;"><button type="button" class="yellow" style="width:auto">Jetzt ${escapeHtml(formatEuro(req.totalPrice || 0))} per PayPal zahlen</button></a></div>` : `<div class="small" style="margin-top:8px">PayPal-Link mit Betrag: ${escapeHtml(payUrl)}</div>`;
-      return `<div class="entry-card"><div class="trip-title">${isAdmin() ? `Anfrage ${idx+1} – ` : ''}${escapeHtml(req.requestedPackage || '-')}</div><div class="small">${escapeHtml(req.requesterName || '-')} · ${escapeHtml(req.requesterEmail || '-')}</div><div class="small">Add-ons: ${escapeHtml(formatAddOnLabels(req.addOns || []))}</div><div class="small">Preis: ${formatEuro(req.totalPrice || 0)}</div><div class="small">Datum: ${escapeHtml(req.createdAtText || '-')}</div><div class="small">PayPal: ${escapeHtml(req.paypalLink || 'paypal.me/StiluStruktur')}</div><div class="status ${statusClass}" style="margin-top:10px">Status: ${escapeHtml(req.status || 'offen')}${req.activeUntil ? ` · Aktiv bis ${escapeHtml(formatGermanDateOnly(req.activeUntil))}` : ''}</div>${paymentBox}${activeField}${actions}</div>`;
-    }).join('');    list.innerHTML = html;
+      return `<div class="entry-card"><div class="trip-title">${isAdmin() ? `Anfrage ${idx+1} – ` : ''}${escapeHtml(req.requestedPackage || '-')}</div><div class="small">${escapeHtml(req.requesterName || '-')} · ${escapeHtml(req.requesterEmail || '-')}</div><div class="small">Add-ons: ${escapeHtml(formatAddOnLabels(req.addOns || []))}</div><div class="small">Preis: ${formatEuro(req.totalPrice || 0)}</div><div class="small">Datum: ${escapeHtml(req.createdAtText || '-')}</div><div class="small">PayPal: ${escapeHtml(req.paypalLink || 'paypal.me/StiluStruktur')}</div><div class="status ${statusClass}" style="margin-top:10px">Status: ${escapeHtml(req.status || 'offen')}${req.activeUntil ? ` · Aktiv bis ${escapeHtml(formatGermanDateOnly(req.activeUntil))}` : ''}</div>${activeField}${actions}</div>`;
+    }).join('');
+    list.innerHTML = html;
     if(adminList){
       adminList.innerHTML = isAdmin() ? html : '<div class="muted">Nur für Admin sichtbar.</div>';
     }
@@ -1974,7 +1964,6 @@ function buildPayPalUrl(amount){
       totalPrice,
       status: 'offen',
       paypalLink: 'paypal.me/StiluStruktur',
-      paypalUrl: buildPayPalUrl(totalPrice),
       createdAtMs: Date.now(),
       createdAtText: new Date().toLocaleString('de-DE'),
       activeUntil: ''
