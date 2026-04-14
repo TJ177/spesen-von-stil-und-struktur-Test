@@ -279,6 +279,21 @@
           <button type="button" class="yellow" onclick="signUpUser()">Registrieren</button>
           <button type="button" class="outline" onclick="sendReset()">Passwort vergessen?</button>
         </div>
+
+        <div class="request-builder" style="margin-top:14px;padding:14px">
+          <h3>Zusatzangaben bei Registrierung</h3>
+          <div class="request-note">Optional: Nur ausfüllen, wenn du zu einem Team gehörst oder einen Empfehlungscode bekommen hast.</div>
+          <div class="field-row-compact">
+            <div><label for="signupTeamCode">Team-Code</label><input id="signupTeamCode" placeholder="Team-Code"></div>
+            <div><label for="signupPin">PIN</label><input id="signupPin" placeholder="PIN"></div>
+          </div>
+          <div>
+            <label for="signupReferralCode">Empfehlungscode</label>
+            <input id="signupReferralCode" placeholder="Empfehlungscode">
+          </div>
+          <div id="signupExtraStatus" class="status info">Wenn du keinen Code hast, lass die Felder einfach leer.</div>
+        </div>
+
         <div id="authStatus" class="status warn">Noch nicht angemeldet.</div>
       </div>
 
@@ -1836,7 +1851,10 @@
       email: currentUser.email,
       displayName: localState.profile.displayName || '',
       packageName: localState.profile.packageName || 'Basic',
-      activeUntil: localState.profile.activeUntil || ''
+      activeUntil: localState.profile.activeUntil || '',
+      teamName: localState.profile.teamName || '',
+      driverNumber: localState.profile.driverNumber || '',
+      referredByCode: localState.profile.referredByCode || ''
     }, { merge:true });
   }
 
@@ -2017,12 +2035,103 @@
     const email = $('email').value.trim();
     const password = $('password').value;
     if(!email || !password) return alert('Bitte E-Mail und Passwort eingeben.');
+
+    const extraTeamCode = ($('signupTeamCode')?.value || '').trim().toUpperCase();
+    const extraPin = ($('signupPin')?.value || '').trim();
+    const extraReferralCode = ($('signupReferralCode')?.value || '').trim();
+    const extraStatus = $('signupExtraStatus');
+
     try{
       await setPersistence(auth, $('stayLoggedIn').checked ? browserLocalPersistence : browserSessionPersistence);
-      await createUserWithEmailAndPassword(auth, email, password);
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+      if(extraReferralCode){
+        await setDoc(doc(db,'users',cred.user.uid,'meta','profile'), {
+          referredByCode: extraReferralCode,
+          updatedAt: Date.now()
+        }, { merge:true });
+        await setDoc(doc(db,'profiles',cred.user.uid), {
+          email,
+          referredByCode: extraReferralCode,
+          referralLinkedAt: Date.now()
+        }, { merge:true });
+      }
+
+      if(extraTeamCode || extraPin){
+        if(!extraTeamCode || !extraPin){
+          if(extraStatus){
+            extraStatus.className = 'status warn';
+            extraStatus.textContent = 'Für ein Team bitte Team-Code und PIN zusammen eingeben.';
+          }
+        }else{
+          const teamSnap = await getDocs(query(collection(db,'teams'), where('teamCode','==',extraTeamCode)));
+          const teamDoc = teamSnap.docs.find(d => String(d.data().teamPin || '') === extraPin);
+
+          if(!teamDoc){
+            if(extraStatus){
+              extraStatus.className = 'status warn';
+              extraStatus.textContent = 'Team-Code oder PIN stimmen nicht. Registrierung selbst ist aber erfolgt.';
+            }
+          }else{
+            const team = { id: teamDoc.id, ...teamDoc.data() };
+            const driversSnap = await getDocs(collection(db,'teams',team.id,'drivers'));
+            const freeSlot = driversSnap.docs.map(d => ({ id:d.id, ...d.data() })).find(d => !d.archived && d.role !== 'leader' && !d.userUid);
+
+            if(!freeSlot){
+              if(extraStatus){
+                extraStatus.className = 'status warn';
+                extraStatus.textContent = 'Registrierung erfolgt, aber im Team ist aktuell kein freier Fahrerplatz vorhanden.';
+              }
+            }else{
+              const guessedName = email.split('@')[0] || '';
+              await setDoc(doc(db,'teams',team.id,'drivers',freeSlot.driverNumber), {
+                driverNumber: freeSlot.driverNumber,
+                driverName: freeSlot.driverName || guessedName,
+                userUid: cred.user.uid,
+                userEmail: email,
+                userName: guessedName,
+                role: 'driver',
+                status: 'aktiv',
+                joinedAt: Date.now(),
+                updatedAt: Date.now()
+              }, { merge:true });
+
+              await setDoc(doc(db,'users',cred.user.uid,'meta','profile'), {
+                teamId: team.id,
+                teamRole: 'driver',
+                teamName: team.teamName || '',
+                teamCode: team.teamCode || '',
+                teamOwnerUid: team.ownerUid || '',
+                driverNumber: freeSlot.driverNumber,
+                updatedAt: Date.now()
+              }, { merge:true });
+
+              await setDoc(doc(db,'profiles',cred.user.uid), {
+                email,
+                teamId: team.id,
+                teamName: team.teamName || '',
+                driverNumber: freeSlot.driverNumber
+              }, { merge:true });
+
+              if(extraStatus){
+                extraStatus.className = 'status ok';
+                extraStatus.textContent = `Registrierung erfolgreich. Du wurdest als Fahrer ${freeSlot.driverNumber} dem Team ${team.teamName || ''} zugeordnet.`;
+              }
+            }
+          }
+        }
+      }else if(extraStatus){
+        extraStatus.className = 'status ok';
+        extraStatus.textContent = extraReferralCode ? 'Registrierung erfolgreich. Empfehlungscode wurde gespeichert.' : 'Registrierung erfolgreich.';
+      }
+
       $('authStatus').className = 'status ok';
       $('authStatus').textContent = 'Registrierung erfolgreich.';
     }catch(e){
+      if(extraStatus){
+        extraStatus.className = 'status warn';
+        extraStatus.textContent = 'Registrierung fehlgeschlagen.';
+      }
       alert('Registrierung fehlgeschlagen: ' + e.message);
     }
   }
@@ -2462,6 +2571,7 @@
           <div class="small">Paket: ${escapeHtml(u.packageName || 'Basic')}</div>
           <div class="small">Aktiv bis: ${escapeHtml(u.activeUntil ? formatGermanDateOnly(u.activeUntil) : '-')}</div>
           <div class="small">Team: ${escapeHtml(u.teamName || '-')} · Fahrer-Nr.: ${escapeHtml(u.driverNumber || '-')}</div>
+          <div class="small">Empfohlen durch: ${escapeHtml(u.referredByCode || '-')}</div>
           <div class="small">${requestLabel}</div>
           ${hasRequest ? `<div class="toolbar"><button type="button" onclick="openAdminPanel('requests')">Anfrage ansehen</button></div>` : ''}
         </div>`;
