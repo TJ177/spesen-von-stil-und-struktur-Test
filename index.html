@@ -1036,6 +1036,34 @@
     return addOns.map(key => ADDON_PRICES[key]?.label || key).join(', ');
   }
 
+  function formatPayPalDisplay(link){
+    const clean = String(link || 'paypal.me/StiluStruktur').replace(/^https?:\/\//,'');
+    return clean;
+  }
+
+  function buildRequestPaymentBox(req){
+    const displayLink = formatPayPalDisplay(req?.paypalLink);
+    const actionText = req?.status === 'bezahlt'
+      ? 'Zahlung eingegangen. Die Freischaltung erfolgt in der Regel innerhalb von 24 Stunden.'
+      : req?.status === 'freigeschaltet'
+        ? 'Freigeschaltet. Bitte prüfe dein Paket und die Laufzeit oben im Profil.'
+        : req?.status === 'abgelehnt'
+          ? 'Diese Anfrage wurde abgelehnt. Du kannst bei Bedarf später eine neue passende Anfrage stellen.'
+          : 'Bitte jetzt per PayPal.Me bezahlen. Die Freischaltung erfolgt in der Regel innerhalb von 24 Stunden nach Zahlungseingang.';
+    return `<div class="info-box" style="margin-top:10px">
+      <strong>Zahlung & Freischaltung</strong><br><br>
+      ${escapeHtml(actionText)}<br><br>
+      PayPal.Me: <span class="mono">${escapeHtml(displayLink)}</span>
+    </div>`;
+  }
+
+  function splitPackageRequestsForView(){
+    const active = packageRequests.filter(req => !req.archived);
+    const archived = packageRequests.filter(req => !!req.archived);
+    return { active, archived };
+  }
+
+
   function applyRememberedFuelType(){
     const savedType = localStorage.getItem('svss_remember_fuel_type_value');
     const remembered = localStorage.getItem('svss_remember_fuel_type_on') === '1';
@@ -1896,12 +1924,16 @@
     }
   }
 
-  function renderPackageRequests(){
+  
+function renderPackageRequests(){
     const builder = $('packageRequestBuilder');
     const list = $('packageRequestList');
     const title = $('packageRequestListTitle');
     const adminList = $('adminPackageRequestList');
     if(!builder || !list || !title) return;
+    const split = splitPackageRequestsForView();
+    const visibleRequests = split.active;
+    const archivedRequests = split.archived;
     if(!currentUser){
       builder.classList.remove('hidden');
       title.textContent = 'Meine Paket-Anfragen';
@@ -1911,23 +1943,58 @@
     }
     builder.classList.toggle('hidden', isAdmin());
     title.textContent = isAdmin() ? 'Alle Paket-Anfragen' : 'Meine Paket-Anfragen';
-    if(!packageRequests.length){
-      const emptyText = isAdmin() ? 'Noch keine Paket-Anfragen vorhanden.' : 'Du hast noch keine Paket-Anfrage erstellt.';
-      list.innerHTML = `<div class="muted">${emptyText}</div>`;
-      if(adminList) adminList.innerHTML = `<div class="muted">${isAdmin() ? 'Noch keine Paket-Anfragen vorhanden.' : 'Nur für Admin sichtbar.'}</div>`;
-      return;
-    }
-    const html = packageRequests.map((req, idx) => {
+
+    const buildRequestCard = (req, idx, showAdminActions=false, archivedMode=false) => {
       const statusClass = req.status === 'freigeschaltet' ? 'ok' : req.status === 'abgelehnt' ? 'warn' : req.status === 'bezahlt' ? 'info' : 'offline';
-      const activeField = isAdmin() ? `<div style="margin-top:10px"><label>Aktiv bis</label><input type="date" id="requestUntil_${req.requestId}" value="${escapeHtml(req.activeUntil || '')}"></div>` : '';
-      const actions = isAdmin() ? `<div class="toolbar"><button type="button" class="outline" onclick="setPackageRequestStatus('${req.requestId}','offen')">offen</button><button type="button" onclick="setPackageRequestStatus('${req.requestId}','bezahlt')">bezahlt</button><button type="button" class="green" onclick="setPackageRequestStatus('${req.requestId}','freigeschaltet')">freigeschaltet</button><button type="button" class="red" onclick="setPackageRequestStatus('${req.requestId}','abgelehnt')">abgelehnt</button></div>` : '';
-      return `<div class="entry-card"><div class="trip-title">${isAdmin() ? `Anfrage ${idx+1} – ` : ''}${escapeHtml(req.requestedPackage || '-')}</div><div class="small">${escapeHtml(req.requesterName || '-')} · ${escapeHtml(req.requesterEmail || '-')}</div><div class="small">Add-ons: ${escapeHtml(formatAddOnLabels(req.addOns || []))}</div><div class="small">Preis: ${formatEuro(req.totalPrice || 0)}</div><div class="small">Datum: ${escapeHtml(req.createdAtText || '-')}</div><div class="small">PayPal: ${escapeHtml(req.paypalLink || 'paypal.me/StiluStruktur')}</div><div class="status ${statusClass}" style="margin-top:10px">Status: ${escapeHtml(req.status || 'offen')}${req.activeUntil ? ` · Aktiv bis ${escapeHtml(formatGermanDateOnly(req.activeUntil))}` : ''}</div>${activeField}${actions}</div>`;
-    }).join('');
-    list.innerHTML = html;
+      const activeField = showAdminActions ? `<div style="margin-top:10px"><label>Aktiv bis</label><input type="date" id="requestUntil_${req.requestId}" value="${escapeHtml(req.activeUntil || '')}"></div>` : '';
+      const actions = showAdminActions ? `<div class="toolbar">
+        <button type="button" class="outline" onclick="setPackageRequestStatus('${req.requestId}','offen')">offen</button>
+        <button type="button" onclick="setPackageRequestStatus('${req.requestId}','bezahlt')">bezahlt</button>
+        <button type="button" class="green" onclick="setPackageRequestStatus('${req.requestId}','freigeschaltet')">freigeschaltet</button>
+        <button type="button" class="red" onclick="setPackageRequestStatus('${req.requestId}','abgelehnt')">abgelehnt</button>
+        <button type="button" class="gray" onclick="archivePackageRequest('${req.requestId}', ${archivedMode ? 'false' : 'true'})">${archivedMode ? 'zurückholen' : 'archivieren'}</button>
+      </div>` : '';
+      return `<div class="entry-card">
+        <div class="trip-title">${showAdminActions ? `Anfrage ${idx+1} – ` : ''}${escapeHtml(req.requestedPackage || '-')}</div>
+        <div class="small">${escapeHtml(req.requesterName || '-')} · ${escapeHtml(req.requesterEmail || '-')}</div>
+        <div class="small">Add-ons: ${escapeHtml(formatAddOnLabels(req.addOns || []))}</div>
+        <div class="small">Preis: ${formatEuro(req.totalPrice || 0)}</div>
+        <div class="small">Datum: ${escapeHtml(req.createdAtText || '-')}</div>
+        <div class="small">PayPal: ${escapeHtml(formatPayPalDisplay(req.paypalLink || 'paypal.me/StiluStruktur'))}</div>
+        <div class="status ${statusClass}" style="margin-top:10px">Status: ${escapeHtml(req.status || 'offen')}${req.activeUntil ? ` · Aktiv bis ${escapeHtml(formatGermanDateOnly(req.activeUntil))}` : ''}</div>
+        ${!showAdminActions ? buildRequestPaymentBox(req) : ''}
+        ${activeField}
+        ${actions}
+      </div>`;
+    };
+
+    if(!visibleRequests.length){
+      const emptyText = isAdmin() ? 'Noch keine aktiven Paket-Anfragen vorhanden.' : 'Du hast noch keine aktive Paket-Anfrage erstellt.';
+      list.innerHTML = `<div class="muted">${emptyText}</div>`;
+    } else {
+      list.innerHTML = visibleRequests.map((req, idx) => buildRequestCard(req, idx, false, false)).join('');
+    }
+
     if(adminList){
-      adminList.innerHTML = isAdmin() ? html : '<div class="muted">Nur für Admin sichtbar.</div>';
+      if(isAdmin()){
+        let html = visibleRequests.length
+          ? visibleRequests.map((req, idx) => buildRequestCard(req, idx, true, false)).join('')
+          : '<div class="muted">Noch keine aktiven Paket-Anfragen vorhanden.</div>';
+        if(archivedRequests.length){
+          html += `<div class="info-box"><strong>Archiv</strong><br><br>Archivierte Anfragen bleiben zur Nachvollziehbarkeit gespeichert, sind aber aus der normalen Übersicht raus.</div>`;
+          html += archivedRequests.map((req, idx) => buildRequestCard(req, idx, true, true)).join('');
+        }
+        adminList.innerHTML = html;
+      }else{
+        adminList.innerHTML = '<div class="muted">Nur für Admin sichtbar.</div>';
+      }
+    }
+
+    if(!isAdmin() && archivedRequests.length){
+      list.innerHTML += `<div class="info-box"><strong>Archiv</strong><br><br>${archivedRequests.length} ältere oder erledigte Anfrage(n) wurden archiviert und aus der Hauptübersicht ausgeblendet.</div>`;
     }
   }
+
 
   async function createPackageRequest(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
@@ -1960,7 +2027,8 @@
       paypalLink: 'paypal.me/StiluStruktur',
       createdAtMs: Date.now(),
       createdAtText: new Date().toLocaleString('de-DE'),
-      activeUntil: ''
+      activeUntil: '',
+      archived: false
     };
     try{
       await setDoc(doc(db,'users',currentUser.uid,'packageRequests',requestId), payload, { merge:true });
@@ -1972,7 +2040,7 @@
         latestPackageRequestAt: Date.now()
       }, { merge:true });
       $('packageRequestStatus').className = 'status ok';
-      $('packageRequestStatus').textContent = 'Paket-Anfrage gespeichert.';
+      $('packageRequestStatus').innerHTML = 'Paket-Anfrage gespeichert. Bitte jetzt über <span class="mono">paypal.me/StiluStruktur</span> bezahlen. Die Freischaltung erfolgt in der Regel innerhalb von 24 Stunden nach Zahlungseingang.';
       await loadPackageRequests();
     }catch(e){
       console.log('createPackageRequest Fehler:', e);
@@ -1982,6 +2050,22 @@
     }
   }
   window.createPackageRequest = createPackageRequest;
+
+
+  async function archivePackageRequest(requestId, archived = true){
+    if(!isAdmin()) return;
+    const request = packageRequests.find(r => r.requestId === requestId);
+    if(!request) return;
+    try{
+      await setDoc(doc(db,'users',request.requesterUid,'packageRequests',requestId), { archived: !!archived, archivedAtMs: archived ? Date.now() : 0 }, { merge:true });
+      await loadPackageRequests();
+      if(isAdmin()) await loadUsers();
+    }catch(e){
+      console.log('archivePackageRequest Fehler:', e);
+      alert('Archivstatus konnte nicht geändert werden: ' + e.message);
+    }
+  }
+  window.archivePackageRequest = archivePackageRequest;
 
   async function setPackageRequestStatus(requestId, status){
     if(!isAdmin()) return;
@@ -1995,7 +2079,7 @@
       activeUntil = formatLocalDate(d);
     }
     try{
-      await setDoc(doc(db,'users',request.requesterUid,'packageRequests',requestId), { status, activeUntil, updatedAtMs: Date.now() }, { merge:true });
+      await setDoc(doc(db,'users',request.requesterUid,'packageRequests',requestId), { status, activeUntil, updatedAtMs: Date.now(), archived: false }, { merge:true });
       const profileUpdate = {
         latestPackageRequestId: requestId,
         latestPackageRequestStatus: status,
