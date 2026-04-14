@@ -218,7 +218,7 @@
         <strong>Android:</strong><br>
         1. Link öffnen<br>
         2. oben rechts auf die 3 Punkte tippen<br>
-        3. „Zum Startbildschirm hinzufügen“ auswählen<br>
+        3. Zum Startbildschirm hinzufügen auswählen<br>
         4. Installieren drücken<br>
         5. App-Icon erscheint auf dem Handy und kann wie eine normale App genutzt werden<br><br>
         <strong>iPhone:</strong><br>
@@ -232,7 +232,7 @@
           <button type="button" class="green hidden" id="helpInstallBtn" onclick="installApp()">Jetzt installieren</button>
           <button type="button" class="outline" onclick="copyAppInstallLink()">App-Link kopieren</button>
         </div>
-        <div id="installStatus" class="status info">Wenn der Installieren-Button noch nicht sichtbar ist, öffne die Seite kurz neu und warte ein paar Sekunden.</div>
+        <div id="installStatus" class="status info">Wenn der Installieren-Button noch nicht sichtbar ist, öffne die Seite kurz neu und warte ein paar Sekunden. Install-Text-Stand: v4.</div>
       </div>
 
       <div id="accessBox" class="hero-panel">
@@ -560,7 +560,7 @@
             <strong>Für Fahrer:</strong><br>
             1. App-Link öffnen<br>
             2. oben rechts auf die 3 Punkte tippen<br>
-            3. <strong>„Zum Startbildschirm hinzufügen“</strong> auswählen<br>
+            3. <strong>Zum Startbildschirm hinzufügen</strong> auswählen<br>
             4. <strong>Installieren</strong> drücken<br>
             5. App-Icon erscheint auf dem Handy und kann wie eine normale App genutzt werden<br>
             6. in der App registrieren oder anmelden<br>
@@ -660,7 +660,7 @@
             <strong>Android:</strong><br>
             1. Link öffnen<br>
             2. oben rechts auf die 3 Punkte tippen<br>
-            3. <strong>„Zum Startbildschirm hinzufügen“</strong> auswählen<br>
+            3. <strong>Zum Startbildschirm hinzufügen</strong> auswählen<br>
             4. <strong>Installieren</strong> drücken<br>
             5. App-Icon erscheint auf dem Handy und kann wie eine normale App genutzt werden<br>
             6. in der App registrieren<br>
@@ -2751,12 +2751,12 @@
   const APP_LINK = 'https://tj177.github.io/spesen-von-stil-und-struktur-Test/';
 
   function buildTeamShareText(){
-    return `Hier ist der App-Link für Spesen von Stil & Struktur:\n${APP_LINK}\n\nAndroid:\n1. Link öffnen\n2. oben rechts auf die 3 Punkte tippen\n3. „Zum Startbildschirm hinzufügen“ auswählen\n4. Installieren drücken\n5. App-Icon erscheint auf dem Handy und kann wie eine normale App genutzt werden\n\nDanach in der App registrieren oder anmelden und im Team-Reiter Team-Code + PIN + Fahrer-Nr. eingeben.`;
+    return `Hier ist der App-Link für Spesen von Stil & Struktur:\n${APP_LINK}\n\nAndroid:\n1. Link öffnen\n2. oben rechts auf die 3 Punkte tippen\n3. Zum Startbildschirm hinzufügen auswählen\n4. Installieren drücken\n5. App-Icon erscheint auf dem Handy und kann wie eine normale App genutzt werden\n\nDanach in der App registrieren oder anmelden und im Team-Reiter Team-Code + PIN + Fahrer-Nr. eingeben.`;
   }
 
   function buildReferralShareText(){
     const code = $('refCode')?.value || '';
-    return `Hier ist mein App-Link für Spesen von Stil & Struktur:\n${APP_LINK}\n\nMein Empfehlungscode: ${code}\n\nAndroid:\n1. Link öffnen\n2. oben rechts auf die 3 Punkte tippen\n3. „Zum Startbildschirm hinzufügen“ auswählen\n4. Installieren drücken\n5. App-Icon erscheint auf dem Handy und kann wie eine normale App genutzt werden\n\nDanach in der App registrieren, Testzeit genießen und App erkunden und danach ein Paket buchen.`;
+    return `Hier ist mein App-Link für Spesen von Stil & Struktur:\n${APP_LINK}\n\nMein Empfehlungscode: ${code}\n\nAndroid:\n1. Link öffnen\n2. oben rechts auf die 3 Punkte tippen\n3. Zum Startbildschirm hinzufügen auswählen\n4. Installieren drücken\n5. App-Icon erscheint auf dem Handy und kann wie eine normale App genutzt werden\n\nDanach in der App registrieren, Testzeit genießen und App erkunden und danach ein Paket buchen.`;
   }
 
   function fillShareBoxes(){
@@ -2851,9 +2851,9 @@
     }
     if(status){
       status.className = 'status info';
-      status.textContent = 'Automatischer Installieren-Button ist gerade noch nicht verfügbar. Nutze oben rechts die 3 Punkte im Browser, wähle „Zum Startbildschirm hinzufügen“ und drücke danach „Installieren“.';
+      status.textContent = 'Automatischer Installieren-Button ist gerade noch nicht verfügbar. Nutze oben rechts die 3 Punkte im Browser, wähle Zum Startbildschirm hinzufügen und drücke danach „Installieren“.';
     }
-    alert('Wenn kein Installieren-Button erscheint: oben rechts auf die 3 Punkte tippen, „Zum Startbildschirm hinzufügen“ auswählen und danach „Installieren“ drücken.');
+    alert('Wenn kein Installieren-Button erscheint: oben rechts auf die 3 Punkte tippen, Zum Startbildschirm hinzufügen auswählen und danach „Installieren“ drücken.');
   }
   window.installApp = installApp;
 
