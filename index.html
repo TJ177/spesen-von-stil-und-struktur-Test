@@ -316,11 +316,15 @@
           <label>Fahrzeug</label><input id="vehicle" placeholder="Fahrzeug">
           <label>Kennzeichen</label><input id="plate" placeholder="Kennzeichen">
         </div>
+        <div id="teamProfileFields" class="hidden">
+          <label>Fahrer-Nr.</label><input id="driverNumber" placeholder="Fahrer-Nr." readonly>
+          <div id="teamProfileInfo" class="small">Noch keinem Team zugeordnet.</div>
+        </div>
         <div class="toolbar">
           <button type="button" onclick="saveProfile()" id="saveProfileBtn">Profil speichern</button>
         </div>
         <div id="trialBox" class="toolbar"></div>
-        <div class="small">Basic: Name + E-Mail + Fahrten. Premium/Gold zusätzlich Firma, Fahrzeug, Kennzeichen.</div>
+        <div class="small">Basic: Name + E-Mail + Fahrten. Premium/Gold zusätzlich Firma, Fahrzeug, Kennzeichen. Team später mit Fahrer-Nr.</div>
         <div id="profileStatus" class="status info">Noch kein Profil geladen.</div>
       </div>
 
@@ -333,6 +337,7 @@
           <button class="tab-btn" data-tab="pdf" onclick="showTab('pdf', this)">PDF-Auswahl</button>
           <button class="tab-btn" data-tab="rechnung" onclick="showTab('rechnung', this)">Rechnung</button>
           <button class="tab-btn" data-tab="pakete" onclick="showTab('pakete', this)">Pakete</button>
+          <button class="tab-btn" data-tab="team" onclick="showTab('team', this)">Team</button>
           <button class="tab-btn" data-tab="empfehlen" onclick="showTab('empfehlen', this)">Empfehlen</button>
         </div>
 
@@ -507,6 +512,76 @@
             <div id="packageRequestList" class="entry-list"></div>
           </div>
         </div>
+
+        <div id="team" class="tab-panel">
+          <h2>Team</h2>
+          <div class="note-box">Teamleiter können Fahrerplätze mit Fahrer-Nr. anlegen. Fahrer melden sich normal an und geben dann Team-Code, PIN und Fahrer-Nr. ein, damit die Zuordnung sauber passiert.</div>
+          <div id="teamStatus" class="status info">Noch kein Team aktiv.</div>
+
+          <div id="teamLeaderBox" class="hidden" style="margin-top:14px;">
+            <h3>Mein Team</h3>
+            <div class="field-row-compact">
+              <div><label>Teamname</label><input id="teamNameInput" placeholder="z. B. Müller Meier Schulze"></div>
+              <div><label>Fahrer-Nr. Leiter</label><input id="leaderDriverNumber" placeholder="z. B. 0001"></div>
+            </div>
+            <div class="field-row-compact">
+              <div><label>Team-Code</label><input id="teamCodeInput" readonly></div>
+              <div><label>PIN</label><input id="teamPinInput" readonly></div>
+            </div>
+            <div class="toolbar">
+              <button type="button" onclick="createOrUpdateTeam()">Team speichern</button>
+              <button type="button" class="outline" onclick="regenerateTeamAccess()">Code / PIN neu erzeugen</button>
+            </div>
+            <div class="small">Diesen Code + PIN gibst du an deine Fahrer weiter. Ohne passende Fahrer-Nr. kommt niemand sauber in dein Team.</div>
+
+            <div style="margin-top:18px;">
+              <h3>Fahrerplatz anlegen</h3>
+              <div class="field-row-compact">
+                <div><label>Fahrer-Nr.</label><input id="newDriverNumber" placeholder="z. B. 0017"></div>
+                <div><label>Fahrername</label><input id="newDriverName" placeholder="optional / zur besseren Übersicht"></div>
+              </div>
+              <div class="toolbar">
+                <button type="button" onclick="createTeamDriverSlot()">Fahrerplatz speichern</button>
+              </div>
+              <div id="teamDriverCreateStatus" class="status info">Noch kein Fahrerplatz angelegt.</div>
+            </div>
+
+            <div style="margin-top:18px;">
+              <h3>Team-Fahrer</h3>
+              <div id="teamDriversList" class="entry-list"></div>
+            </div>
+          </div>
+
+          <div id="teamJoinBox" class="hidden" style="margin-top:14px;">
+            <h3>Team beitreten</h3>
+            <div class="field-row-compact">
+              <div><label>Team-Code</label><input id="joinTeamCode" placeholder="Team-Code"></div>
+              <div><label>PIN</label><input id="joinTeamPin" placeholder="PIN"></div>
+            </div>
+            <div class="field-row-compact">
+              <div><label>Fahrer-Nr.</label><input id="joinDriverNumber" placeholder="deine Fahrer-Nr."></div>
+              <div><label>Name</label><input id="joinDriverName" placeholder="wird automatisch aus Profil übernommen"></div>
+            </div>
+            <div class="toolbar">
+              <button type="button" onclick="joinTeamWithCode()">Team beitreten</button>
+            </div>
+            <div id="teamJoinStatus" class="status info">Noch keinem Team beigetreten.</div>
+          </div>
+
+          <div id="teamDriverInfoBox" class="hidden" style="margin-top:14px;">
+            <h3>Meine Team-Zuordnung</h3>
+            <div id="teamDriverInfo" class="info-box">Noch keine Teamdaten vorhanden.</div>
+          </div>
+
+          <div id="teamAdminBox" class="hidden" style="margin-top:14px;">
+            <h3>Admin-Teams</h3>
+            <div class="toolbar">
+              <button type="button" onclick="loadAllTeamsForAdmin()">Teams laden</button>
+            </div>
+            <div id="adminTeamsList" class="entry-list"></div>
+          </div>
+        </div>
+
 <div id="empfehlen" class="tab-panel">
           <h2>Empfehlen</h2>
           <div class="note-box">Empfehlungscode ist sichtbar. Auswertung/Belohnungslogik kann später erweitert werden.</div>
@@ -624,7 +699,7 @@
 
   function createEmptyState(){
     return {
-      profile: { displayName:'', packageName:'Basic', activeUntil:'', company:'', vehicle:'', plate:'', referralCode:'' },
+      profile: { displayName:'', packageName:'Basic', activeUntil:'', company:'', vehicle:'', plate:'', referralCode:'', activeAddOns:[], driverNumber:'', teamId:'', teamRole:'', teamName:'', teamCode:'', teamPin:'', teamOwnerUid:'' },
       trips: [],
       hotels: [],
       fuels: [],
@@ -705,6 +780,36 @@
 
   function hasUnlimitedAccess(){
     return isAdmin() || isMicha();
+  }
+
+  function hasTeamFeature(){
+    return hasUnlimitedAccess() || !!(Array.isArray(localState.profile.activeAddOns) && localState.profile.activeAddOns.includes('team')) || localState.profile.teamRole === 'leader' || localState.profile.teamRole === 'driver';
+  }
+
+  function isTeamLeader(){
+    return hasUnlimitedAccess() || localState.profile.teamRole === 'leader';
+  }
+
+  function normalizeDriverNumber(value){
+    return String(value || '').trim().replace(/\s+/g,'').toUpperCase();
+  }
+
+  function randomToken(length=6){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for(let i=0;i<length;i++) out += chars[Math.floor(Math.random()*chars.length)];
+    return out;
+  }
+
+  function randomPin(length=4){
+    let out = '';
+    for(let i=0;i<length;i++) out += String(Math.floor(Math.random()*10));
+    return out;
+  }
+
+  function formatTeamCode(name=''){
+    const base = String(name || localState.profile.displayName || 'TEAM').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5) || 'TEAM';
+    return `${base}-${randomToken(4)}`;
   }
 
   function formatGermanDateOnly(value){
@@ -1165,16 +1270,16 @@
     const state = getAccessState();
     const pkg = state.packageName || localState.profile.packageName || 'Basic';
     const base = hasUnlimitedAccess()
-      ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
+      ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, team:true, empfehlen:true, rechnung:true, premiumFields:true }
       : pkg === 'Goldmitglied'
-        ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
+        ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, team:true, empfehlen:true, rechnung:true, premiumFields:true }
         : (pkg === 'Premium' || pkg === 'Premium Plus')
-          ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:true }
+          ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, team:true, empfehlen:true, rechnung:true, premiumFields:true }
           : pkg === 'Basic Plus'
-            ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, empfehlen:true, rechnung:true, premiumFields:false }
-            : { fahrt:true, hotel:false, tanken:false, kilometer:false, pdf:true, pakete:true, empfehlen:false, rechnung:true, premiumFields:false };
+            ? { fahrt:true, hotel:true, tanken:true, kilometer:true, pdf:true, pakete:true, team:true, empfehlen:true, rechnung:true, premiumFields:false }
+            : { fahrt:true, hotel:false, tanken:false, kilometer:false, pdf:true, pakete:true, team:true, empfehlen:false, rechnung:true, premiumFields:false };
     if(state.isExpired){
-      return { ...base, fahrt:false, hotel:false, tanken:false, kilometer:false, pdf:false, empfehlen:false, rechnung:false, premiumFields:base.premiumFields };
+      return { ...base, fahrt:false, hotel:false, tanken:false, kilometer:false, pdf:false, team:true, empfehlen:false, rechnung:false, premiumFields:base.premiumFields };
     }
     return base;
   }
@@ -1182,6 +1287,13 @@
   function applyPackageUi(){
     const access = packageAccess();
     $('premiumFields').classList.toggle('hidden', !access.premiumFields);
+    $('teamProfileFields').classList.toggle('hidden', !(localState.profile.teamRole || hasTeamFeature()));
+    const teamInfo = $('teamProfileInfo');
+    if(teamInfo){
+      if(localState.profile.teamRole === 'leader') teamInfo.textContent = `Teamleiter · ${localState.profile.teamName || 'Team'} · Code ${localState.profile.teamCode || '-'}`;
+      else if(localState.profile.teamRole === 'driver') teamInfo.textContent = `Teamfahrer · ${localState.profile.teamName || 'Team'} · Fahrer-Nr. ${localState.profile.driverNumber || '-'}`;
+      else teamInfo.textContent = 'Noch keinem Team zugeordnet.';
+    }
     document.querySelectorAll('.tab-btn').forEach(btn => {
       const tab = btn.dataset.tab;
       const allowed = !!access[tab];
@@ -1189,6 +1301,7 @@
       btn.disabled = false;
       btn.title = allowed ? '' : 'In deinem Paket nicht aktiv';
     });
+    renderTeamUi();
   }
 
   function showTab(tabId, btn, forceOpen=false){
@@ -1394,6 +1507,7 @@
     $('company').value = localState.profile.company || '';
     $('vehicle').value = localState.profile.vehicle || '';
     $('plate').value = localState.profile.plate || '';
+    if($('driverNumber')) $('driverNumber').value = localState.profile.driverNumber || '';
     $('refCode').value = localState.profile.referralCode || computeRefCode(localState.profile.displayName,currentUser?.email);
     if(state.isUnlimited){
       $('accessInfo').className = 'status ok';
@@ -1671,6 +1785,7 @@
     localState.profile.company = $('company').value.trim();
     localState.profile.vehicle = $('vehicle').value.trim();
     localState.profile.plate = $('plate').value.trim();
+    if(localState.profile.teamRole === 'leader') localState.profile.driverNumber = normalizeDriverNumber($('leaderDriverNumber')?.value || localState.profile.driverNumber);
     localState.profile.referralCode = computeRefCode(localState.profile.displayName, currentUser.email);
     localState.profile.updatedAt = Date.now();
     saveLocalState();
@@ -2012,8 +2127,9 @@
       if(status === 'freigeschaltet'){
         profileUpdate.packageName = request.requestedPackage;
         profileUpdate.activeUntil = activeUntil;
+        profileUpdate.activeAddOns = Array.isArray(request.addOns) ? request.addOns : [];
         profileUpdate.updatedAt = Date.now();
-        await setDoc(doc(db,'users',request.requesterUid,'meta','profile'), { packageName: request.requestedPackage, activeUntil, updatedAt: Date.now() }, { merge:true });
+        await setDoc(doc(db,'users',request.requesterUid,'meta','profile'), { packageName: request.requestedPackage, activeUntil, activeAddOns: Array.isArray(request.addOns) ? request.addOns : [], updatedAt: Date.now() }, { merge:true });
       }
       await setDoc(doc(db,'profiles',request.requesterUid), profileUpdate, { merge:true });
       await loadPackageRequests();
@@ -2024,6 +2140,247 @@
     }
   }
   window.setPackageRequestStatus = setPackageRequestStatus;
+
+  async function createOrUpdateTeam(){
+    if(!currentUser) return alert('Bitte zuerst anmelden.');
+    if(!hasTeamFeature() && !hasUnlimitedAccess()) return alert('Team ist in deinem aktuellen Paket nicht aktiv.');
+    const teamName = ($('teamNameInput')?.value || '').trim() || localState.profile.teamName || localState.profile.displayName || 'Mein Team';
+    const teamId = localState.profile.teamId || crypto.randomUUID();
+    const teamCode = localState.profile.teamCode || formatTeamCode(teamName);
+    const teamPin = localState.profile.teamPin || randomPin(4);
+    const leaderDriverNumber = normalizeDriverNumber($('leaderDriverNumber')?.value || localState.profile.driverNumber || '0001');
+    const payload = {
+      teamId,
+      teamName,
+      teamCode,
+      teamPin,
+      ownerUid: currentUser.uid,
+      ownerEmail: currentUser.email || '',
+      ownerName: localState.profile.displayName || $('displayName').value.trim() || String(currentUser.email || '').split('@')[0],
+      updatedAt: Date.now(),
+      createdAt: localState.profile.teamId ? (localState.profile.teamCreatedAt || Date.now()) : Date.now(),
+      active: true
+    };
+    try{
+      await setDoc(doc(db,'teams',teamId), payload, { merge:true });
+      await setDoc(doc(db,'teams',teamId,'drivers',leaderDriverNumber), {
+        driverNumber: leaderDriverNumber,
+        driverName: payload.ownerName,
+        userUid: currentUser.uid,
+        userEmail: currentUser.email || '',
+        userName: payload.ownerName,
+        role: 'leader',
+        status: 'aktiv',
+        updatedAt: Date.now()
+      }, { merge:true });
+      localState.profile.teamId = teamId;
+      localState.profile.teamRole = 'leader';
+      localState.profile.teamName = teamName;
+      localState.profile.teamCode = teamCode;
+      localState.profile.teamPin = teamPin;
+      localState.profile.teamOwnerUid = currentUser.uid;
+      localState.profile.driverNumber = leaderDriverNumber;
+      localState.profile.teamCreatedAt = payload.createdAt;
+      saveLocalState();
+      await saveProfile();
+      $('teamStatus').className = 'status ok';
+      $('teamStatus').textContent = `Team gespeichert. Code ${teamCode} · PIN ${teamPin}`;
+      await loadTeamDrivers();
+      renderTeamUi();
+    }catch(e){
+      console.log('createOrUpdateTeam Fehler:', e);
+      $('teamStatus').className = 'status warn';
+      $('teamStatus').textContent = 'Team konnte nicht gespeichert werden.';
+      alert('Team konnte nicht gespeichert werden: ' + e.message);
+    }
+  }
+  window.createOrUpdateTeam = createOrUpdateTeam;
+
+  async function regenerateTeamAccess(){
+    if(!currentUser || !localState.profile.teamId) return alert('Bitte zuerst ein Team speichern.');
+    localState.profile.teamCode = formatTeamCode(localState.profile.teamName || $('teamNameInput')?.value || 'TEAM');
+    localState.profile.teamPin = randomPin(4);
+    await createOrUpdateTeam();
+  }
+  window.regenerateTeamAccess = regenerateTeamAccess;
+
+  async function createTeamDriverSlot(){
+    if(!currentUser || !localState.profile.teamId || !isTeamLeader()) return alert('Nur Teamleiter können Fahrerplätze anlegen.');
+    const driverNumber = normalizeDriverNumber($('newDriverNumber')?.value);
+    const driverName = ($('newDriverName')?.value || '').trim();
+    if(!driverNumber) return alert('Bitte Fahrer-Nr. eintragen.');
+    try{
+      await setDoc(doc(db,'teams',localState.profile.teamId,'drivers',driverNumber), {
+        driverNumber,
+        driverName,
+        role:'driver',
+        status:'frei',
+        teamId: localState.profile.teamId,
+        teamName: localState.profile.teamName || '',
+        updatedAt: Date.now()
+      }, { merge:true });
+      $('teamDriverCreateStatus').className = 'status ok';
+      $('teamDriverCreateStatus').textContent = `Fahrerplatz ${driverNumber} gespeichert.`;
+      $('newDriverNumber').value = '';
+      $('newDriverName').value = '';
+      await loadTeamDrivers();
+    }catch(e){
+      console.log('createTeamDriverSlot Fehler:', e);
+      $('teamDriverCreateStatus').className = 'status warn';
+      $('teamDriverCreateStatus').textContent = 'Fahrerplatz konnte nicht gespeichert werden.';
+      alert('Fahrerplatz konnte nicht gespeichert werden: ' + e.message);
+    }
+  }
+  window.createTeamDriverSlot = createTeamDriverSlot;
+
+  async function removeTeamDriver(driverNumber){
+    if(!currentUser || !localState.profile.teamId || !isTeamLeader()) return;
+    if(!confirm(`Fahrerplatz ${driverNumber} wirklich entfernen?`)) return;
+    try{
+      await setDoc(doc(db,'teams',localState.profile.teamId,'drivers',driverNumber), {
+        archived:true,
+        status:'archiviert',
+        updatedAt: Date.now()
+      }, { merge:true });
+      await loadTeamDrivers();
+    }catch(e){
+      alert('Fahrerplatz konnte nicht archiviert werden: ' + e.message);
+    }
+  }
+  window.removeTeamDriver = removeTeamDriver;
+
+  async function loadTeamDrivers(){
+    const wrap = $('teamDriversList');
+    if(!wrap) return;
+    if(!localState.profile.teamId){
+      wrap.innerHTML = '<div class="muted">Noch kein Team gespeichert.</div>';
+      return;
+    }
+    try{
+      const snap = await getDocs(collection(db,'teams',localState.profile.teamId,'drivers'));
+      const drivers = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+        .filter(d => !d.archived)
+        .sort((a,b) => String(a.driverNumber || '').localeCompare(String(b.driverNumber || '')));
+      wrap.innerHTML = drivers.length ? drivers.map(d => `
+        <div class="entry-card">
+          <div class="trip-title">Fahrer-Nr. ${escapeHtml(d.driverNumber || '-')}</div>
+          <div class="small">${escapeHtml(d.driverName || d.userName || 'ohne Namen')}</div>
+          <div class="small">${escapeHtml(d.userEmail || 'noch nicht verbunden')}</div>
+          <div class="small">Status: ${escapeHtml(d.status || 'frei')}</div>
+          ${isTeamLeader() && d.role !== 'leader' ? `<div class="toolbar"><button type="button" class="red" onclick="removeTeamDriver('${escapeHtml(d.driverNumber || '')}')">Archivieren</button></div>` : ''}
+        </div>
+      `).join('') : '<div class="muted">Noch keine Fahrerplätze vorhanden.</div>';
+    }catch(e){
+      console.log('loadTeamDrivers Fehler:', e);
+      wrap.innerHTML = '<div class="muted">Team-Fahrer konnten nicht geladen werden.</div>';
+    }
+  }
+
+  async function joinTeamWithCode(){
+    if(!currentUser) return alert('Bitte zuerst anmelden.');
+    const teamCode = ($('joinTeamCode')?.value || '').trim().toUpperCase();
+    const teamPin = ($('joinTeamPin')?.value || '').trim();
+    const driverNumber = normalizeDriverNumber($('joinDriverNumber')?.value || localState.profile.driverNumber);
+    const joinName = ($('joinDriverName')?.value || localState.profile.displayName || $('displayName').value || '').trim();
+    if(!teamCode || !teamPin || !driverNumber) return alert('Bitte Team-Code, PIN und Fahrer-Nr. eingeben.');
+    try{
+      const snap = await getDocs(query(collection(db,'teams'), where('teamCode','==',teamCode)));
+      const teamDoc = snap.docs.find(d => String(d.data().teamPin || '') === teamPin);
+      if(!teamDoc) return alert('Team-Code oder PIN stimmt nicht.');
+      const team = { id: teamDoc.id, ...teamDoc.data() };
+      const driverRef = doc(db,'teams',team.id,'drivers',driverNumber);
+      const driverSnap = await getDoc(driverRef);
+      if(!driverSnap.exists()) return alert('Diese Fahrer-Nr. ist in diesem Team nicht angelegt.');
+      const slot = driverSnap.data() || {};
+      if(slot.userUid && slot.userUid !== currentUser.uid) return alert('Diese Fahrer-Nr. ist bereits vergeben.');
+      await setDoc(driverRef, {
+        driverNumber,
+        driverName: slot.driverName || joinName,
+        userUid: currentUser.uid,
+        userEmail: currentUser.email || '',
+        userName: joinName || slot.driverName || '',
+        role:'driver',
+        status:'aktiv',
+        joinedAt: Date.now(),
+        updatedAt: Date.now()
+      }, { merge:true });
+      localState.profile.teamId = team.id;
+      localState.profile.teamRole = 'driver';
+      localState.profile.teamName = team.teamName || '';
+      localState.profile.teamCode = team.teamCode || '';
+      localState.profile.teamPin = '';
+      localState.profile.teamOwnerUid = team.ownerUid || '';
+      localState.profile.driverNumber = driverNumber;
+      saveLocalState();
+      await saveProfile();
+      $('teamJoinStatus').className = 'status ok';
+      $('teamJoinStatus').textContent = `Du bist jetzt ${team.teamName || 'dem Team'} zugeordnet.`;
+      renderTeamUi();
+    }catch(e){
+      console.log('joinTeamWithCode Fehler:', e);
+      $('teamJoinStatus').className = 'status warn';
+      $('teamJoinStatus').textContent = 'Teambeitritt fehlgeschlagen.';
+      alert('Teambeitritt fehlgeschlagen: ' + e.message);
+    }
+  }
+  window.joinTeamWithCode = joinTeamWithCode;
+
+  async function loadAllTeamsForAdmin(){
+    if(!isAdmin()) return;
+    const wrap = $('adminTeamsList');
+    if(!wrap) return;
+    wrap.innerHTML = '<div class="muted">Lade Teams…</div>';
+    try{
+      const snap = await getDocs(collection(db,'teams'));
+      const teams = snap.docs.map(d => ({ id:d.id, ...d.data() })).sort((a,b) => String(a.teamName || '').localeCompare(String(b.teamName || ''),'de'));
+      wrap.innerHTML = teams.length ? teams.map(t => `
+        <div class="entry-card">
+          <div class="trip-title">${escapeHtml(t.teamName || 'Team')}</div>
+          <div class="small">Code: ${escapeHtml(t.teamCode || '-')} · PIN: ${escapeHtml(t.teamPin || '-')}</div>
+          <div class="small">Leiter: ${escapeHtml(t.ownerName || t.ownerEmail || '-')}</div>
+        </div>
+      `).join('') : '<div class="muted">Noch keine Teams vorhanden.</div>';
+    }catch(e){
+      wrap.innerHTML = '<div class="muted">Teams konnten nicht geladen werden.</div>';
+    }
+  }
+  window.loadAllTeamsForAdmin = loadAllTeamsForAdmin;
+
+  function renderTeamUi(){
+    const status = $('teamStatus');
+    const leaderBox = $('teamLeaderBox');
+    const joinBox = $('teamJoinBox');
+    const driverInfoBox = $('teamDriverInfoBox');
+    const driverInfo = $('teamDriverInfo');
+    const adminBox = $('teamAdminBox');
+    if(!status) return;
+    if($('joinDriverName') && !$('joinDriverName').value) $('joinDriverName').value = localState.profile.displayName || '';
+    if($('driverNumber')) $('driverNumber').value = localState.profile.driverNumber || '';
+    if($('teamNameInput')) $('teamNameInput').value = localState.profile.teamName || '';
+    if($('teamCodeInput')) $('teamCodeInput').value = localState.profile.teamCode || '';
+    if($('teamPinInput')) $('teamPinInput').value = localState.profile.teamPin || '';
+    if($('leaderDriverNumber')) $('leaderDriverNumber').value = localState.profile.driverNumber || '';
+    leaderBox?.classList.toggle('hidden', !isTeamLeader());
+    joinBox?.classList.toggle('hidden', !!isTeamLeader() || localState.profile.teamRole === 'driver');
+    driverInfoBox?.classList.toggle('hidden', localState.profile.teamRole !== 'driver');
+    adminBox?.classList.toggle('hidden', !isAdmin());
+    if(isTeamLeader()){
+      status.className = 'status ok';
+      status.textContent = localState.profile.teamId ? `Team aktiv: ${localState.profile.teamName || 'Team'} · Code ${localState.profile.teamCode || '-'} · PIN ${localState.profile.teamPin || '-'}` : 'Team-Funktion aktiv. Bitte jetzt Team speichern und Fahrerplätze anlegen.';
+      loadTeamDrivers();
+    }else if(localState.profile.teamRole === 'driver'){
+      status.className = 'status ok';
+      status.textContent = `Du bist als Fahrer ${localState.profile.driverNumber || '-'} im Team ${localState.profile.teamName || '-'} aktiv.`;
+      if(driverInfo) driverInfo.innerHTML = `<strong>Team:</strong> ${escapeHtml(localState.profile.teamName || '-')}<br><strong>Fahrer-Nr.:</strong> ${escapeHtml(localState.profile.driverNumber || '-')}<br><strong>Name:</strong> ${escapeHtml(localState.profile.displayName || '-')}`;
+    }else if(hasTeamFeature()){
+      status.className = 'status info';
+      status.textContent = 'Team-Funktion aktiv. Wenn du Teamleiter bist, speichere zuerst dein Team. Als Fahrer kannst du unten Team-Code, PIN und Fahrer-Nr. eingeben.';
+    }else{
+      status.className = 'status info';
+      status.textContent = 'Team ist aktuell nur mit Team-Modul oder Gold aktiv. Als eingeladener Fahrer kannst du hier später mit Code, PIN und Fahrer-Nr. beitreten.';
+    }
+    if(isAdmin()) loadAllTeamsForAdmin();
+  }
 
   async function loadUsers(){
     if(!isAdmin()) return;
@@ -2042,6 +2399,7 @@
           <div class="small">${escapeHtml(u.email || '')}</div>
           <div class="small">Paket: ${escapeHtml(u.packageName || 'Basic')}</div>
           <div class="small">Aktiv bis: ${escapeHtml(u.activeUntil ? formatGermanDateOnly(u.activeUntil) : '-')}</div>
+          <div class="small">Team: ${escapeHtml(u.teamName || '-')} · Fahrer-Nr.: ${escapeHtml(u.driverNumber || '-')}</div>
           <div class="small">${requestLabel}</div>
           ${hasRequest ? `<div class="toolbar"><button type="button" onclick="openAdminPanel('requests')">Anfrage ansehen</button></div>` : ''}
         </div>`;
