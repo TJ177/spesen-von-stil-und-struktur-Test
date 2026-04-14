@@ -190,7 +190,6 @@
         <div class="hero-actions">
           <button type="button" class="outline" onclick="togglePanel('helpBox')">App / Hilfe</button>
           <button type="button" class="outline" onclick="togglePanel('accessBox')">Zugang</button>
-          <button type="button" class="outline" onclick="togglePanel('contactBox')">Admin kontaktieren</button>
           <button type="button" class="outline hidden" id="topUsersBtn" onclick="openAdminPanel('users')">Nutzer</button>
           <button type="button" class="outline hidden" id="topRequestsBtn" onclick="openAdminPanel('requests')">Anfragen</button>
           <button type="button" class="outline hidden" id="topAdminBtn" onclick="openAdminPanel('overview')">Admin</button>
@@ -201,14 +200,17 @@
       <div id="syncStatus" class="status warn">Nicht synchronisiert. Bitte anmelden.</div>
 
       <div id="helpBox" class="hero-panel">
-        <strong>App installieren</strong><br><br>
+        <strong>App aufs Handy speichern</strong><br><br>
         <strong>Android:</strong><br>
-        1. Link öffnen<br>
-        2. oben rechts auf die 3 Punkte tippen<br>
-        3. <strong>Installieren</strong><br><br>
+        1. Link aus der Nachricht kopieren<br>
+        2. Chrome öffnen<br>
+        3. Link oben einfügen und öffnen<br>
+        4. Oben rechts auf die 3 Punkte tippen<br>
+        5. „Zum Startbildschirm hinzufügen“ auswählen<br>
+        6. „Installieren“ auswählen<br><br>
         <strong>iPhone:</strong><br>
         1. Link in Safari öffnen<br>
-        2. unten auf Teilen tippen<br>
+        2. Unten auf Teilen tippen<br>
         3. „Zum Home-Bildschirm“ auswählen<br>
         4. Hinzufügen drücken<br><br>
         <strong>PC:</strong><br>
@@ -219,22 +221,6 @@
         <h3>Zugang &amp; Laufzeit</h3>
         <div id="accessInfo" class="status info">Melde dich an, um deine Laufzeit zu sehen.</div>
         <div class="small">Basic = nur Fahrten. Rechnung bleibt sichtbar, ist aber noch nicht aktiviert.</div>
-      </div>
-
-      <div id="contactBox" class="hero-panel">
-        <h3>Fragen oder Probleme?</h3>
-        <div class="note-box" style="margin-top:10px">
-          Wenn etwas nicht funktioniert oder du Hilfe brauchst, kontaktiere bitte den Admin.<br><br>
-          <strong>Admin:</strong> Tanja<br>
-          <strong>E-Mail:</strong> <a href="mailto:tanjapischke177@gmail.com?subject=Spesen%20von%20Stil%20%26%20Struktur%20-%20Frage%20oder%20Problem" style="color:#93c5fd">tanjapischke177@gmail.com</a><br><br>
-          Bitte schreibe kurz dazu:
-          <br>• dein Name
-          <br>• welches Paket du nutzt
-          <br>• worum es geht
-          <br>• ob es um Anmeldung, Zahlung, Freischaltung oder einen Fehler geht
-          <br><br>
-          Hinweis: Freischaltungen werden in der Regel innerhalb von 24 Stunden nach Zahlungseingang geprüft.
-        </div>
       </div>
 
       <div id="adminPanel" class="hero-panel hidden">
@@ -549,6 +535,21 @@
             Fahrer sehen nur ihre eigenen Daten.<br>
             Der Teamleiter sieht alle Fahrer im Team.
           </div>
+
+          <div class="request-builder" style="margin-top:14px">
+            <h3>App-Link für Fahrer</h3>
+            <div class="request-note">Hier kannst du den fertigen App-Link mit kurzer Anleitung kopieren und direkt an Fahrer weiterleiten.</div>
+            <label>App-Link</label>
+            <input id="teamAppLink" readonly>
+            <label>Nachricht zum Weiterleiten</label>
+            <textarea id="teamShareText" class="small-textarea" readonly></textarea>
+            <div class="toolbar">
+              <button type="button" class="outline" onclick="copyAppLinkOnly('teamAppLink')">Nur Link kopieren</button>
+              <button type="button" onclick="copyShareText('teamShareText')">Link + Anleitung kopieren</button>
+            </div>
+            <div id="teamCopyStatus" class="status info">Noch nichts kopiert.</div>
+          </div>
+
           <div id="teamStatus" class="status info">Noch kein Team aktiv.</div>
 
           <div id="teamLeaderBox" class="hidden" style="margin-top:14px;">
@@ -635,12 +636,25 @@
           </div>
           <label>Dein Empfehlungscode</label>
           <input id="refCode" readonly>
+
+          <div class="request-builder" style="margin-top:14px">
+            <h3>App-Link zum Weiterleiten</h3>
+            <div class="request-note">Hier kannst du den App-Link mit deinem Empfehlungscode und der kurzen Anleitung als fertige Nachricht kopieren.</div>
+            <label>App-Link</label>
+            <input id="refAppLink" readonly>
+            <label>Nachricht zum Weiterleiten</label>
+            <textarea id="refShareText" class="small-textarea" readonly></textarea>
+            <div class="toolbar">
+              <button type="button" class="outline" onclick="copyAppLinkOnly('refAppLink')">Nur Link kopieren</button>
+              <button type="button" onclick="copyShareText('refShareText')">Link + Code + Anleitung kopieren</button>
+            </div>
+            <div id="refCopyStatus" class="status info">Noch nichts kopiert.</div>
+          </div>
         </div>
 
         <div id="rechnung" class="tab-panel">
           <h2>Rechnung</h2>
-          <div class="note-box"><strong>Testphase:</strong> Dieser Bereich ist vorbereitet, aber noch nicht final. Bitte Ergebnisse aktuell noch prüfen.</div>
-          <div class="note-box" style="margin-top:10px">Hier ist die Rechnungs-Vorschau vorbereitet. Die eigentliche Logik kann später erweitert werden. Rechnungsnummer läuft fortlaufend weiter. Lieferschein-Scan ist als Feld schon mit vorbereitet.</div>
+          <div class="note-box">Hier ist die Rechnungs-Vorschau vorbereitet. Die eigentliche Logik kann später erweitert werden. Rechnungsnummer läuft fortlaufend weiter. Lieferschein-Scan ist als Feld schon mit vorbereitet.</div>
           <div class="field-row-compact">
             <div><label>Firmenname</label><input id="invoiceCompanyName" placeholder="Firma / Absender"></div>
             <div><label>Rechnungsnummer</label><div class="mini-dt-row"><input id="invoiceNumber" readonly><button type="button" class="outline" onclick="nextInvoiceNumber()">Nächste Nr.</button></div></div>
@@ -952,7 +966,7 @@
   function togglePanel(id){
     const el = $(id);
     if(!el) return;
-    if(id === 'helpBox' || id === 'accessBox' || id === 'contactBox'){
+    if(id === 'helpBox' || id === 'accessBox'){
       el.classList.toggle('show');
       return;
     }
@@ -2602,7 +2616,83 @@
   }
   window.exportPDF = exportPDF;
 
+
+  const APP_LINK = 'https://tj177.github.io/spesen-von-stil-und-struktur-Test/';
+
+  function buildTeamShareText(){
+    return `Hier ist der App-Link für Spesen von Stil & Struktur:\n${APP_LINK}\n\nAndroid:\n1. Link öffnen\n2. oben rechts auf die 3 Punkte tippen\n3. Installieren\n\nDanach in der App registrieren oder anmelden und im Team-Reiter Team-Code + PIN + Fahrer-Nr. eingeben.`;
+  }
+
+  function buildReferralShareText(){
+    const code = $('refCode')?.value || '';
+    return `Hier ist mein App-Link für Spesen von Stil & Struktur:\n${APP_LINK}\n\nMein Empfehlungscode: ${code}\n\nAndroid:\n1. Link öffnen\n2. oben rechts auf die 3 Punkte tippen\n3. Installieren\n\nDanach in der App registrieren, Testzeit genießen und App erkunden und erst danach ein Paket buchen. Der Bonus zählt erst nach einem bezahlten Paket.`;
+  }
+
+  function fillShareBoxes(){
+    if($('teamAppLink')) $('teamAppLink').value = APP_LINK;
+    if($('refAppLink')) $('refAppLink').value = APP_LINK;
+    if($('teamShareText')) $('teamShareText').value = buildTeamShareText();
+    if($('refShareText')) $('refShareText').value = buildReferralShareText();
+  }
+
+  async function copyTextToClipboard(text){
+    try{
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    }catch(e){}
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    }catch(e){
+      document.body.removeChild(ta);
+      return false;
+    }
+  }
+
+  async function copyAppLinkOnly(inputId){
+    const input = $(inputId);
+    if(!input) return;
+    const ok = await copyTextToClipboard(input.value || APP_LINK);
+    const statusId = inputId === 'teamAppLink' ? 'teamCopyStatus' : 'refCopyStatus';
+    const statusEl = $(statusId);
+    if(statusEl){
+      statusEl.className = `status ${ok ? 'ok' : 'warn'}`;
+      statusEl.textContent = ok ? 'App-Link wurde kopiert.' : 'Kopieren hat nicht funktioniert.';
+    }
+  }
+  window.copyAppLinkOnly = copyAppLinkOnly;
+
+  async function copyShareText(textareaId){
+    const el = $(textareaId);
+    if(!el) return;
+    const ok = await copyTextToClipboard(el.value || '');
+    const statusId = textareaId === 'teamShareText' ? 'teamCopyStatus' : 'refCopyStatus';
+    const statusEl = $(statusId);
+    if(statusEl){
+      statusEl.className = `status ${ok ? 'ok' : 'warn'}`;
+      statusEl.textContent = ok ? 'Nachricht mit Link wurde kopiert.' : 'Kopieren hat nicht funktioniert.';
+    }
+  }
+  window.copyShareText = copyShareText;
+
+  const originalUpdateProfileUi = updateProfileUi;
+  updateProfileUi = function(){
+    originalUpdateProfileUi();
+    fillShareBoxes();
+  };
+
   renderAll();
+  fillShareBoxes();
 </script>
 </body>
 </html>
