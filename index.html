@@ -2887,13 +2887,15 @@
     }
   });
 
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('Service Worker aktiv'))
-        .catch(err => console.log('Service Worker Fehler:', err));
-    });
-  }
+ // SERVICE WORKER DEAKTIVIERT (für Entwicklung)
+
+// wenn ('ServiceWorker' in Navigator) {
+//   Fenster.addEventListener('Laden', () => {
+//     navigator.serviceWorker.register('./service-worker.js')
+//       .dann(() => Konsole.Logbuch('Service Worker aktiv'))
+//       .Fang(Ähm => Konsole.Logbuch('Service Worker Fehler:', Ähm));
+//   });
+// } 
 
 </script>
 </body>
