@@ -56,9 +56,9 @@
     .row{display:flex;gap:10px;align-items:center}
     .row > *{flex:1;min-width:0}
     .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-    .month-card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;align-items:stretch}
+    .month-card-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:10px;align-items:stretch}
     .month-control{display:grid;grid-template-columns:1fr;gap:12px;align-items:end}
-    .month-actions-row{display:grid;grid-template-columns:minmax(160px,220px) auto auto;gap:10px;align-items:end}
+    .month-actions-row{display:grid;grid-template-columns:minmax(150px,190px) minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:end}
     .month-mini label{margin:0 0 6px;font-size:13px}
     .month-mini select{padding:10px 12px;height:44px;border-radius:12px;max-width:220px}
     .month-actions-row button{width:auto;height:44px;padding:10px 14px;border-radius:12px;white-space:nowrap}
@@ -137,7 +137,7 @@
     .hero-panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:none;margin-top:10px}
     .hero-panel.show{display:block}
     .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-    .tab-btn{width:auto;padding:14px 26px;border-radius:16px;background:#e5e7eb;color:#111;font-weight:700}
+    .tab-btn{width:auto;padding:12px 18px;border-radius:16px;background:#e5e7eb;color:#111;font-weight:700;min-height:52px;font-size:15px;white-space:nowrap}
     .tab-btn.active{background:var(--accent);color:#fff}
     .tab-btn.locked{opacity:.55}
     .tab-panel{display:none}
@@ -153,18 +153,55 @@
     .addon-item input{width:auto;transform:scale(1.15);margin-top:2px}
     .request-total{margin-top:12px;padding:12px 14px;border-radius:14px;background:#0f1b35;border:1px solid var(--line);font-weight:700}
     .request-note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.4}
+
+    .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .time-grid-4{display:grid;grid-template-columns:minmax(0,1fr) 102px minmax(0,1fr) 102px;gap:10px;align-items:end}
+    .hotel-grid-6{display:grid;grid-template-columns:1.2fr .7fr 1fr 92px 1fr 82px;gap:10px;align-items:end}
+    .fuel-grid-top{display:grid;grid-template-columns:1.25fr .75fr;gap:10px}
+    .fuel-grid-main{display:grid;grid-template-columns:.9fr .72fr .72fr .72fr .82fr;gap:10px;align-items:end}
+    .km-grid-3{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:10px}
+    .compact-field label{margin:0 0 6px}
+    .compact-field input,.compact-field select{height:46px}
+    .small-remark{margin-top:10px}
+    #monthCard{margin-top:18px}
+    #monthCard .stat{padding:12px 14px}
+    #monthCard .month-overall .value{font-size:34px}
+    #monthCard .month-time-money .value,#monthCard .month-time-away .value,#monthCard .month-hotel .value,#monthCard .month-fuel .value{font-size:18px}
+
     @media (max-width: 980px){
       .grid,.profile-grid,.login-grid,.topbar{grid-template-columns:1fr}
       .topbar-info{flex-wrap:wrap}
       .hero-actions{justify-content:flex-start}
       .row{flex-direction:column;align-items:stretch}
-      .stats,.month-card-grid,.month-control,.field-row-compact,.pdf-options,.month-stats-small,.profile-panel-grid,.month-actions-row{grid-template-columns:1fr}
+      .stats,.month-card-grid,.month-control,.pdf-options,.profile-panel-grid{grid-template-columns:1fr}
+      .month-actions-row{grid-template-columns:1fr}
+      .month-stats-small{grid-template-columns:1fr 1fr}
+      .field-row-compact,.form-grid-2,.fuel-grid-top{grid-template-columns:1fr 1fr}
+      .time-grid-4{grid-template-columns:minmax(0,1fr) 96px minmax(0,1fr) 96px}
+      .hotel-grid-6{grid-template-columns:1fr .8fr 1fr 86px}
+      .hotel-grid-6 > :nth-child(5){grid-column:1 / 2}
+      .hotel-grid-6 > :nth-child(6){grid-column:2 / 5}
+      .fuel-grid-main{grid-template-columns:repeat(4,1fr)}
+      .fuel-grid-main > :last-child{grid-column:1 / -1}
+      .km-grid-3{grid-template-columns:1fr 1fr 1fr}
     }
     @media (max-width: 620px){
       .wrap{padding:12px}
       .topbar-info{width:100%}
       .info-chip{min-height:auto}
-      .hero-actions button{flex:1}
+      .hero-actions button{flex:0 0 auto}
+      .hero-actions{gap:6px}
+      .tab-btn{padding:12px 14px;min-height:54px;font-size:15px}
+      .month-stats-small{grid-template-columns:1fr}
+      .field-row-compact,.form-grid-2,.fuel-grid-top{grid-template-columns:1fr 1fr}
+      .time-grid-4{grid-template-columns:minmax(0,1fr) 88px;grid-auto-rows:auto}
+      .time-grid-4 > :nth-child(3){grid-column:1 / 2}
+      .time-grid-4 > :nth-child(4){grid-column:2 / 3}
+      .hotel-grid-6{grid-template-columns:1fr .8fr}
+      .hotel-grid-6 > *{grid-column:auto}
+      .fuel-grid-main{grid-template-columns:1fr 1fr}
+      .km-grid-3{grid-template-columns:1fr 1fr}
+      .km-grid-3 > :first-child{grid-column:1 / -1}
     }
   </style>
 </head>
@@ -337,28 +374,6 @@
         <div id="authStatus" class="status warn">Noch nicht angemeldet.</div>
       </div>
 
-      <div class="card" id="monthCard">
-        <h2>Monatsübersicht</h2>
-        <div class="month-control">
-          <div class="month-actions-row">
-            <div class="month-mini month-month">
-              <label for="monthSelect">Monat</label>
-              <select id="monthSelect"></select>
-            </div>
-            <button type="button" class="outline" onclick="exportCSV()">Liste exportieren</button>
-            <button type="button" onclick="exportPDFQuick()">PDF exportieren</button>
-          </div>
-          <div class="month-card-grid">
-            <div class="stat month-tile month-overall"><div class="label">Gesamtspesen</div><div class="subline">Spesen + Hotel + Tank</div><div class="value" id="overallTotal">0,00 €</div></div>
-          </div>
-          <div class="month-stats-small">
-            <div class="stat month-tile month-time-money"><div class="label">Zeitspesen</div><div class="subline">Nur 14 € / 28 € Zeit</div><div class="value" id="monthlyTotal">0,00 €</div></div>
-            <div class="stat month-tile month-time-away"><div class="label">Zeit nicht zu Hause</div><div class="value" id="monthlyHours">0 Std 0 Min</div></div>
-            <div class="stat month-tile month-hotel"><div class="label">Hotel</div><div class="value" id="monthlyHotel">0,00 €</div></div>
-            <div class="stat month-tile month-fuel"><div class="label">Tanken</div><div class="value" id="monthlyFuel">0,00 €</div></div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="profile-grid">
@@ -377,15 +392,17 @@
 
         <div id="fahrt" class="tab-panel active">
           <h2>Fahrt erfassen</h2>
-          <div class="field-row-compact">
-            <div><label>Tour / Titel (optional)</label><input id="tourName" placeholder="Tour / Titel"></div>
-            <div><label>Bemerkung</label><input id="tripNote" placeholder="Bemerkung"></div>
+          <div class="form-grid-2">
+            <div class="compact-field"><label>Tour / Titel</label><input id="tourName" placeholder="Tour / Titel"></div>
+            <div class="compact-field"><label>Bemerkung</label><input id="tripNote" placeholder="Bemerkung"></div>
           </div>
-          <div class="row">
-            <div><label>Start</label><div class="row"><input id="startTime" type="datetime-local"><button type="button" class="green" onclick="setNow('startTime')">Start jetzt</button></div></div>
-            <div><label>Ende</label><div class="row"><input id="endTime" type="datetime-local"><button type="button" class="red" onclick="setNow('endTime')">Ende jetzt</button></div></div>
+          <div class="time-grid-4" style="margin-top:10px">
+            <div class="compact-field"><label>Start Datum / Zeit</label><input id="startTime" type="datetime-local"></div>
+            <div class="compact-field"><label>&nbsp;</label><button type="button" class="green" onclick="setNow('startTime')">Start</button></div>
+            <div class="compact-field"><label>Ende Datum / Zeit</label><input id="endTime" type="datetime-local"></div>
+            <div class="compact-field"><label>&nbsp;</label><button type="button" class="red" onclick="setNow('endTime')">Ende</button></div>
           </div>
-          <div class="stats">
+          <div class="form-grid-2" style="margin-top:10px">
             <div class="stat"><div class="label">Dauer</div><div class="value" id="durationPreview">0 Std 0 Min</div></div>
             <div class="stat"><div class="label">Spesen</div><div class="value" id="allowancePreview">0,00 €</div></div>
           </div>
@@ -400,9 +417,15 @@
 
         <div id="hotel" class="tab-panel">
           <h2>Hotel</h2>
-          <div class="row"><div><label>Hotelname / Ort</label><input id="hotelName"></div><div><label>Preis €</label><input id="hotelPrice"></div></div>
-          <div class="row"><div><label>Anreise</label><div class="mini-dt-row"><input id="hotelCheckin" type="datetime-local"><button type="button" class="green" onclick="setNow('hotelCheckin')">Jetzt</button></div></div><div><label>Abreise</label><div class="mini-dt-row"><input id="hotelCheckout" type="datetime-local"><button type="button" class="red" onclick="setNow('hotelCheckout')">Jetzt</button></div></div></div>
-          <div class="field-row-compact"><div><label>Nächte</label><input id="hotelNights"></div><div><label>Bemerkung</label><input id="hotelNote"></div></div>
+          <div class="hotel-grid-6">
+            <div class="compact-field"><label>Hotelname / Ort</label><input id="hotelName"></div>
+            <div class="compact-field"><label>Preis €</label><input id="hotelPrice"></div>
+            <div class="compact-field"><label>Anreise Datum / Zeit</label><input id="hotelCheckin" type="datetime-local"></div>
+            <div class="compact-field"><label>&nbsp;</label><button type="button" class="green" onclick="setNow('hotelCheckin')">Jetzt</button></div>
+            <div class="compact-field"><label>Abreise Datum / Zeit</label><input id="hotelCheckout" type="datetime-local"></div>
+            <div class="compact-field"><label>Nächte</label><input id="hotelNights"></div>
+          </div>
+          <div class="small-remark compact-field"><label>Bemerkung</label><input id="hotelNote" placeholder="Bemerkung"></div>
           <div class="receipt-box">
             <label for="hotelReceipt">Hotelbeleg</label>
             <input id="hotelReceipt" type="file" accept="image/*,.pdf">
@@ -415,21 +438,23 @@
 
         <div id="tanken" class="tab-panel">
           <h2>Tanken</h2>
-          <div class="row"><div><label>Tankstelle / Ort</label><input id="fuelStation"></div><div><label>Betrag €</label><input id="fuelAmount"></div></div>
-          <div class="row"><div><label>Datum</label><div class="mini-dt-row"><input id="fuelDate" type="date"><button type="button" class="green" onclick="setToday('fuelDate')">Jetzt</button></div></div><div><label>Uhrzeit</label><div class="mini-dt-row"><input id="fuelTime" type="time"><button type="button" class="red" onclick="setCurrentTime('fuelTime')">Jetzt</button></div></div></div>
-          <div class="row">
-            <div><label>Liter</label><input id="fuelLiters"></div>
-            <div>
-              <label>Spritart</label>
-              <select id="fuelType">
+          <div class="fuel-grid-top">
+            <div class="compact-field"><label>Tankstelle / Ort</label><input id="fuelStation"></div>
+            <div class="compact-field"><label>Betrag €</label><input id="fuelAmount"></div>
+          </div>
+          <div class="fuel-grid-main" style="margin-top:10px">
+            <div class="compact-field"><label>Datum</label><input id="fuelDate" type="date"></div>
+            <div class="compact-field"><label>Uhrzeit</label><input id="fuelTime" type="time"></div>
+            <div class="compact-field"><label>Liter</label><input id="fuelLiters"></div>
+            <div class="compact-field"><label>Spritart</label><select id="fuelType">
                 <option value="Diesel">Diesel</option>
                 <option value="Benzin">Benzin</option>
                 <option value="Elektro">Elektro</option>
-              </select>
-              <label class="checkline" for="rememberFuelType" style="margin-top:8px"><input id="rememberFuelType" type="checkbox"><span>Spritart merken</span></label>
-            </div>
+              </select></div>
+            <div class="compact-field"><label>Preis / Liter</label><input id="fuelPricePerLiter"></div>
           </div>
-          <div class="field-row-compact"><div><label>Preis / Liter</label><input id="fuelPricePerLiter"></div><div><label>Bemerkung</label><input id="fuelNote"></div></div>
+          <label class="checkline" for="rememberFuelType" style="margin-top:8px"><input id="rememberFuelType" type="checkbox"><span>Spritart merken</span></label>
+          <div class="small-remark compact-field"><label>Bemerkung</label><input id="fuelNote" placeholder="Bemerkung"></div>
           <div class="receipt-box">
             <label for="fuelReceipt">Tankbeleg</label>
             <input id="fuelReceipt" type="file" accept="image/*,.pdf">
@@ -442,8 +467,12 @@
 
         <div id="kilometer" class="tab-panel">
           <h2>Kilometer</h2>
-          <div class="row"><div><label>Strecke / Zweck</label><input id="kmPurpose"></div><div><label>Datum</label><input id="kmDate" type="date"></div></div>
-          <div class="field-row-compact"><div><label>Kilometer</label><input id="kmValue"></div><div><label>Bemerkung</label><input id="kmNote"></div></div>
+          <div class="km-grid-3">
+            <div class="compact-field"><label>Strecke / Zweck</label><input id="kmPurpose"></div>
+            <div class="compact-field"><label>Datum</label><input id="kmDate" type="date"></div>
+            <div class="compact-field"><label>Kilometer</label><input id="kmValue"></div>
+          </div>
+          <div class="small-remark compact-field"><label>Bemerkung</label><input id="kmNote" placeholder="Bemerkung"></div>
           <div class="compact-toolbar"><button type="button" onclick="saveKm()">Speichern</button><button type="button" class="outline" onclick="clearKmForm()">Leeren</button><select id="sortKms" class="compact-sort"><option value="desc">Jüngstes zuerst</option><option value="asc">Ältestes zuerst</option></select></div>
           <div id="kmSaveStatus" class="status info">Noch keine Kilometer gespeichert.</div>
           <div id="kmList" class="entry-list"></div>
@@ -722,6 +751,30 @@
           </div>
           <div id="invoiceStatus" class="status info">Rechnungsbereich vorbereitet.</div>
         </div>
+
+
+      <div class="card" id="monthCard">
+        <h2>Monatsübersicht</h2>
+        <div class="month-control">
+          <div class="month-actions-row">
+            <div class="month-mini month-month">
+              <label for="monthSelect">Monat</label>
+              <select id="monthSelect"></select>
+            </div>
+            <button type="button" class="outline" onclick="exportCSV()">Liste exportieren</button>
+            <button type="button" onclick="exportPDFQuick()">PDF exportieren</button>
+          </div>
+          <div class="month-card-grid">
+            <div class="stat month-tile month-overall"><div class="label">Gesamtspesen</div><div class="subline">Spesen + Hotel + Tank</div><div class="value" id="overallTotal">0,00 €</div></div>
+          </div>
+          <div class="month-stats-small">
+            <div class="stat month-tile month-time-money"><div class="label">Zeitspesen</div><div class="subline">Nur 14 € / 28 € Zeit</div><div class="value" id="monthlyTotal">0,00 €</div></div>
+            <div class="stat month-tile month-time-away"><div class="label">Zeit nicht zu Hause</div><div class="value" id="monthlyHours">0 Std 0 Min</div></div>
+            <div class="stat month-tile month-hotel"><div class="label">Hotel</div><div class="value" id="monthlyHotel">0,00 €</div></div>
+            <div class="stat month-tile month-fuel"><div class="label">Tanken</div><div class="value" id="monthlyFuel">0,00 €</div></div>
+          </div>
+        </div>
+      </div>
 
       </div>
     </div>
@@ -2886,28 +2939,16 @@
       status.textContent = 'App wurde installiert.';
     }
   });
-
-  // Service Worker vorübergehend deaktiviert, damit GitHub-/PWA-Cache
-  // bei der Entwicklung keine alten Stände weiter ausliefert.
-  // Wenn die App-Struktur final ist, kann das sauber wieder aktiviert werden.
-  //
-  // if ('serviceWorker' in navigator) {
-  //   window.addEventListener('load', () => {
-  //     navigator.serviceWorker.register('./service-worker.js')
-  //       .then(() => console.log('Service Worker aktiv'))
-  //       .catch(err => console.log('Service Worker Fehler:', err));
-  //   });
-  // }
-
-  // Alte Service Worker-Registrierungen aktiv entfernen,
-  // damit sofort der aktuelle Stand geladen wird.
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
-      try {
+      try{
         const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(reg => reg.unregister()));
-        console.log('Alte Service Worker entfernt');
-      } catch (err) {
+        for (const reg of regs) {
+          if ((reg.scope || '').includes('spesen-von-stil-und-struktur-Test')) {
+            await reg.unregister();
+          }
+        }
+      }catch(err){
         console.log('Service Worker Entfernen Fehler:', err);
       }
     });
