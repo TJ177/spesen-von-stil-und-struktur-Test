@@ -34,7 +34,7 @@
     .receipt-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#0f1b35;border:1px solid var(--line);font-size:12px;color:#dbeafe;margin-top:8px}
     .thumb{display:block;max-width:180px;max-height:120px;object-fit:contain;border-radius:10px;border:1px solid var(--line);margin-top:8px;background:#fff}
 
-    .profile-grid{display:grid;grid-template-columns:330px 1fr;gap:18px;margin-top:18px}
+    .profile-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
     .card,.section{padding:18px}
     h1{margin:0 0 4px;font-size:24px}
     h2{margin:0 0 16px;font-size:22px}
@@ -56,20 +56,18 @@
     .row{display:flex;gap:10px;align-items:center}
     .row > *{flex:1;min-width:0}
     .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-    .month-card-grid{display:grid;grid-template-columns:.9fr 1fr .9fr;gap:12px;margin-top:10px;align-items:stretch}
+    .month-card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;align-items:stretch}
     .month-control{display:grid;grid-template-columns:1fr;gap:12px;align-items:end}
+    .month-actions-row{display:grid;grid-template-columns:minmax(160px,220px) auto auto;gap:10px;align-items:end}
     .month-mini label{margin:0 0 6px;font-size:13px}
-    .month-mini select{padding:10px 12px;height:44px;border-radius:12px;max-width:170px}
-    .month-export{display:grid;grid-template-columns:1fr;gap:8px;align-items:stretch;grid-column:3;grid-row:2 / span 2}
-    .month-export button{width:100%;min-width:0;height:44px;padding:10px 14px;border-radius:12px}
-    .month-top-row{display:contents}
-    .month-bottom-row{display:contents}
-    .month-month{grid-column:1;grid-row:1}
-    .month-overall{grid-column:2 / 4;grid-row:1}
-    .month-time-money{grid-column:1;grid-row:2}
-    .month-time-away{grid-column:2;grid-row:2}
-    .month-hotel{grid-column:1;grid-row:3}
-    .month-fuel{grid-column:2;grid-row:3}
+    .month-mini select{padding:10px 12px;height:44px;border-radius:12px;max-width:220px}
+    .month-actions-row button{width:auto;height:44px;padding:10px 14px;border-radius:12px;white-space:nowrap}
+    .month-overall{grid-column:1 / -1}
+    .month-stats-small{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .month-time-money,.month-time-away,.month-hotel,.month-fuel{min-height:0}
+    .month-time-money .value,.month-time-away .value,.month-hotel .value,.month-fuel .value{font-size:20px}
+    .month-overall .value{font-size:40px}
+    .month-overall .subline{font-size:13px}
     .mini-dt-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
     .mini-dt-row button{width:auto;min-width:88px;height:44px;padding:10px 12px;border-radius:12px}
     .month-tile .subline{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.2}
@@ -121,13 +119,18 @@
     .pill.yellow{background:#facc15}
     .pill.red{background:#ef4444;color:#fff}
     .pill.green{background:#22c55e;color:#fff}
-    .topbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;margin-top:10px}
-    .topbar-info{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-    .info-chip{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-height:54px}
-    .info-chip .chip-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-    .info-chip .chip-value{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;margin-top:10px}
+    .topbar-info{display:flex;align-items:center;gap:10px;min-height:44px}
+    .info-chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:10px 14px;min-height:44px;display:inline-flex;align-items:center}
+    .info-chip .chip-label{display:none}
+    .info-chip .chip-value{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .hero-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
     .hero-actions button{width:auto;padding:8px 12px;border-radius:12px;font-size:13px}
+    .main-shell{margin-top:18px}
+    .profile-panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .profile-button{display:inline-flex;align-items:center;gap:8px}
+    .main-tabs-card{margin-top:18px}
+    .topbar-meta{font-size:14px;font-weight:700}
     .install-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
     .install-cta button{width:auto}
     #syncStatus{display:inline-flex;align-items:center;width:auto;min-width:0;padding:8px 12px;border-radius:999px;margin-top:10px;font-size:13px}
@@ -150,72 +153,18 @@
     .addon-item input{width:auto;transform:scale(1.15);margin-top:2px}
     .request-total{margin-top:12px;padding:12px 14px;border-radius:14px;background:#0f1b35;border:1px solid var(--line);font-weight:700}
     .request-note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.4}
-    /* --- A-Optik: aufgeräumter Preview-Umbau --- */
-    .wrap{max-width:1100px;padding:14px}
-    .hero{padding:16px 18px;border-radius:22px;background:linear-gradient(180deg,#1d2d57 0%,#1a2950 100%)}
-    .brand-head{gap:12px;align-items:center}
-    .brand-logo{width:56px;height:56px}
-    h1{font-size:21px;line-height:1.15}
-    .brand-text .muted{font-size:14px}
-    .topbar{grid-template-columns:1fr;gap:12px;margin-top:14px}
-    .topbar-info{display:flex;flex-wrap:wrap;gap:8px}
-    .info-chip{min-height:auto;padding:8px 10px;border-radius:999px;background:#122145;display:flex;align-items:center;gap:8px}
-    .info-chip .chip-label{margin:0;font-size:10px;opacity:.9}
-    .info-chip .chip-value{font-size:13px;max-width:160px}
-    .hero-actions{justify-content:flex-start;gap:8px}
-    .hero-actions button{padding:9px 12px;border-radius:999px;font-size:13px}
-    #syncStatus{margin-top:2px;margin-bottom:0;padding:8px 12px;font-size:13px}
-    .hero-panel{margin-top:12px;padding:14px;border-radius:16px;background:#102049}
-    .grid{grid-template-columns:1fr;gap:14px}
-    #loginCard{display:none}
-    #monthCard{order:-1}
-    .month-card-grid{grid-template-columns:170px repeat(4,1fr);gap:10px}
-    .month-month{grid-column:1;grid-row:1 / span 2}
-    .month-overall{grid-column:2 / 4;grid-row:1}
-    .month-time-money{grid-column:4;grid-row:1}
-    .month-time-away{grid-column:5;grid-row:1}
-    .month-hotel{grid-column:2;grid-row:2}
-    .month-fuel{grid-column:3;grid-row:2}
-    .month-export{grid-column:4 / 6;grid-row:2;grid-template-columns:1fr 1fr}
-    .month-export button{height:48px}
-    .stat{padding:12px 14px;border-radius:18px;background:#425887}
-    .month-tile .label{font-size:12px}
-    .month-tile .value{font-size:16px;margin-top:4px}
-    .profile-grid{grid-template-columns:260px 1fr;gap:14px;margin-top:14px}
-    .section,.card{padding:16px;border-radius:20px}
-    .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
-    .tab-btn{width:100%;padding:14px 10px;border-radius:16px;text-align:center;justify-content:center}
-    .compact-toolbar{gap:8px}
-    .compact-toolbar button,.compact-toolbar select{height:46px}
-    .row{gap:10px}
-    .mini-dt-row{grid-template-columns:minmax(0,1fr) 110px}
-    .note-box,.request-builder,.receipt-box{border-radius:18px}
-    .entry-card{padding:12px;border-radius:16px}
-    .package-card{border-radius:18px}
-    .toolbar button{border-radius:12px}
-
     @media (max-width: 980px){
       .grid,.profile-grid,.login-grid,.topbar{grid-template-columns:1fr}
+      .topbar-info{flex-wrap:wrap}
+      .hero-actions{justify-content:flex-start}
       .row{flex-direction:column;align-items:stretch}
-      .stats,.month-card-grid,.month-control,.field-row-compact,.month-top-row,.month-bottom-row,.pdf-options{grid-template-columns:1fr}
-      .month-month,.month-overall,.month-time-money,.month-time-away,.month-hotel,.month-fuel,.month-export{grid-column:auto;grid-row:auto}
-      .month-export{grid-template-columns:1fr}
-      .profile-grid{grid-template-columns:1fr}
-      .tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
-      #loginCard{display:none}
+      .stats,.month-card-grid,.month-control,.field-row-compact,.pdf-options,.month-stats-small,.profile-panel-grid,.month-actions-row{grid-template-columns:1fr}
     }
     @media (max-width: 620px){
-      .wrap{padding:10px}
-      .hero{padding:14px}
-      .topbar-info{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-      .info-chip{border-radius:14px}
-      .hero-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
-      .hero-actions button{width:100%;flex:none}
-      .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .brand-logo{width:50px;height:50px}
-      h1{font-size:19px}
-      .month-mini select{max-width:none}
-      .profile-grid{margin-top:12px}
+      .wrap{padding:12px}
+      .topbar-info{width:100%}
+      .info-chip{min-height:auto}
+      .hero-actions button{flex:1}
     }
   </style>
 </head>
@@ -226,36 +175,18 @@
         <img src="logo.png" alt="Stil &amp; Struktur Logo" class="brand-logo">
         <div class="brand-text">
           <h1>Spesen von Stil &amp; Struktur</h1>
-          <div class="muted">Kompakte Fahrer-App für Handy und PC. · Aufgeräumte A-Preview</div>
+          <div class="muted">Kompakte Fahrer-App für Handy und PC.</div>
         </div>
       </div>
 
       <div class="topbar">
         <div class="topbar-info">
-          <div class="info-chip">
-            <div class="chip-label">Name</div>
-            <div class="chip-value" id="nameBadge">Nicht angemeldet</div>
-          </div>
-          <div class="info-chip">
-            <div class="chip-label">E-Mail</div>
-            <div class="chip-value" id="emailBadge">—</div>
-          </div>
-          <div class="info-chip">
-            <div class="chip-label">Paket</div>
-            <div class="chip-value" id="packageBadge">Basic</div>
-          </div>
-          <div class="info-chip">
-            <div class="chip-label">Admin</div>
-            <div class="chip-value" id="adminBadge">—</div>
-          </div>
-          <div class="info-chip">
-            <div class="chip-label">Sync</div>
-            <div class="chip-value" id="queueBadge">Nicht synchronisiert</div>
-          </div>
+          <div class="info-chip"><div class="chip-value" id="topWelcome">Nicht angemeldet</div></div>
         </div>
 
         <div class="hero-actions">
-          <button type="button" class="outline" onclick="togglePanel('helpBox')">App</button>
+          <button type="button" class="outline profile-button" onclick="togglePanel('profileBox')">👤 Profil</button>
+          <button type="button" class="outline" onclick="togglePanel('helpBox')">App / Hilfe</button>
           <button type="button" class="outline" onclick="togglePanel('accessBox')">Zugang</button>
           <button type="button" class="green hidden" id="topInstallBtn" onclick="installApp()">Installieren</button>
           <button type="button" class="outline hidden" id="topUsersBtn" onclick="openAdminPanel('users')">Nutzer</button>
@@ -293,6 +224,43 @@
         <h3>Zugang &amp; Laufzeit</h3>
         <div id="accessInfo" class="status info">Melde dich an, um deine Laufzeit zu sehen.</div>
         <div class="small">Basic = nur Fahrten. Rechnung bleibt sichtbar, ist aber noch nicht aktiviert.</div>
+      </div>
+
+      <div id="profileBox" class="hero-panel">
+        <h3>Mein Profil</h3>
+        <div class="profile-panel-grid">
+          <div>
+            <label>Name</label>
+            <input id="displayName" placeholder="Vor- und Nachname">
+          </div>
+          <div>
+            <label>E-Mail</label>
+            <input id="profileEmail" placeholder="wird aus dem Login übernommen" readonly>
+          </div>
+          <div id="premiumFields" class="hidden">
+            <label>Firma</label><input id="company" placeholder="Firma">
+            <label>Fahrzeug</label><input id="vehicle" placeholder="Fahrzeug">
+            <label>Kennzeichen</label><input id="plate" placeholder="Kennzeichen">
+          </div>
+          <div>
+            <label>Paket</label>
+            <input id="packageBadge" readonly>
+            <label style="margin-top:10px">Admin</label>
+            <input id="adminBadge" readonly>
+            <label style="margin-top:10px">Sync</label>
+            <input id="queueBadge" readonly>
+          </div>
+          <div id="teamProfileFields" class="hidden">
+            <label>Fahrer-Nr.</label><input id="driverNumber" placeholder="Fahrer-Nr." readonly>
+            <div id="teamProfileInfo" class="small">Noch keinem Team zugeordnet.</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button type="button" onclick="saveProfile()" id="saveProfileBtn">Profil speichern</button>
+        </div>
+        <div id="trialBox" class="toolbar"></div>
+        <div class="small">Hier liegen Name, E-Mail, Paket, Admin, Sync und dein Fahrerprofil an einem Ort.</div>
+        <div id="profileStatus" class="status info">Noch kein Profil geladen.</div>
       </div>
 
       <div id="adminPanel" class="hero-panel hidden">
@@ -372,50 +340,29 @@
       <div class="card" id="monthCard">
         <h2>Monatsübersicht</h2>
         <div class="month-control">
-          <div class="month-card-grid">
+          <div class="month-actions-row">
             <div class="month-mini month-month">
               <label for="monthSelect">Monat</label>
               <select id="monthSelect"></select>
             </div>
+            <button type="button" class="outline" onclick="exportCSV()">Liste exportieren</button>
+            <button type="button" onclick="exportPDFQuick()">PDF exportieren</button>
+          </div>
+          <div class="month-card-grid">
             <div class="stat month-tile month-overall"><div class="label">Gesamtspesen</div><div class="subline">Spesen + Hotel + Tank</div><div class="value" id="overallTotal">0,00 €</div></div>
+          </div>
+          <div class="month-stats-small">
             <div class="stat month-tile month-time-money"><div class="label">Zeitspesen</div><div class="subline">Nur 14 € / 28 € Zeit</div><div class="value" id="monthlyTotal">0,00 €</div></div>
             <div class="stat month-tile month-time-away"><div class="label">Zeit nicht zu Hause</div><div class="value" id="monthlyHours">0 Std 0 Min</div></div>
             <div class="stat month-tile month-hotel"><div class="label">Hotel</div><div class="value" id="monthlyHotel">0,00 €</div></div>
             <div class="stat month-tile month-fuel"><div class="label">Tanken</div><div class="value" id="monthlyFuel">0,00 €</div></div>
-            <div class="month-export">
-              <button type="button" class="outline" onclick="exportCSV()">Liste exportieren</button>
-              <button type="button" onclick="exportPDFQuick()">PDF exportieren</button>
-            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="profile-grid">
-      <div class="section">
-        <h3>Fahrerprofil</h3>
-        <label>Name</label>
-        <input id="displayName" placeholder="Vor- und Nachname">
-        <label>E-Mail</label>
-        <input id="profileEmail" placeholder="wird aus dem Login übernommen" readonly>
-        <div id="premiumFields" class="hidden">
-          <label>Firma</label><input id="company" placeholder="Firma">
-          <label>Fahrzeug</label><input id="vehicle" placeholder="Fahrzeug">
-          <label>Kennzeichen</label><input id="plate" placeholder="Kennzeichen">
-        </div>
-        <div id="teamProfileFields" class="hidden">
-          <label>Fahrer-Nr.</label><input id="driverNumber" placeholder="Fahrer-Nr." readonly>
-          <div id="teamProfileInfo" class="small">Noch keinem Team zugeordnet.</div>
-        </div>
-        <div class="toolbar">
-          <button type="button" onclick="saveProfile()" id="saveProfileBtn">Profil speichern</button>
-        </div>
-        <div id="trialBox" class="toolbar"></div>
-        <div class="small">Basic: Name + E-Mail + Fahrten. Premium/Gold zusätzlich Firma, Fahrzeug, Kennzeichen. Team später mit Fahrer-Nr.</div>
-        <div id="profileStatus" class="status info">Noch kein Profil geladen.</div>
-      </div>
-
-      <div class="card">
+      <div class="card main-tabs-card">
         <div class="tabs" id="tabsBar">
           <button class="tab-btn active" data-tab="fahrt" onclick="showTab('fahrt', this)">Fahrt</button>
           <button class="tab-btn" data-tab="hotel" onclick="showTab('hotel', this)">Hotel</button>
@@ -1621,10 +1568,9 @@
   function updateBadges(){
     const state = getAccessState();
     if(!currentUser){
-      $('nameBadge').textContent = 'Nicht angemeldet';
-      $('emailBadge').textContent = '—';
-      $('packageBadge').textContent = 'Basic';
-      $('adminBadge').textContent = '—';
+      $('topWelcome').textContent = 'Nicht angemeldet';
+      $('packageBadge').value = 'Basic';
+      $('adminBadge').value = '—';
       $('topAdminBtn').classList.add('hidden');
       $('topUsersBtn').classList.add('hidden');
       $('topRequestsBtn').classList.add('hidden');
@@ -1635,10 +1581,9 @@
       return;
     }
     const displayName = (localState.profile.displayName || '').trim() || String(currentUser.email || '').split('@')[0];
-    $('nameBadge').textContent = displayName;
-    $('emailBadge').textContent = currentUser.email || '—';
-    $('packageBadge').textContent = state.isUnlimited ? (isAdmin() ? 'Admin' : 'Goldmitglied') : (localState.profile.packageName || 'Basic');
-    $('adminBadge').textContent = isAdmin() ? 'aktiv' : '—';
+    $('topWelcome').textContent = `Angemeldet als ${displayName}`;
+    $('packageBadge').value = state.isUnlimited ? (isAdmin() ? 'Admin' : 'Goldmitglied') : (localState.profile.packageName || 'Basic');
+    $('adminBadge').value = isAdmin() ? 'aktiv' : '—';
     $('topAdminBtn').classList.toggle('hidden', !isAdmin());
     $('topUsersBtn').classList.toggle('hidden', !isAdmin());
     $('topRequestsBtn').classList.toggle('hidden', !isAdmin());
@@ -1650,7 +1595,7 @@
 
   function updateQueueBadge(){
     const pending = Array.isArray(localState.queue) ? localState.queue.length : 0;
-    $('queueBadge').textContent = pending > 0 ? `${pending} offen` : 'bereit';
+    $('queueBadge').value = pending > 0 ? `${pending} offen` : 'bereit';
   }
 
   function updateProfileUi(){
