@@ -142,6 +142,7 @@
     .addon-item input{width:auto;transform:scale(1.15);margin-top:2px}
     .request-total{margin-top:12px;padding:12px 14px;border-radius:14px;background:#0f1b35;border:1px solid var(--line);font-weight:700}
     .request-note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.4}
+    .addon-item.disabled{opacity:.55}
     @media (max-width: 980px){
       .grid,.profile-grid,.login-grid,.topbar{grid-template-columns:1fr}
       .topbar-info{grid-template-columns:1fr 1fr}
@@ -499,7 +500,8 @@
             </div>
             <div class="request-total" id="requestPriceBox">Gesamtpreis: 4,99 €</div>
             <div class="request-note">Zahlung aktuell manuell über PayPal.Me: <span class="mono">paypal.me/StiluStruktur</span>. Nach Zahlung prüft der Admin und setzt den Status.</div>
-            <div class="toolbar"><button type="button" class="yellow" onclick="createPackageRequest()">Paket anfragen</button></div>
+            <div id="packageRuleStatus" class="status info">Bitte Paket auswählen.</div>
+            <div class="toolbar"><button type="button" class="yellow" id="requestSubmitBtn" onclick="createPackageRequest()">Paket anfragen</button></div>
             <div id="packageRequestStatus" class="status info">Noch keine Anfrage erstellt.</div>
           </div>
           <div style="margin-top:18px;">
@@ -620,6 +622,23 @@
     team: { label:'Team-Funktion', price:9.99 },
     pdf: { label:'PDF-Auswahl', price:6.99 },
     fahrer: { label:'Zusätzlicher Fahrer', price:2.99 }
+  };
+
+  const PACKAGE_RANK = {
+    'Basic': 1,
+    'Basic Plus': 2,
+    'Premium': 3,
+    'Premium Plus': 4,
+    'Goldmitglied': 5,
+    'Admin': 99
+  };
+
+  const ADDON_RULES = {
+    'Basic': [],
+    'Basic Plus': ['hotel','tanken','kilometer','team','pdf','fahrer'],
+    'Premium': [],
+    'Premium Plus': ['team','pdf','fahrer'],
+    'Goldmitglied': []
   };
 
   function createEmptyState(){
@@ -933,6 +952,136 @@
     const extras = (addOns || []).reduce((sum, key) => sum + Number(ADDON_PRICES[key]?.price || 0), 0);
     if(packageName === 'Goldmitglied') return base;
     return base + extras;
+  }
+
+  function getCurrentActivePackageName(){
+    const state = getAccessState();
+    if(!currentUser) return '';
+    if(state.isUnlimited) return isAdmin() ? 'Admin' : 'Goldmitglied';
+    if(state.isExpired) return '';
+    return state.packageName || '';
+  }
+
+  function sameOrLowerPackageSelected(currentPkg, selectedPkg){
+    const currentRank = Number(PACKAGE_RANK[currentPkg] || 0);
+    const selectedRank = Number(PACKAGE_RANK[selectedPkg] || 0);
+    return !!currentRank && !!selectedRank && selectedRank <= currentRank;
+  }
+
+  function getAllowedAddOnsForPackage(packageName){
+    return ADDON_RULES[packageName] || [];
+  }
+
+  function findOwnBlockingRequest(selectedPackage){
+    if(isAdmin()) return null;
+    return packageRequests.find(req =>
+      req.requestedPackage === selectedPackage &&
+      ['offen','bezahlt'].includes(String(req.status || 'offen'))
+    ) || null;
+  }
+
+  function getPackageRequestLogicState(){
+    const selectedPackage = $('requestPackage')?.value || 'Basic';
+    const state = getAccessState();
+    const activePackage = getCurrentActivePackageName();
+    const activeUntil = state.activeUntil || '';
+    const requesterName = ($('requestName')?.value || localState.profile.displayName || '').trim();
+    const hasActiveMainPackage = !!activePackage && !state.isExpired && !hasUnlimitedAccess();
+    const blockingRequest = findOwnBlockingRequest(selectedPackage);
+    const isSamePackage = hasActiveMainPackage && selectedPackage === activePackage;
+    const isDowngrade = hasActiveMainPackage && sameOrLowerPackageSelected(activePackage, selectedPackage) && !isSamePackage;
+    const isUpgrade = hasActiveMainPackage && Number(PACKAGE_RANK[selectedPackage] || 0) > Number(PACKAGE_RANK[activePackage] || 0);
+    const allowedAddOns = getAllowedAddOnsForPackage(selectedPackage);
+
+    let canSubmit = true;
+    let buttonText = 'Paket anfragen';
+    let message = 'Du kannst dieses Paket anfragen.';
+    let level = 'info';
+
+    if(!currentUser){
+      canSubmit = false;
+      buttonText = 'Bitte anmelden';
+      message = 'Bitte zuerst anmelden.';
+      level = 'warn';
+    } else if(hasUnlimitedAccess()){
+      canSubmit = false;
+      buttonText = 'Admin verwaltet Pakete';
+      message = isAdmin() ? 'Als Admin buchst du keine eigenen Pakete.' : 'Goldmitglied ist dauerhaft aktiv.';
+      level = 'info';
+    } else if(!requesterName){
+      canSubmit = false;
+      buttonText = 'Name fehlt';
+      message = 'Bitte zuerst deinen Namen im Profil oder im Anfragefeld eintragen.';
+      level = 'warn';
+    } else if(isSamePackage){
+      canSubmit = false;
+      buttonText = 'Bereits aktiv';
+      message = `Dein Paket ${activePackage} läuft${activeUntil ? ` bis ${formatGermanDateOnly(activeUntil)}` : ''} bereits.`;
+      level = 'info';
+    } else if(isDowngrade){
+      canSubmit = false;
+      buttonText = 'Downgrade später';
+      message = `Ein Downgrade auf ${selectedPackage} geht erst nach Ablauf deines aktuellen Pakets${activeUntil ? ` am ${formatGermanDateOnly(activeUntil)}` : ''}.`;
+      level = 'warn';
+    } else if(blockingRequest){
+      canSubmit = false;
+      buttonText = 'Anfrage läuft';
+      message = `Für ${selectedPackage} gibt es bereits eine Anfrage mit Status ${blockingRequest.status || 'offen'}.`;
+      level = 'info';
+    } else if(selectedPackage === 'Goldmitglied'){
+      buttonText = 'Gold anfragen';
+      message = 'Goldmitglied enthält bereits alle Funktionen und Add-ons.';
+      level = 'info';
+    } else if(isUpgrade){
+      buttonText = `Upgrade auf ${selectedPackage}`;
+      message = `Upgrade von ${activePackage} auf ${selectedPackage} ist sofort möglich.`;
+      level = 'ok';
+    }
+
+    return {
+      selectedPackage,
+      activePackage,
+      activeUntil,
+      requesterName,
+      allowedAddOns,
+      canSubmit,
+      buttonText,
+      message,
+      level
+    };
+  }
+
+  function applyPackageRequestRules(){
+    const logic = getPackageRequestLogicState();
+    const selectedPackage = logic.selectedPackage;
+    const allowedAddOns = new Set(logic.allowedAddOns);
+
+    document.querySelectorAll('.request-addon').forEach(el => {
+      const enabled = allowedAddOns.has(el.value);
+      if(!enabled) el.checked = false;
+      el.disabled = !enabled;
+      const wrapper = el.closest('.addon-item');
+      if(wrapper) wrapper.classList.toggle('disabled', !enabled);
+    });
+
+    const submitBtn = $('requestSubmitBtn');
+    if(submitBtn){
+      submitBtn.disabled = !logic.canSubmit;
+      submitBtn.textContent = logic.buttonText;
+    }
+
+    const ruleBox = $('packageRuleStatus');
+    if(ruleBox){
+      ruleBox.className = `status ${logic.level}`;
+      ruleBox.textContent = logic.message;
+    }
+
+    if(selectedPackage === 'Goldmitglied'){
+      updatePackageRequestPrice();
+      return;
+    }
+
+    updatePackageRequestPrice();
   }
 
   function updatePackageRequestPrice(){
@@ -1443,7 +1592,7 @@
     updateLayoutMode();
     syncInvoiceMonthOptions();
     seedInvoiceNumber();
-    updatePackageRequestPrice();
+    applyPackageRequestRules();
     renderPackageRequests();
   }
 
@@ -1549,7 +1698,8 @@
       }
       saveLocalState();
       updateProfileUi();
-      if($('requestName')) $('requestName').value = localState.profile.displayName || String(currentUser?.email || '').split('@')[0] || '';
+      if($('requestName') && !($('requestName').value || '').trim()) $('requestName').value = localState.profile.displayName || '';
+      applyPackageRequestRules();
       $('profileStatus').className = 'status ok';
       $('profileStatus').textContent = 'Profil geladen.';
     }catch(e){
@@ -1580,6 +1730,7 @@
     localState.profile.referralCode = computeRefCode(localState.profile.displayName, currentUser.email);
     localState.profile.updatedAt = Date.now();
     saveLocalState();
+    if($('requestName') && !($('requestName').value || '').trim()) $('requestName').value = localState.profile.displayName || '';
     renderAll();
     $('profileStatus').className = 'status ok';
     $('profileStatus').textContent = 'Profil lokal gespeichert.';
@@ -1844,8 +1995,14 @@
   async function createPackageRequest(){
     if(!currentUser) return alert('Bitte zuerst anmelden.');
     if(isAdmin()) return alert('Admin kann keine eigene Anfrage erstellen.');
+    const logic = getPackageRequestLogicState();
+    if(!logic.canSubmit){
+      $('packageRequestStatus').className = `status ${logic.level}`;
+      $('packageRequestStatus').textContent = logic.message;
+      return;
+    }
     const requestedPackage = $('requestPackage').value;
-    const requesterName = ($('requestName').value || localState.profile.displayName || String(currentUser.email || '').split('@')[0]).trim();
+    const requesterName = logic.requesterName;
     const addOns = getSelectedRequestAddons();
     const totalPrice = getRequestTotal(requestedPackage, addOns);
     const requestId = crypto.randomUUID();
@@ -1875,6 +2032,7 @@
       $('packageRequestStatus').className = 'status ok';
       $('packageRequestStatus').textContent = 'Paket-Anfrage gespeichert.';
       await loadPackageRequests();
+      applyPackageRequestRules();
     }catch(e){
       console.log('createPackageRequest Fehler:', e);
       $('packageRequestStatus').className = 'status warn';
@@ -2060,8 +2218,9 @@
       localStorage.removeItem('svss_remember_fuel_type_value');
     }
   });
-  $('requestPackage')?.addEventListener('change', updatePackageRequestPrice);
-  document.querySelectorAll('.request-addon').forEach(el => el.addEventListener('change', updatePackageRequestPrice));
+  $('requestPackage')?.addEventListener('change', applyPackageRequestRules);
+  $('requestName')?.addEventListener('input', applyPackageRequestRules);
+  document.querySelectorAll('.request-addon').forEach(el => el.addEventListener('change', applyPackageRequestRules));
   window.addEventListener('online', onConnectivityChange);
   window.addEventListener('offline', onConnectivityChange);
   setInterval(() => { if(currentUser){ updateProfileUi(); } }, 60000);
